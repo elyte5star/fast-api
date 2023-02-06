@@ -1,0 +1,18 @@
+[tool.poetry]
+name =  "Elyte FastAPI Application."
+version = "0.1.0"
+description = "e-Market"
+authors = ["elyte5star <checkuti@gmail.com>"]
+readme = "README.md"
+packages = [{include = "fastapi_docker"}]
+homepage ="https://github.com/elyte5star/fastapi_docker"
+repository = "https://github.com/elyte5star/fastapi_docker"
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

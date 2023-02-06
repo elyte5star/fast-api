@@ -1,0 +1,40 @@
+version: '3.8'
+networks:
+  elyte_net:
+
+
+services:
+  app:
+    container_name: fast-api
+    image: fast-api
+    build:
+      context: ./app/src
+      dockerfile: ./backend.dockerfile
+    networks:
+      - elyte_net
+    ports:
+      # <Port exposed> : < Port running inside container>
+      - "8080:8080"
+    depends_on:
+      - db
+    links:
+      - db
+    env_file:
+      - app.env
+    volumes:
+      - ./app/src:/home
+  db:
+    image: mariadb
+    container_name: maria-db
+    restart: always
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    env_file:
+      - app.env
+    volumes:
+      # folder to hold the actual db data
+      - ./persistence:/var/lib/mysql
+    networks:
+      - elyte_net

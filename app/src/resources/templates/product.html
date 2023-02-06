@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <h1>Place your Order.</h1>
+    <div class="framed">
+        <div class="prod_left">
+            <img src="/static/images/products/{{ product['image'] }}" alt="{{ product['name'] }}" width="200px" />
+            <div class="place">{{ product['category'] }}</div>
+        </div>
+        <div class="prod_right">
+            <h3>{{ product['name'] }}</h3>
+            <p>{{ product['description'] }}</p>
+            <h3>Unit Price: {{ product['price'] }} Kr.</h3>
+            {% if msg %}
+            <h3><span id="info">{{ msg }}</span></h3>
+            {% endif %}
+        </div>
+        <div class="prod_order">
+            <form action="{{ url_for('booking') }}" method="POST">
+                <input type="hidden" name="pid" value="{{ product['pid'] }}" />
+                <input type="hidden" name="unit_price" value="{{ product['price'] }}" />
+                <label id="lb4">Quantity(multiples of 1):&nbsp
+                    <input type="number" name="volume" id="num_items" placeholder="e.g 1,2" step="1" min="1" max="10"
+                        value="1"></label>
+                <input class="form-btn" type="submit" value="Create Order" id="add_p">
+            </form>
+        </div>
+    </div>
+</div>
+<h1>Product Details</h1>
+<div class="framed">{{ product['details']|safe }}</div>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="sorted_">
+    <h1>{{ result.message }}</h1>
+    {% for product in result.products%}
+    <article class="framed column" id="{{ product.pid }}">
+        <div class="prod_left">
+            <img src="/static/images/products/{{ product['image'] }}" alt="{{ product['name'] }}" width="200px"
+                height="200px" />
+            <div class="place">{{ product['category'] }}</div>
+        </div>
+        <div class="prod_right">
+            <h3>{{ product['name'] }}</h3>
+            <p>{{ product['description'] }}</p>
+            <h4>{{ product['price'] }} Kr.</h4>
+            {% if "old_price" in product %}
+            <h5 style="text-decoration: line-through;">{{ product['old_price'] }} Kr.</h5>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('one_product', pid=product.pid) }}">
+            <div class="details">Details</div>
+        </a>
+    </article>
+
+    {% endfor %}
+</div>
+{% endblock %}

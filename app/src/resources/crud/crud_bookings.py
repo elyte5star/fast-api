@@ -67,19 +67,19 @@ class Bookings(Discount):
         try:
             await self.commit()
             await self.refresh(booking)
+            return CreateBookingResponse(
+                oid=booking.oid,
+                volume=form_data.volume,
+                sale_price=sale_price,
+                message=f"Booking for {form_data.volume} item(s) created!",
+            )
         except IntegrityError as e:
-            self.log.info(e)
+            self.log.warning(repr(e))
             await self.rollback()
             return BaseResponse(
                 success=False,
                 message=str(e),
             )
-        return CreateBookingResponse(
-            oid=booking.oid,
-            volume=form_data.volume,
-            sale_price=sale_price,
-            message=f"Booking for {form_data.volume} item(s) created!",
-        )
 
     async def _confirm_booking(self, oid: str) -> ConfirmBookingResponse:
         query = (

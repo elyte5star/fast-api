@@ -10,15 +10,21 @@
         <div class="prod_right">
             <h3>{{ product['name'] }}</h3>
             <p>{{ product['description'] }}</p>
-            <h3>Unit Price: {{ product['price'] }} Kr.</h3>
-            {% if msg %}
+            {% if product.discount is defined and product.discount|length > 0 %}
+            <h3>Unit Price: {{ product.discount[0]["new_price"] }} Kr.</h3>
+            <h5>{{ product.discount[0]["discount"] * 100 }} % Discount.</h5>
+                {% else %}
+            <h4>{{ product['price'] }} Kr.</h4>
+                {% endif %}
+                {% if msg %}
             <h3><span id="info">{{ msg }}</span></h3>
-            {% endif %}
+                {% endif %}
         </div>
         <div class="prod_order">
             <form action="{{ url_for('booking') }}" method="POST">
                 <input type="hidden" name="pid" value="{{ product['pid'] }}" />
-                <input type="hidden" name="unit_price" value="{{ product['price'] }}" />
+                <input type="hidden" name="unit_price"
+                    value="{{ product.discount[0]['new_price'] if product.discount|length > 0 else product['price'] }}" />
                 <label id="lb4">Quantity(multiples of 1):&nbsp
                     <input type="number" name="volume" id="num_items" placeholder="e.g 1,2" step="1" min="1" max="10"
                         value="1"></label>

@@ -155,7 +155,7 @@ class Products(Discount):
         res_list = jsonable_encoder(res_orm_list)
         response_list, message = (None for x in range(2))
         if data.key == "deals":
-            response_list = await self._special_deals()
+            response_list = [x for x in res_list if x["discount"]]
             message = data.key
         elif data.key == "numeric_asc":
             message = data.key

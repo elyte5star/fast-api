@@ -19,14 +19,12 @@ class Product(Base):
     description = Column(String(250), nullable=False)
     price = Column(Float, nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-    discount = relationship("SpecialDeals")
+    discount = relationship("SpecialDeals", back_populates="product")
 
 
 class SpecialDeals(Base):
     sid = Column(String(60), primary_key=True, index=True)
     new_price = Column(Float, nullable=False, index=True)
-    pid = Column(
-        String(60), ForeignKey("product.pid"), nullable=False, unique=True
-    )
+    product_id = Column(String(60), ForeignKey("product.pid"), unique=True)
     discount = Column(Float, nullable=False, index=True)
     product = relationship("Product", back_populates="discount")

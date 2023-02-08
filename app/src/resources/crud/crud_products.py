@@ -86,7 +86,7 @@ class Products(Discount):
             aux_prod = SpecialDeals(
                 sid=self.get_indent(),
                 new_price=new_price,
-                pid=data.pid,
+                product_id=data.pid,
                 discount=data.discount,
             )
             self.add(aux_prod)
@@ -94,7 +94,7 @@ class Products(Discount):
                 await self.commit()
                 return CreateDiscountResponse(
                     sid=aux_prod.sid,
-                    message=f"Discount created for Product with id {aux_prod.sid}!",
+                    message=f"Discount created for Product with id {aux_prod.product_id}!",
                 )
             except IntegrityError as e:
                 self.log.warning(e)
@@ -158,21 +158,21 @@ class Products(Discount):
             response_list = [x for x in res_list if x["discount"]]
             message = data.key
         elif data.key == "numeric_asc":
-            message = data.key
+            message = "Product prices in ascending order."
             response_list = sorted(
                 res_list,
                 key=lambda x: x["price"],
                 reverse=False,
             )
         elif data.key == "numeric_desc":
-            message = data.key
+            message = "Product prices in descending order."
             response_list = sorted(
                 res_list,
                 key=lambda x: x["price"],
                 reverse=True,
             )
         elif data.key == "name_asc":
-            message = data.key
+            message = "Product names in ascending order."
             response_list = sorted(
                 res_list,
                 key=lambda x: x["name"],
@@ -180,7 +180,7 @@ class Products(Discount):
             )
 
         elif data.key == "name_desc":
-            message = data.key
+            message = "Product names in descending order"
             response_list = sorted(
                 res_list,
                 key=lambda x: x["name"],

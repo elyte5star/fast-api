@@ -32,6 +32,7 @@ fastapi = "^0.75.0"
 pydantic = "^1.9.0"
 uvicorn = {extras = ["standard"], version = "^0.17.1"}
 pyconfs = "^0.5.5"
+numpy="latest"
 toml = "^0.10.2"
 aiofiles = "^0.8.0"
 motor = "^2.5.1"

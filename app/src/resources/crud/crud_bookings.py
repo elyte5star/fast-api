@@ -74,7 +74,7 @@ class Bookings(Discount):
                 message=f"Booking for {form_data.volume} item(s) created!",
             )
         except IntegrityError as e:
-            self.log.warning(repr(e))
+            self.log.warning(e)
             await self.rollback()
             return BaseResponse(
                 success=False,

@@ -45,15 +45,15 @@ class PageHandler(Utilities):
 
     async def _admin(self, data: dict = {}):
         request = data["request"]
-        if request.session.get("user")["username"] == self.cf.username:
-            data["user_info"] = request.session.get("user")
+        if request.session.get("user")["sub"] == self.cf.username:
+            data["userinfo"] = request.session.get("user")
             return self.templates.TemplateResponse("admin.html", data)
         self.log.warning("Admin rights needed!!")
         return RedirectResponse(url="/login")
 
     async def _sort_items_(self, data: dict = {}):
         data["result"] = await self.product_handler._sort_items(
-            GetSortRequest(key=data["sort_key"])
+            GetSortRequest(key=data["sort_key"], request=data["request"])
         )
         return self.templates.TemplateResponse("sorted.html", data)
 

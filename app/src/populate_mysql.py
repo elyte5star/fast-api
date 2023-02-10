@@ -32,7 +32,7 @@ class SQLTableBuilder(Utilities):
             json_obj = await self.read_json(path_to_file)
             for i, item in enumerate(json_obj):
                 print(item)
-            break
+                break
 
 
 async def main():

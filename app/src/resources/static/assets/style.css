@@ -93,6 +93,7 @@ nav .fa {
 
 #search input {
     font-family: Raleway, sans-serif;
+    width: 305px;
 }
 
 /* Search End */
@@ -213,13 +214,23 @@ nav .fa {
     text-shadow: 4px 4px 4px #aaa;
 }
 
-.fa-search,
 .fa-sort,
 .fa-caret-down {
     color: #3299BB;
     text-shadow: 2px 2px 2px #aaa;
 }
 
+
+
+
+
+.fa-search{
+    position: relative;
+    left: 300px;
+    color: #3299BB;
+    text-shadow: 2px 2px 2px #aaa;
+    font-size: 20px;
+}
 #info {
     color: red;
     margin: 10px;

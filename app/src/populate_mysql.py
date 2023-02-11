@@ -3,7 +3,7 @@ from resources.database.models.product import Products
 from resources.database.models.user import Users
 import json
 from os import getcwd, listdir
-from resources.lib.config import Settings
+from resources.settings.config import Settings
 import asyncio
 import logging
 

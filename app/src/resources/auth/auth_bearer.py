@@ -3,7 +3,7 @@ from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from resources.schemas.requests.auth import JWTcredentials
-from resources.lib.config import Settings
+from resources.settings.config import Settings
 from .blacklist import BlackListHandler
 
 # https://testdriven.io/blog/fastapi-jwt-auth/

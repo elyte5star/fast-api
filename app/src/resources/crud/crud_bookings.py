@@ -50,7 +50,6 @@ class Bookings(Discount):
     async def _create_booking(
         self, form_data: CreateBooking
     ) -> CreateBookingResponse:
-
         sale_price = form_data.unit_price * form_data.volume
         if form_data.discount is not None:
             sale_price = self.calculate_discount(

@@ -7,7 +7,7 @@ from starlette.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.logger import logger
-from resources.lib.config import Settings
+from resources.settings.config import Settings
 from resources.database.db_session import AsyncDatabaseSession
 from resources.crud.crud_users import Users
 from resources.auth.crud_auth import Auth

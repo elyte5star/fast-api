@@ -281,6 +281,7 @@ function getGoogleToken() {
 //Logout
 async function onSignout() {
     const returned_result = await getData("./auth/logout").then((result) => {
+        console.log(result);
         if (result["success"] === true) {
             localStorage.removeItem("token");
             google.accounts.id.disableAutoSelect();

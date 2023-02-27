@@ -38,3 +38,27 @@ services:
       - ./persistence:/var/lib/mysql
     networks:
       - elyte_net
+
+  rabbitQ:
+    hostname: rabbitQ
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - elyte_net
+      
+  # worker:
+  #   image: worker
+  #   build:
+  #     context: ./app/src/worker
+  #     dockerfile: rabbitworker.dockerfile
+  #   environment:
+  #     - PYTHONUNBUFFERED=1
+  #   networks:
+  #       - my_net
+  #   volumes:
+  #     - ./app/worker:/app
+  #   depends_on:
+  #     - rabbitQ
+  #     - web

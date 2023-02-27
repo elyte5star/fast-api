@@ -29,6 +29,11 @@ class Settings:
         self.round: int = 0
         self.coding: str = ""
 
+        # global variables for RabbitMQ
+        self.rabbit_host_name: str = ""
+        self.abbit_host_port: str = ""
+        self.queue_name: list = []
+
         # Project details
         self.name: str = ""
         self.version: str = ""
@@ -61,6 +66,10 @@ class Settings:
         self.sqlUsername = cf.database.user
         self.sqlPassword = cf.database.pwd
         self.db_url = f"mariadb+asyncmy://{self.sqlUsername}:{self.sqlPassword}@{self.sqlHost}/{self.sqlDB}"
+
+        self.rabbit_host_name = cf.queue.params.host_name
+        self.rabbit_host_port = cf.queue.params.port
+        self.queue_name = cf.queue.params.my_queue
 
         self.log_type = cf.api.log_type
         self.host_url = cf.api.host_url

@@ -70,7 +70,13 @@ class Settings:
         self.rabbit_host_name = cf.queue.params.host_name
         self.rabbit_host_port = cf.queue.params.port
         self.queue_name = cf.queue.params.my_queue
-
+        self.rabbit_connect_string: str = (
+            "amqp://guest:guest@"
+            + self.rabbit_host_name
+            + ":"
+            + self.rabbit_host_port
+            + "/"
+        )
         self.log_type = cf.api.log_type
         self.host_url = cf.api.host_url
         self.debug = cf.api.debug

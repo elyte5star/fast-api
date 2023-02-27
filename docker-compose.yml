@@ -2,7 +2,6 @@ version: '3.8'
 networks:
   elyte_net:
 
-
 services:
   app:
     container_name: fast-api
@@ -47,7 +46,7 @@ services:
       - 15672:15672
     networks:
       - elyte_net
-      
+
   # worker:
   #   image: worker
   #   build:

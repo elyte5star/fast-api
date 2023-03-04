@@ -60,12 +60,12 @@ class Settings:
         self.telephone: int = 0
 
     def from_toml_file(self):
-        self.sqlHost = cf.database.host
-        self.sqlPort = cf.database.port
-        self.sqlDB = cf.database.db
-        self.sqlUsername = cf.database.user
-        self.sqlPassword = cf.database.pwd
-        self.db_url = f"mariadb+asyncmy://{self.sqlUsername}:{self.sqlPassword}@{self.sqlHost}/{self.sqlDB}"
+        self.sql_host = cf.database.host
+        self.sql_port = cf.database.port
+        self.sql_db = cf.database.db
+        self.sql_username = cf.database.user
+        self.sql_password = cf.database.pwd
+        self.db_url = f"mariadb+asyncmy://{self.sql_username}:{self.sql_password}@{self.sql_host}/{self.sql_db}"
 
         self.rabbit_host_name = cf.queue.params.host_name
         self.rabbit_host_port = cf.queue.params.port

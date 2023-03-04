@@ -4,7 +4,7 @@ from ...schemas.misc.enums import JobState, JobStatus, JobType
 from sqlalchemy import Column, String, DateTime, ForeignKey, Enum, JSON
 
 
-class Job(Base):
+class _Job(Base):
     job_id = Column(String(60), primary_key=True, index=True)
     task_id = Column(String(60), index=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
@@ -14,9 +14,9 @@ class Job(Base):
     booking_request = Column(JSON)
 
 
-class Task(Base):
+class _Task(Base):
     task_id = Column(String(60),primary_key=True, index=True)
-    job_id = Column(String(60), ForeignKey("job.job_id"))
+    job_id = Column(String(60), ForeignKey("_job.job_id"))
     status = Column(Enum(JobStatus))
     result = Column(JSON)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)

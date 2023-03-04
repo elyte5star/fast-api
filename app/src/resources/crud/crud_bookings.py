@@ -40,7 +40,7 @@ class Discount(Utilities):
             return self.calculate_discount(sale_amount, 0.3)  # 30% discount
         return sale_amount
 
-    def calculate_discount(self, amount: float, percentage: float) -> float:
+    def calculate_discount(self, amount: float, percentage: float) -> str:
         discount = amount * percentage
         sale_price = amount - discount
         return str(round(sale_price, 2))

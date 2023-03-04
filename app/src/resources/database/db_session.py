@@ -13,6 +13,7 @@ from .models.product import Product, SpecialDeals
 from .models.user import User
 from .models.booking import Booking
 from .models.blacklist import BlackList
+from .models.job_task import Job, Task
 
 
 class AsyncDatabaseSession:

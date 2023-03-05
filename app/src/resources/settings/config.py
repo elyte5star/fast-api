@@ -111,10 +111,10 @@ class Settings:
 
         print("Overriding  variables for FastAPI, MySQL")
 
-        self.sqlHost = str(getenv("MYSQL_HOST"))
-        self.sqlDB = str(getenv("MYSQL_DATABASE"))
-        self.sqlUsername = str(getenv("MYSQL_USER"))
-        self.sqlPassword = str(getenv("MYSQL_ROOT_PASSWORD"))
+        self.sql_port = str(getenv("MYSQL_HOST"))
+        self.sql_db = str(getenv("MYSQL_DATABASE"))
+        self.sql_username = str(getenv("MYSQL_USER"))
+        self.sql_password = str(getenv("MYSQL_ROOT_PASSWORD"))
 
         self.google_client_id = str(getenv("GOOGLE_CLIENT_ID"))
         self.secret_key = str(getenv("SECRET_KEY"))

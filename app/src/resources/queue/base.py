@@ -5,8 +5,7 @@ from aio_pika import Message, connect
 from ..schemas.queue.item import ItemInQueue
 from ..schemas.queue.job_task import Job, JobState, JobStatus, JobType, Task
 from resources.database.models.job_task import _Job, _Task
-from typing import Tuple
-from ..schemas.responses.base_response import BaseResponse
+from resources.schemas.responses.job import GetJobRequestResponse
 
 
 class RQHandler(Utilities):
@@ -25,7 +24,7 @@ class RQHandler(Utilities):
         tasks_list: list[Task],
         queue_name: str,
         queue_items_list: list[ItemInQueue],
-    ) -> Tuple[bool, str]:
+    ) -> tuple[bool, str]:
         try:
             _job = _Job(**job.dict())
             self.add(_job)
@@ -45,18 +44,19 @@ class RQHandler(Utilities):
                 # Creating a channel
                 channel = await conn.channel()
                 # Declaring queue
-                queue = await channel.declare_queue(queue_name)
+                _ = await channel.declare_queue(queue_name)
 
                 for queue_item in queue_items_list:
                     # Sending the message
                     await channel.default_exchange.publish(
                         Message(queue_item.json().encode()),
-                        routing_key=queue.name,
+                        routing_key=queue_name,
                     )
 
-            return (True, job.job_id)
+            return (True, f"Job with id '{job.job_id}' created.")
 
         except Exception as ex:
+            await self.rollback()
             return (False, f"Failed to create job. {str(ex)}.")
 
     async def add_job_with_one_task(self, job):
@@ -67,17 +67,14 @@ class RQHandler(Utilities):
         task.created_at = self.time_now()
         task.finished = self.time_then()
         tasks.append(task)
-
         queue_items_list = []
         queue_items_list.append(ItemInQueue(job=job, task=task))
-
         success, message = await self.add_job_tasks_to_db(
             job,
             tasks,
-            queue_items_list,
             self.cf.queue_name[1],
+            queue_items_list,
         )
         if success:
-            return BaseResponse(message=message)
-
-        return BaseResponse(message=message, success=False)
+            return GetJobRequestResponse(job_id=job.job_id, message=message)
+        return GetJobRequestResponse(message=message, success=False)

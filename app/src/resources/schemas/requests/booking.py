@@ -13,3 +13,7 @@ class CreateBooking(RequestBase):
 
 class BookingRequest(RequestBase):
     booking_request: CreateBooking = None
+
+
+class BookingsRequest(RequestBase):
+    pass

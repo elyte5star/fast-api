@@ -109,7 +109,7 @@ pwd = "54321"
 db = "elyte"
 
 [queue.params]
-host_name = "rabbitmQ"
+host_name = "rabbitQ"
 port = "5672"
 my_queue =["SEARCH","BOOKING"]
 pwd="elyteRQ"
@@ -142,7 +142,7 @@ coding = "utf-8"
 algorithm = "HS256"
 secret_key = "0c2214c33cc65769166ec5248bb0ec6a15e892ba649e36fefc5732d9c1ba100"
 token_url = "/token"
-token_expire_min = 30
+token_expire_min = 50
 refresh_token_expire_minutes=43200 #30 days
 grant_type="refresh_token"
 

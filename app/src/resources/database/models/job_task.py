@@ -1,6 +1,6 @@
 from resources.database.base import Base
 from datetime import datetime
-from ...schemas.misc.enums import JobState, JobStatus, JobType
+from ...schemas.misc.enums import JobType
 from sqlalchemy import (
     Column,
     String,
@@ -18,7 +18,7 @@ class _Job(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     username = Column(String(60), ForeignKey("user.username"))
     job_type = Column(Enum(JobType))
-    job_status = Column(Enum(JobStatus))
+    job_status = Column(JSON)
     number_of_tasks = Column(Integer)
     booking_request = Column(JSON)
 
@@ -26,7 +26,7 @@ class _Job(Base):
 class _Task(Base):
     task_id = Column(String(60), primary_key=True, index=True)
     job_id = Column(String(60), ForeignKey("_job.job_id"))
-    status = Column(Enum(JobStatus))
+    status = Column(JSON(none_as_null=True))
     result = Column(JSON(none_as_null=True))
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     started = Column(String(60), index=True)

@@ -16,8 +16,10 @@ services:
       - "8080:8080"
     depends_on:
       - db
+      - rabbitQ
     links:
       - db
+      - rabbitQ
     env_file:
       - app.env
     volumes:
@@ -46,6 +48,7 @@ services:
       - 15672:15672
     networks:
       - elyte_net
+    
 
   # worker:
   #   image: worker

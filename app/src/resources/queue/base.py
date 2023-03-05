@@ -60,7 +60,6 @@ class RQHandler(Utilities):
             return (False, f"Failed to create job. {str(ex)}.")
 
     async def add_job_with_one_task(self, job):
-        """Add a job with one task to the queue."""
         job.number_of_tasks = 1
         tasks = list()
         task = Task(job_id=job.job_id, task_id=self.get_indent())

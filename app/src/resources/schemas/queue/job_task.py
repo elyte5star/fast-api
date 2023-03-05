@@ -1,5 +1,4 @@
-from pydantic import BaseModel
-from pydantic.types import Any
+from pydantic import BaseModel, Json
 from datetime import datetime
 from ..misc.enums import JobState, JobStatus, JobType
 from ..requests.booking import CreateBooking
@@ -20,7 +19,7 @@ class Task(BaseModel):
     task_id: str = ""
     job_id: str = ""
     status: JobStatus = JobStatus()
-    result: Any = None
+    result: Json = None
     created_at: datetime = datetime.utcnow
     started: str = ""
     finished: str = ""

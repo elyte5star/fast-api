@@ -1,10 +1,11 @@
 from .base_response import BaseResponse
+from .job import JobResponse
 
 
 class CreateBookingResponse(BaseResponse):
-    oid: str
-    volume: int
-    sale_price: float
+    oid: str = ""
+    volume: int = 0
+    sale_price: float = 0.0
 
 
 class GetBookingsResponse(BaseResponse):
@@ -13,3 +14,8 @@ class GetBookingsResponse(BaseResponse):
 
 class ConfirmBookingResponse(BaseResponse):
     oid: str = ""
+
+
+class GetQBookingRequestResult(BaseResponse):
+    job: JobResponse = JobResponse()
+    result_data: CreateBookingResponse = CreateBookingResponse()

@@ -78,3 +78,52 @@ class RQHandler(Utilities):
         if success:
             return GetJobRequestResponse(job_id=job.job_id, message=message)
         return GetJobRequestResponse(message=message, success=False)
+
+    async def _check_job_and_tasks(self, job: Job) -> tuple[Job, list[Task]]:
+        states = []
+        successes = []
+        ends = []
+        tasks = []
+        query = self.select(_Task).where(_Task.job_id == job.job_id)
+        results = await self.execute(query)
+        async for result in results:
+            states.append(result["status"]["state"])
+            successes.append(result["status"]["success"])
+            ends.append(result["finished"])
+            tasks.append(result)
+
+        # No tasks in database.
+        if len(tasks) == 0:
+            job["job_status"]["state"] = JobState.NoTasks
+            job["job_status"]["success"] = False
+            job["job_status"]["is_finished"] = True
+            return (job, [])
+
+        ends.sort()
+
+        success = True
+        state = JobState.Finished
+        is_finished = True
+
+        if JobState.Timeout in states:
+            state = JobState.Timeout
+            success = False
+            is_finished = True
+        elif JobState.NotSet in states:
+            state = JobState.NotSet
+            success = False
+            is_finished = False
+        elif JobState.Received in states:
+            state = JobState.Pending
+            success = False
+            is_finished = False
+        elif JobState.Pending in states:
+            state = JobState.Pending
+            success = False
+            is_finished = False
+
+        job["job_status"]["state"] = state
+        job["job_status"]["success"] = success
+        job["job_status"]["is_finished"] = is_finished
+
+        return (job, tasks, ends[-1])

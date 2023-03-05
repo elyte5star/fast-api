@@ -23,7 +23,7 @@ def create_jobresponse(
         job_id=job["job_id"],
         job_status=job["job_status"],
         end_time=end,
-        total_time=float((end - job["created"]).total_seconds()),
+        total_time=float((end - job["created_at"]).total_seconds()),
     )
 
 

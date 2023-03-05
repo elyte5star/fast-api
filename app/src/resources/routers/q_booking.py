@@ -6,7 +6,7 @@ from resources.schemas.requests.booking import (
     CreateBooking,
     BookingRequest,
 )
-from resources.schemas.responses.booking import CreateBookingResponse
+from resources.schemas.responses.booking import GetQBookingRequestResult
 from resources.schemas.responses.job import GetJobRequestResponse
 
 router = APIRouter(prefix="/q_booking", tags=["Q_Bookings"])
@@ -21,11 +21,11 @@ async def create_booking(
     )
 
 
-@router.get("/{job_id}", response_model=CreateBookingResponse)
+@router.get("/{job_id}", response_model=GetQBookingRequestResult)
 async def get_booking_result(
     job_id: str, cred: JWTcredentials = Depends(security)
-) -> CreateBookingResponse:
-    return await result_handler.get_booking_result(
+) -> GetQBookingRequestResult:
+    return await handler.get_booking_result(
         GetJobRequest(
             cred=cred,
             job_id=job_id,

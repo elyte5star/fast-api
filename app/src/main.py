@@ -14,7 +14,16 @@ from resources.auth.crud_auth import Auth
 from resources.crud.crud_products import Products
 from resources.crud.crud_bookings import Bookings
 from resources.crud.crud_pages import PageHandler
-from resources.routers import auth, users, products, booking, pages
+from resources.queue.booking_queue import QBookingHandler
+from resources.routers import (
+    auth,
+    users,
+    products,
+    booking,
+    pages,
+    q_booking,
+    job,
+)
 import time
 
 
@@ -26,13 +35,14 @@ logging.basicConfig(encoding=cfg.coding, level=cfg.log_type)
 db = AsyncDatabaseSession(cfg)
 db.int_db()
 
-routes = (users, auth, products, booking, pages)
+routes = (users, auth, products, booking, pages, q_booking, job)
 crud_operations = (
     Users(cfg),
     Auth(cfg),
     Products(cfg),
     Bookings(cfg),
     PageHandler(cfg),
+    QBookingHandler(cfg),
 )
 # page_op = [pages for i in range(len(crud_operations))]
 
@@ -76,6 +86,7 @@ async def custom_http_exception_handler(request, exc):
 
 # Add Routes
 for route, crud in zip(routes, crud_operations):
+    route.logger = logger
     route.handler = crud
     app.include_router(route.router)
 

@@ -16,6 +16,9 @@ class Utilities(AsyncDatabaseSession):
     def time_now(self) -> datetime:
         return datetime.utcnow()
 
+    def time_then(self) -> datetime:
+        return datetime.datetime(1980, 1, 1)
+
     def get_user_string(self, stringLength: int = 10) -> str:
         letters = (
             string.ascii_lowercase + "0123456789" + string.ascii_uppercase

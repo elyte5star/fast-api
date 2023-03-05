@@ -12,6 +12,7 @@ class Job(BaseModel):
     job_id: str = ""
     task_id: str = ""
     job_status: JobStatus = JobStatus()
+    number_of_tasks: int = 0
     booking_request: CreateBooking = None
 
 

@@ -11,5 +11,5 @@ class CreateBooking(RequestBase):
     # token_load: Optional[JWTcredentials] = None
 
 
-class BookingsRequest(RequestBase):
-    pass
+class BookingRequest(RequestBase):
+    booking_request: CreateBooking = None

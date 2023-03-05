@@ -1,7 +1,7 @@
 from resources.database.base import Base
 from datetime import datetime
 from ...schemas.misc.enums import JobState, JobStatus, JobType
-from sqlalchemy import Column, String, DateTime, ForeignKey, Enum, JSON
+from sqlalchemy import Column, String, DateTime,Integer, ForeignKey, Enum, JSON
 
 
 class _Job(Base):
@@ -11,11 +11,12 @@ class _Job(Base):
     username = Column(String(60), ForeignKey("user.username"))
     job_type = Column(Enum(JobType))
     job_status = Column(Enum(JobStatus))
+    number_of_tasks = Column(Integer)
     booking_request = Column(JSON)
 
 
 class _Task(Base):
-    task_id = Column(String(60),primary_key=True, index=True)
+    task_id = Column(String(60), primary_key=True, index=True)
     job_id = Column(String(60), ForeignKey("_job.job_id"))
     status = Column(Enum(JobStatus))
     result = Column(JSON)

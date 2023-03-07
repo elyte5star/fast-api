@@ -2,6 +2,11 @@ from enum import Enum
 from pydantic import BaseModel
 
 
+class WorkerType(str, Enum):
+    Noop = "0"
+    Booking = "30"
+
+
 class JobType(str, Enum):
     Noop = "0"
     CreateSearch = "10"

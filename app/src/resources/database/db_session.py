@@ -14,6 +14,7 @@ from .models.user import User
 from .models.booking import Booking
 from .models.blacklist import BlackList
 from .models.job_task import _Job, _Task
+from .models.worker import _Worker
 
 
 class AsyncDatabaseSession:

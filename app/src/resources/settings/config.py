@@ -12,11 +12,11 @@ class Settings:
     def __init__(self) -> None:
 
         # global variables for mysql
-        self.sqlHost: str = ""
-        self.sqlPort: int = 0
-        self.sqlDB: str = ""
-        self.sqlUsername: str = ""
-        self.sqlPassword: str = ""
+        self.sql_host: str = ""
+        self.sql_port: int = 0
+        self.sql_db: str = ""
+        self.sql_username: str = ""
+        self.sql_password: str = ""
         self.db_url: str = ""
 
         # Api
@@ -31,7 +31,8 @@ class Settings:
 
         # global variables for RabbitMQ
         self.rabbit_host_name: str = ""
-        self.abbit_host_port: str = ""
+        self.rabbit_host_port: str = ""
+        self.rabbit_connect_string: str = ""
         self.queue_name: list = []
 
         # Project details

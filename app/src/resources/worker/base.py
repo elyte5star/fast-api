@@ -56,31 +56,29 @@ class WorkerHandler:
             db_task = asyncio.get_event_loop().run_until_complete(
                 self.execute(query)
             )
-            # TODO: throw exception if not found?
-            db_task["started"] = datetime.utcnow()
-            db_task["status"]["state"] = JobState.Pending
-
-            status = {
-                    "state": JobState.Pending,
-                    "success": False,
-                    "is_finished": False,
-                }
-        
+            # Update task status
+            task_status = {
+                "state": JobState.Pending,
+                "success": False,
+                "is_finished": False,
+            }
+            print(task_status)
             query = (
                 self.db.update(_Task)
                 .where(_Task.task_id == db_task["task_id"])
                 .values(
                     dict(
                         started=datetime.utcnow(),
+                        status=json.dumps(task_status),
                     )
                 )
                 .execution_options(synchronize_session="fetch")
             )
-            task_filter = {"task_id": db_task["task_id"]}
-            updated_task = {"$set": db_task}
-            result = self.databases.mongo_select(
-                self.database
-            ).tasks.update_one(task_filter, updated_task)
+            query_execute = self.db.execute(query)
+            commit_changes = self.db.commit()
+            result = asyncio.get_event_loop().run_until_complete(
+                asyncio.gather(*[query_execute, commit_changes])
+            )
 
             # Switch on job type.
             success = False

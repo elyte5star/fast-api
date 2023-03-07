@@ -111,7 +111,7 @@ db = "elyte"
 [queue.params]
 host_name = "rabbitQ"
 port = "5672"
-my_queue =["SEARCH","BOOKING"]
+my_queue =["SEARCH","BOOKING","LOST_ITEM"]
 pwd="elyteRQ"
 
 [api]

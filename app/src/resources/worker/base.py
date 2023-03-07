@@ -7,10 +7,10 @@ from ..schemas.misc.enums import JobType, JobStatus, JobState
 from sqlalchemy.exc import IntegrityError
 import json
 import asyncio
-import pika
+from pika import ConnectionParameters, BlockingConnection, BasicProperties
 
 
-class WorkerHandler:
+class Worker:
     def __init__(self, config: Settings) -> None:
         self.cf = config
         self.db = AsyncDatabaseSession(self.cf)
@@ -84,37 +84,34 @@ class WorkerHandler:
             success = False
             match job_type:
                 case JobType.Noop:
-                    pass  # ?
-                case JobType.BuildTopic:
-                    raise Exception("Build topic job in wrong queue.")
+                    raise Exception("No job on the queue")
                 case JobType.CreateSearch:
-                    (success, result) = self.search_handler.create_search(
+                    raise Exception("Create Search job in wrong queue.")
+                case JobType.CreateBooking:
+                    (success, result) = self.booking_handler.create_booking(
                         queue_job
                     )
-                case JobType.CreateDoccount:
-                    (success, result) = self.concept_handler.create_doccount(
-                        queue_job, self.database
-                    )
+
                 case _:
                     raise Exception(f"Unknown job type: {job_type}")
         except:
             # On exception, put queue_item on lost_and_found queue.
-            connection = pika.BlockingConnection(
-                pika.ConnectionParameters(host=self.config.queue_host)
+            connection = BlockingConnection(
+                ConnectionParameters(host=self.rabbit_host_name)
             )
             channel = connection.channel()
             channel.queue_declare(
-                queue=self.config.queue_lost_and_found, durable=True
+                queue=self.cf.queue_name[2], durable=True
             )  # durable?
             channel.basic_qos(prefetch_count=1)
             channel.basic_publish(
                 exchange="",
-                routing_key=self.config.queue_lost_and_found,
+                routing_key=self.cf.queue_name[2],
                 body=received,
             )
-            connection.close()
+            self.close()
         finally:
-            # Update task in mongodb.
+            # Update task in db.
             db_task["status"]["state"] = JobState.Finished
             db_task["status"]["success"] = success
             db_task["status"]["is_finished"] = True
@@ -127,3 +124,16 @@ class WorkerHandler:
             ).tasks.update_one(task_filter, updated_task)
 
             ch.basic_ack(delivery_tag=method.delivery_tag)
+
+    def run_forever(self) -> None:
+        self.connection = BlockingConnection(
+            ConnectionParameters(host=self.config.queue_host)
+        )
+        self.channel = self.connection.channel()
+        self.channel.queue_declare(queue=self.queue, durable=False)
+        self.channel.basic_qos(prefetch_count=1)
+        self.channel.basic_consume(
+            queue=self.queue, on_message_callback=self.callback
+        )
+        self.insert_worker(self.create_worker())
+        self.channel.start_consuming()

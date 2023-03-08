@@ -19,7 +19,7 @@ class QBookingHandler(RQHandler):
         job = self.create_job(JobType.CreateBooking, booking_data.cred)
         json_obj = jsonable_encoder(booking_data.booking_request)
         job.booking_request = json_obj
-        return await self.add_job_with_one_task(job)
+        return await self.add_job_with_one_task(job,self.cf.queue_name[1])
 
     async def get_booking_result(
         self, data: GetJobRequest

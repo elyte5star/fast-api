@@ -16,7 +16,7 @@ services:
       - "8080:8080"
     depends_on:
       - db
-      - rabbitQ
+      #- rabbitQ
     links:
       - db
       - rabbitQ
@@ -63,5 +63,4 @@ services:
       - ./api/src:/usr/src
     links:
       - db
-    depends_on:
-      - rabbitQ
+   

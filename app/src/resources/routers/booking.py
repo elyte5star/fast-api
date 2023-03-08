@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Form
 from resources.schemas.requests.booking import (
     CreateBooking,
     BookingsRequest,
+    BookingRequest,
 )
 from resources.schemas.responses.booking import (
     ConfirmBookingResponse,
@@ -23,12 +24,11 @@ async def create_booking(
     cred: JWTcredentials = Depends(security),
 ):
     return await handler._create_booking(
-        CreateBooking(
-            pid=pid,
-            volume=volume,
-            unit_price=unit_price,
-            discount=cred.discount,
-            userid=cred.userid,
+        BookingRequest(
+            booking_request=CreateBooking(
+                pid=pid, volume=volume, unit_price=unit_price
+            ),
+            cred=cred,
         )
     )
 

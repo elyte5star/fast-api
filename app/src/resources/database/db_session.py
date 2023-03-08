@@ -41,7 +41,7 @@ class AsyncDatabaseSession:
                 self._engine, expire_on_commit=False, class_=AsyncSession
             )()
             self.log.info(
-                f"[+] MYSQL Connection to the {self.cf.sqlHost} for user {self.cf.sqlUsername} created successfully."
+                f"[+] MYSQL Connection to the {self.cf.sql_host} for user {self.cf.sql_username} created successfully."
             )
 
         except Exception as ex:
@@ -55,7 +55,7 @@ class AsyncDatabaseSession:
 
     async def create_all(self):
         async with self._engine.begin() as conn:
-            # await conn.run_sync(Base.metadata.drop_all)
+            await conn.run_sync(Base.metadata.drop_all)
             await conn.run_sync(Base.metadata.create_all)
             await self.create_admin_account()
 

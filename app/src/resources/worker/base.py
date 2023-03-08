@@ -32,16 +32,12 @@ class WorkerBase:
 
     def insert_worker_to_db(self, worker: Worker):
         db_worker = _Worker(**worker.dict())
-        self.add(db_worker)
+        self.db.add(db_worker)
         try:
             asyncio.get_event_loop().run_until_complete(self.db.commit())
         except IntegrityError as e:
             asyncio.get_event_loop().run_until_complete(self.db.rollback())
             raise SystemExit(e)
-
-    def close(self):
-        self.channel.close()
-        self.connection.close()
 
     def _update_ongoing_task_status_in_db(
         self, status_dict: dict, task_id: str
@@ -52,7 +48,7 @@ class WorkerBase:
             .values(
                 dict(
                     started=datetime.utcnow(),
-                    status=json.dumps(status_dict),
+                    status=status_dict,
                 )
             )
             .execution_options(synchronize_session="fetch")
@@ -63,7 +59,7 @@ class WorkerBase:
             asyncio.get_event_loop().run_until_complete(query_execute)
             asyncio.get_event_loop().run_until_complete(commit_changes)
         except Exception as e:
-            print(f"Couldnt update Task Status .{e}")
+            print(f"Couldnt update Task Status to pending..{e}")
 
     def _update_finished_task_status_in_db(
         self, status_dict: dict, task_id: str, result: dict
@@ -74,8 +70,8 @@ class WorkerBase:
             .values(
                 dict(
                     finished=datetime.utcnow(),
-                    status=json.dumps(status_dict),
-                    result=json.dumps(result),
+                    status=status_dict,
+                    result=result,
                 )
             )
             .execution_options(synchronize_session="fetch")
@@ -86,7 +82,7 @@ class WorkerBase:
             asyncio.get_event_loop().run_until_complete(query_execute)
             asyncio.get_event_loop().run_until_complete(commit_changes)
         except Exception as e:
-            print(f"Couldnt update Task Status .{e}")
+            print(f"Couldnt update Task Status to finished..{e}")
 
         # result = asyncio.get_event_loop().run_until_complete(
         # asyncio.gather(*[query_execute, commit_changes])
@@ -105,27 +101,23 @@ class WorkerBase:
             result = {}
 
             # Find task in db, update started, status before doing any work.
-            query = self.select(_Task).where(
+            query = self.db.select(_Task).where(
                 _Task.task_id == queue_task["task_id"]
             )
 
-            db_task = asyncio.get_event_loop().run_until_complete(
-                self.execute(query)
+            db_tasks = asyncio.get_event_loop().run_until_complete(
+                self.db.execute(query)
             )
+            (db_task,) = db_tasks.first()
             # Update task status
             task_status = {
                 "state": JobState.Pending,
                 "success": False,
                 "is_finished": False,
             }
-            print(task_status)
             self._update_ongoing_task_status_in_db(
-                task_status, db_task["task_id"]
+                task_status, db_task.task_id
             )
-
-            # result = asyncio.get_event_loop().run_until_complete(
-            # asyncio.gather(*[query_execute, commit_changes])
-            # )
 
             # Switch on job type.
             success = False
@@ -156,7 +148,8 @@ class WorkerBase:
                 routing_key=self.cf.queue_name[2],
                 body=received,
             )
-            self.close()
+            # channel.close()
+            connection.close()
             print(f"Couldnt process task....{e}")
 
         finally:
@@ -167,20 +160,20 @@ class WorkerBase:
                 "is_finished": True,
             }
             self._update_finished_task_status_in_db(
-                task_status, db_task["task_id"], result
+                task_status, db_task.task_id, result
             )
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
     def run_forever(self) -> None:
-        self.connection = BlockingConnection(
-            ConnectionParameters(host=self.config.queue_host)
+        connection = BlockingConnection(
+            ConnectionParameters(host=self.cf.rabbit_host_name)
         )
-        self.channel = self.connection.channel()
-        self.channel.queue_declare(queue=self.queue_name, durable=False)
-        self.channel.basic_qos(prefetch_count=1)
-        self.channel.basic_consume(
+        channel = connection.channel()
+        channel.queue_declare(queue=self.queue_name, durable=False)
+        channel.basic_qos(prefetch_count=1)
+        channel.basic_consume(
             queue=self.queue_name, on_message_callback=self.callback
         )
         self.insert_worker_to_db(self.create_worker())
-        print(' [*] Waiting for Task.')
-        self.channel.start_consuming()
+        print(" [*] Waiting for Task.")
+        channel.start_consuming()

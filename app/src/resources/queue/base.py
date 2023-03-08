@@ -59,7 +59,7 @@ class RQHandler(Utilities):
             await self.rollback()
             return (False, f"Failed to create job. {str(ex)}.")
 
-    async def add_job_with_one_task(self, job):
+    async def add_job_with_one_task(self, job, queue_name: str):
         job.number_of_tasks = 1
         tasks = list()
         task = Task(job_id=job.job_id, task_id=self.get_indent())
@@ -67,12 +67,12 @@ class RQHandler(Utilities):
         task.created_at = self.time_now()
         task.finished = self.time_then()
         tasks.append(task)
-        queue_items_list = []
+        queue_items_list = list()
         queue_items_list.append(ItemInQueue(job=job, task=task))
         success, message = await self.add_job_tasks_to_db(
             job,
             tasks,
-            self.cf.queue_name[1],
+            queue_name,
             queue_items_list,
         )
         if success:

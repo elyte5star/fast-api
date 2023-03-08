@@ -5,7 +5,7 @@ Starting the project
   - Clone project with
 
   ```
-  git clone git@github.com:elyte5star/fast-api.git
+  git clone git@github.com:elyte5star/fast-api-queue.git
   ```
 
   - Create file app.env and set values for the environment variables below:
@@ -31,7 +31,9 @@ Starting the project
   - Run migrations with
 
   ```
-  docker-compose run app
+  docker-compose up db
+  
+  docker-compose build app
   ```
 
   - start server with

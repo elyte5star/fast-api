@@ -7,21 +7,26 @@ from ..schemas.misc.enums import JobType, JobStatus, JobState
 from sqlalchemy.exc import IntegrityError
 import json
 import asyncio
-from pika import ConnectionParameters, BlockingConnection, BasicProperties
+from pika import ConnectionParameters, BlockingConnection
+from ..schemas.misc.enums import WorkerType
 
 
-class Worker:
-    def __init__(self, config: Settings) -> None:
+class WorkerBase:
+    def __init__(
+        self, config: Settings, worker_type: WorkerType, queue_name: str
+    ) -> None:
         self.cf = config
         self.db = AsyncDatabaseSession(self.cf)
         self.id = str(uuid.uuid4())
+        self.worker_type = worker_type
+        self.queue_name = queue_name
 
-    def create_worker(self, worker_type, queue_name):
+    def create_worker(self):
         worker = Worker()
-        worker.worker_type = worker_type
+        worker.worker_type = self.worker_type
         worker.created_at = datetime.utcnow()
         worker.worker_id = self.id
-        worker.queue_name = queue_name
+        worker.queue_name = self.queue_name
         worker.queue_host = self.cf.rabbit_host_name
         return worker
 
@@ -38,14 +43,65 @@ class Worker:
         self.channel.close()
         self.connection.close()
 
+    def _update_ongoing_task_status_in_db(
+        self, status_dict: dict, task_id: str
+    ):
+        query = (
+            self.db.update(_Task)
+            .where(_Task.task_id == task_id)
+            .values(
+                dict(
+                    started=datetime.utcnow(),
+                    status=json.dumps(status_dict),
+                )
+            )
+            .execution_options(synchronize_session="fetch")
+        )
+        query_execute = self.db.execute(query)
+        commit_changes = self.db.commit()
+        try:
+            asyncio.get_event_loop().run_until_complete(query_execute)
+            asyncio.get_event_loop().run_until_complete(commit_changes)
+        except Exception as e:
+            print(f"Couldnt update Task Status .{e}")
+
+    def _update_finished_task_status_in_db(
+        self, status_dict: dict, task_id: str, result: dict
+    ):
+        query = (
+            self.db.update(_Task)
+            .where(_Task.task_id == task_id)
+            .values(
+                dict(
+                    finished=datetime.utcnow(),
+                    status=json.dumps(status_dict),
+                    result=json.dumps(result),
+                )
+            )
+            .execution_options(synchronize_session="fetch")
+        )
+        query_execute = self.db.execute(query)
+        commit_changes = self.db.commit()
+        try:
+            asyncio.get_event_loop().run_until_complete(query_execute)
+            asyncio.get_event_loop().run_until_complete(commit_changes)
+        except Exception as e:
+            print(f"Couldnt update Task Status .{e}")
+
+        # result = asyncio.get_event_loop().run_until_complete(
+        # asyncio.gather(*[query_execute, commit_changes])
+        # )
+
     def callback(self, ch, method, properties, body):
         try:
             # Get job and task from queue item.
+            print(" [x] Received %r" % json.loads(body.decode()))
             received = body.decode()
             queue_item = json.loads(received)
             queue_task = queue_item["task"]
             queue_job = queue_item["job"]
             job_type = queue_job["job_type"]
+
             result = {}
 
             # Find task in db, update started, status before doing any work.
@@ -63,22 +119,13 @@ class Worker:
                 "is_finished": False,
             }
             print(task_status)
-            query = (
-                self.db.update(_Task)
-                .where(_Task.task_id == db_task["task_id"])
-                .values(
-                    dict(
-                        started=datetime.utcnow(),
-                        status=json.dumps(task_status),
-                    )
-                )
-                .execution_options(synchronize_session="fetch")
+            self._update_ongoing_task_status_in_db(
+                task_status, db_task["task_id"]
             )
-            query_execute = self.db.execute(query)
-            commit_changes = self.db.commit()
-            result = asyncio.get_event_loop().run_until_complete(
-                asyncio.gather(*[query_execute, commit_changes])
-            )
+
+            # result = asyncio.get_event_loop().run_until_complete(
+            # asyncio.gather(*[query_execute, commit_changes])
+            # )
 
             # Switch on job type.
             success = False
@@ -94,8 +141,8 @@ class Worker:
 
                 case _:
                     raise Exception(f"Unknown job type: {job_type}")
-        except:
-            # On exception, put queue_item on lost_and_found queue.
+        except Exception as e:
+            # On exception, put queue_item on lost_item queue.
             connection = BlockingConnection(
                 ConnectionParameters(host=self.rabbit_host_name)
             )
@@ -110,19 +157,18 @@ class Worker:
                 body=received,
             )
             self.close()
+            print(f"Couldnt process task....{e}")
+
         finally:
             # Update task in db.
-            db_task["status"]["state"] = JobState.Finished
-            db_task["status"]["success"] = success
-            db_task["status"]["is_finished"] = True
-            db_task["finished"] = now()
-            db_task["result"] = result
-
-            updated_task = {"$set": db_task}
-            result = self.databases.mongo_select(
-                self.database
-            ).tasks.update_one(task_filter, updated_task)
-
+            task_status = {
+                "state": JobState.Finished,
+                "success": success,
+                "is_finished": True,
+            }
+            self._update_finished_task_status_in_db(
+                task_status, db_task["task_id"], result
+            )
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
     def run_forever(self) -> None:
@@ -130,10 +176,11 @@ class Worker:
             ConnectionParameters(host=self.config.queue_host)
         )
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue=self.queue, durable=False)
+        self.channel.queue_declare(queue=self.queue_name, durable=False)
         self.channel.basic_qos(prefetch_count=1)
         self.channel.basic_consume(
-            queue=self.queue, on_message_callback=self.callback
+            queue=self.queue_name, on_message_callback=self.callback
         )
-        self.insert_worker(self.create_worker())
+        self.insert_worker_to_db(self.create_worker())
+        print(' [*] Waiting for Task.')
         self.channel.start_consuming()

@@ -3,10 +3,15 @@ from resources.database.models.booking import Booking
 from sqlalchemy.exc import IntegrityError
 from aio_pika import Message, connect
 from resources.schemas.queue.item import ItemInQueue
-from resources.schemas.queue.job_task import Job, JobState, JobStatus, JobType, Task
+from resources.schemas.queue.job_task import (
+    Job,
+    JobState,
+    JobStatus,
+    JobType,
+    Task,
+)
 from resources.database.models.job_task import _Job, _Task
 from resources.schemas.responses.job import GetJobRequestResponse
-
 
 
 class RQHandler(Utilities):
@@ -80,27 +85,24 @@ class RQHandler(Utilities):
         return GetJobRequestResponse(message=message, success=False)
 
     async def _check_job_and_tasks(self, job: Job) -> tuple[Job, list[Task]]:
-        states = []
-        successes = []
-        ends = []
-        tasks = []
+        states, successes, ends, tasks = ([] for _ in range(4))
         query = self.select(_Task).where(_Task.job_id == job.job_id)
         results = await self.execute(query)
-        async for result in results:
-            states.append(result["status"]["state"])
-            successes.append(result["status"]["success"])
-            ends.append(result["finished"])
+        results = results.scalars().all()
+        for result in results:
+            states.append(result.status["state"])
+            successes.append(result.status["success"])
+            ends.append(result.finished)
             tasks.append(result)
 
         # No tasks in database.
         if len(tasks) == 0:
-            job["job_status"]["state"] = JobState.NoTasks
-            job["job_status"]["success"] = False
-            job["job_status"]["is_finished"] = True
+            job.job_status["state"] = JobState.NoTasks
+            job.job_status["success"] = False
+            job.job_status["is_finished"] = True
             return (job, [])
 
         ends.sort()
-
         success = True
         state = JobState.Finished
         is_finished = True
@@ -122,8 +124,8 @@ class RQHandler(Utilities):
             success = False
             is_finished = False
 
-        job["job_status"]["state"] = state
-        job["job_status"]["success"] = success
-        job["job_status"]["is_finished"] = is_finished
+        job.job_status["state"] = state
+        job.job_status["success"] = success
+        job.job_status["is_finished"] = is_finished
 
         return (job, tasks, ends[-1])

@@ -27,8 +27,9 @@ class QBookingHandler(RQHandler):
         query = self.select(_Job).where(_Job.job_id == data.job_id)
         jobs = await self.execute(query)
         (job,) = jobs.first()
+        
         if job is not None:
-            if job["job_type"] != JobType.CreateBooking:
+            if job.job_type != JobType.CreateBooking:
                 return GetQBookingRequestResult(
                     success=False, message="Wrong job type."
                 )
@@ -40,7 +41,7 @@ class QBookingHandler(RQHandler):
 
             return GetQBookingRequestResult(
                 job=create_jobresponse(job, end),
-                result_data=tasks[0]["result"],
+                result_data=tasks[0].result,
                 message=f"Success result for job with id: {data.job_id}.",
             )
 

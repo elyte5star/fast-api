@@ -6,7 +6,7 @@ from .auth import JWTcredentials
 
 class CreateBooking(BaseModel):
     pid: str
-    volume: int
+    volume: int 
     unit_price: float
 
 

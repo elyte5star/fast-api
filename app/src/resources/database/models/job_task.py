@@ -15,7 +15,7 @@ from sqlalchemy import (
 class _Job(Base):
     job_id = Column(String(60), primary_key=True, index=True)
     task_id = Column(String(60), index=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True))
     job_type = Column(Enum(JobType))
     job_status = Column(JSON)
     number_of_tasks = Column(Integer)
@@ -27,6 +27,6 @@ class _Task(Base):
     job_id = Column(String(60), ForeignKey("_job.job_id"))
     status = Column(JSON(none_as_null=True))
     result = Column(JSON(none_as_null=True))
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-    started = Column(String(60), index=True)
-    finished = Column(String(60), index=True)
+    created_at = Column(DateTime(timezone=True))
+    started = Column(DateTime(timezone=True))
+    finished = Column(DateTime(timezone=True))

@@ -1,12 +1,13 @@
 from datetime import datetime
-from .base_response import BaseModel, BaseResponse
+from .base_response import BaseResponse
 from ..queue.job_task import Job, JobType, JobStatus
+from pydantic import BaseModel
 
 
 class JobResponse(BaseModel):
     username: str = ""
-    start_time: datetime = datetime(1980, 1, 1)
-    end_time: datetime = datetime(1980, 1, 1)
+    start_time: datetime = datetime(1985, 1, 1)
+    end_time: datetime = datetime(1985, 1, 1)
     total_time: float = 0.0
     job_type: JobType = JobType.Noop
     job_id: str = None
@@ -14,16 +15,16 @@ class JobResponse(BaseModel):
 
 
 def create_jobresponse(
-    job: Job, end: datetime = datetime(1980, 1, 1)
+    job: Job, end: datetime = datetime(1985, 1, 1)
 ) -> JobResponse:
     return JobResponse(
-        username=job["username"],
-        start_time=job["created_at"],
-        job_type=job["job_type"],
-        job_id=job["job_id"],
-        job_status=job["job_status"],
+        username=job.booking_request["cred"]["username"],
+        start_time=job.created_at,
+        job_type=job.job_type,
+        job_id=job.job_id,
+        job_status=job.job_status,
         end_time=end,
-        total_time=float((end - job["created_at"]).total_seconds()),
+        total_time=float((end - job.created_at).total_seconds()),
     )
 
 

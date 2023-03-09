@@ -84,10 +84,6 @@ class WorkerBase:
         except Exception as e:
             print(f"Couldnt update Task Status to finished..{e}")
 
-        # result = asyncio.get_event_loop().run_until_complete(
-        # asyncio.gather(*[query_execute, commit_changes])
-        # )
-
     def callback(self, ch, method, properties, body):
         try:
             # Get job and task from queue item.

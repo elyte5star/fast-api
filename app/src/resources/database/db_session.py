@@ -86,4 +86,4 @@ class AsyncDatabaseSession:
                 self.log.warning(e)
                 await self.rollback()
         else:
-            self.log.info("Admin account exist already!!")
+            self.log.info("Admin account and other tables exist already!!")

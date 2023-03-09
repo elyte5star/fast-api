@@ -1,18 +1,17 @@
 from pydantic import BaseModel, Json
 from datetime import datetime
 from ..misc.enums import JobState, JobStatus, JobType
-from ..requests.booking import CreateBooking
-
+from ..requests.booking import CreateBooking,BookingRequest
+from typing import Optional
 
 class Job(BaseModel):
-    username: str = ""
     created_at: datetime = datetime.utcnow
     job_type: JobType = JobType.Noop
     job_id: str = ""
     task_id: str = ""
     job_status: JobStatus = JobStatus()
     number_of_tasks: int = 0
-    booking_request: CreateBooking = None
+    booking_request: Optional[BookingRequest] = None
 
 
 class Task(BaseModel):

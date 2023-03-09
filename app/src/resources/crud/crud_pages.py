@@ -1,5 +1,6 @@
 from resources.utils.base_functions import Utilities
-from .crud_bookings import Bookings, CreateBooking
+from .crud_bookings import Bookings
+from resources.schemas.requests.booking import CreateBooking
 from .crud_products import Products, GetProductDetailsRequest, GetSortRequest
 from .crud_users import Users
 from resources.auth.crud_auth import Auth

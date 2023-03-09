@@ -4,15 +4,14 @@ from typing import Optional
 from .auth import JWTcredentials
 
 
-class CreateBooking(RequestBase):
+class CreateBooking(BaseModel):
     pid: str
     volume: int
     unit_price: float
-    # token_load: Optional[JWTcredentials] = None
 
 
-class BookingRequest(RequestBase):
-    booking_request: CreateBooking = None
+class BookingRequest(CreateBooking):
+    cred: Optional[JWTcredentials] = None
 
 
 class BookingsRequest(RequestBase):

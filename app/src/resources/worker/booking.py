@@ -1,5 +1,5 @@
 from ..schemas.queue.job_task import Job
-from ..schemas.requests.booking import CreateBooking
+from ..schemas.requests.booking import CreateBooking,BookingRequest
 from ..crud.crud_bookings import Bookings
 from ..settings.config import Settings
 import asyncio
@@ -15,9 +15,9 @@ class BookingHandler:
         result = None
         try:
             result = asyncio.get_event_loop().run_until_complete(
-                bookings._create_booking(CreateBooking(**booking_request))
+                bookings._create_booking(BookingRequest(**booking_request))
             )
-            return (True, result)
+            return (True, dict(result))
         except Exception as e:
             print("Process failed.....")
             print(e)

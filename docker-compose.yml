@@ -43,6 +43,7 @@ services:
   rabbitQ:
     hostname: rabbitQ
     image: rabbitmq:3-management
+    container_name: rabbit
     ports:
       - 5672:5672
       - 15672:15672
@@ -51,6 +52,7 @@ services:
     
   worker:
     image: worker
+    container_name: main-worker
     build:
       context: ./app/src
       dockerfile: ./rabbitworker.dockerfile
@@ -63,4 +65,6 @@ services:
       - ./api/src:/usr/src
     links:
       - db
+    depends_on:
+      - rabbitQ
    

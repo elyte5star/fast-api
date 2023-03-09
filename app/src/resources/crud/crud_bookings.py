@@ -2,10 +2,7 @@ from resources.utils.base_functions import Utilities
 from resources.database.models.booking import Booking
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
-from resources.schemas.requests.booking import (
-    CreateBooking,
-    BookingsRequest,
-)
+from resources.schemas.requests.booking import BookingsRequest, BookingRequest
 from resources.schemas.responses.booking import (
     ConfirmBookingResponse,
     CreateBookingResponse,
@@ -48,19 +45,19 @@ class Discount(Utilities):
 
 class Bookings(Discount):
     async def _create_booking(
-        self, form_data: CreateBooking
+        self, form_data: BookingRequest
     ) -> CreateBookingResponse:
         sale_price = form_data.unit_price * form_data.volume
-        if form_data.discount is not None:
+        if form_data.cred.discount is not None:
             sale_price = self.calculate_discount(
-                sale_price, form_data.discount
+                sale_price, form_data.cred.discount
             )
         booking = Booking(
             oid=self.get_indent(),
             sale_price=sale_price,
             pid=form_data.pid,
             volume=form_data.volume,
-            owner_id=form_data.userid,
+            owner_id=form_data.cred.userid,
         )
         self.add(booking)
         try:

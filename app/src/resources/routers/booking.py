@@ -25,9 +25,9 @@ async def create_booking(
 ):
     return await handler._create_booking(
         BookingRequest(
-            booking_request=CreateBooking(
-                pid=pid, volume=volume, unit_price=unit_price
-            ),
+            pid=pid,
+            volume=volume,
+            unit_price=unit_price,
             cred=cred,
         )
     )

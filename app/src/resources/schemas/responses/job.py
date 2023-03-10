@@ -1,21 +1,21 @@
 from datetime import datetime
-from .base_response import BaseResponse
+from .base_response import BaseModel, BaseResponse
 from ..queue.job_task import Job, JobType, JobStatus
-from pydantic import BaseModel
+from typing import Optional
 
 
 class JobResponse(BaseModel):
     username: str = ""
-    start_time: datetime = datetime(1985, 1, 1)
-    end_time: datetime = datetime(1985, 1, 1)
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
     total_time: float = 0.0
     job_type: JobType = JobType.Noop
-    job_id: str = None
+    job_id: str = ""
     job_status: JobStatus = JobStatus()
 
 
 def create_jobresponse(
-    job: Job, end: datetime = datetime(1985, 1, 1)
+    job: Job, end: Optional[datetime] = None
 ) -> JobResponse:
     return JobResponse(
         username=job.booking_request["cred"]["username"],

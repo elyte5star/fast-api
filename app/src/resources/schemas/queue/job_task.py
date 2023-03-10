@@ -6,7 +6,7 @@ from typing import Optional
 
 
 class Job(BaseModel):
-    created_at: datetime = datetime.utcnow
+    created_at: Optional[datetime] = None
     job_type: JobType = JobType.Noop
     job_id: str = ""
     task_id: str = ""
@@ -20,9 +20,27 @@ class Task(BaseModel):
     job_id: str = ""
     status: JobStatus = JobStatus()
     result: Json = None
-    created_at: datetime = datetime(1985, 1, 1)
-    started: datetime = datetime(1985, 1, 1)
-    finished: datetime = datetime(1985, 1, 1)
+    created_at: Optional[datetime] = None
+    started: Optional[datetime] = None
+    finished: Optional[datetime] = None
+
+
+class Result(BaseModel):
+    result_id: str = ""
+    result_type: int = 0  # TODO: change to enum, 10 = database, 20 = file
+    result_state: int = (
+        0  #  TODO: change to enum, 10 = present, 20 = archived, 30 = removed
+    )
+    task_id: str = ""
+    data: dict = {}  # Instead of result in Task
+    data_checksum: str = None
+
+
+class ResultLog(BaseModel):
+    result_id: str = ""
+    created_at: datetime = datetime.utcnow
+    handled: bool = False
+    handled_dt: datetime = None
 
 
 def result_available(job: Job) -> bool:

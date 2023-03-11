@@ -59,7 +59,7 @@ class WorkerBase:
             asyncio.get_event_loop().run_until_complete(query_execute)
             asyncio.get_event_loop().run_until_complete(commit_changes)
         except Exception as e:
-            print(f"Couldnt update Task Status to pending..{e}")
+            raise SystemExit(f"Couldnt update Task Status to pending..{e}")
 
     def _update_finished_task_status_in_db(
         self, status_dict: dict, task_id: str, result: dict
@@ -82,12 +82,12 @@ class WorkerBase:
             asyncio.get_event_loop().run_until_complete(query_execute)
             asyncio.get_event_loop().run_until_complete(commit_changes)
         except Exception as e:
-            print(f"Couldnt update Task Status to finished..{e}")
+            raise SystemExit(f"Couldnt update Task Status to finished..{e}")
 
     def callback(self, ch, method, properties, body):
         try:
             # Get job and task from queue item.
-            print(" [x] Received %r" % json.loads(body.decode()))
+            #print(" [x] Received %r" % json.loads(body.decode()))
             received = body.decode()
             queue_item = json.loads(received)
             queue_task = queue_item["task"]
@@ -119,16 +119,16 @@ class WorkerBase:
             success = False
             match job_type:
                 case JobType.Noop:
-                    raise Exception("No job on the queue")
+                    raise SystemExit("No job on the queue")
                 case JobType.CreateSearch:
-                    raise Exception("Create Search job in wrong queue.")
+                    raise SystemExit("Create Search job in wrong queue.")
                 case JobType.CreateBooking:
                     (success, result) = self.booking_handler.create_booking(
                         queue_job
                     )
 
                 case _:
-                    raise Exception(f"Unknown job type: {job_type}")
+                    raise SystemExit(f"Unknown job type: {job_type}")
         except Exception as e:
             # On exception, put queue_item on lost_item queue.
             connection = BlockingConnection(
@@ -171,5 +171,5 @@ class WorkerBase:
             queue=self.queue_name, on_message_callback=self.callback
         )
         self.insert_worker_to_db(self.create_worker())
-        print(" [*] Waiting for Task.")
+        print(" [*] Worker Waiting for Task.")
         channel.start_consuming()

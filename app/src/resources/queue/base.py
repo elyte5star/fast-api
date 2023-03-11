@@ -115,15 +115,11 @@ class RQHandler(Utilities):
             state = JobState.NotSet
             success = False
             is_finished = False
-        elif JobState.Received in states:
+        elif JobState.Received in states or JobState.Pending in states:
             state = JobState.Pending
             success = False
             is_finished = False
-        elif JobState.Pending in states:
-            state = JobState.Pending
-            success = False
-            is_finished = False
-
+        
         job.job_status["state"] = state
         job.job_status["success"] = success
         job.job_status["is_finished"] = is_finished

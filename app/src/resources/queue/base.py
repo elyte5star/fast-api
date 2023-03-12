@@ -1,6 +1,4 @@
 from resources.utils.base_functions import Utilities
-from resources.database.models.booking import Booking
-from sqlalchemy.exc import IntegrityError
 from aio_pika import Message, connect
 from resources.schemas.queue.item import ItemInQueue
 from resources.schemas.queue.job_task import (
@@ -12,7 +10,7 @@ from resources.schemas.queue.job_task import (
 )
 from resources.database.models.job_task import _Job, _Task
 from resources.schemas.responses.job import GetJobRequestResponse
-
+from fastapi.encoders import jsonable_encoder
 
 class RQHandler(Utilities):
     def create_job(self, job_type):
@@ -89,6 +87,7 @@ class RQHandler(Utilities):
         query = self.select(_Task).where(_Task.job_id == job.job_id)
         results = await self.execute(query)
         results = results.scalars().all()
+        
         for result in results:
             states.append(result.status["state"])
             successes.append(result.status["success"])
@@ -103,6 +102,7 @@ class RQHandler(Utilities):
             return (job, [])
 
         ends.sort()
+        print(jsonable_encoder(tasks))
         success = True
         state = JobState.Finished
         is_finished = True
@@ -119,7 +119,7 @@ class RQHandler(Utilities):
             state = JobState.Pending
             success = False
             is_finished = False
-        
+
         job.job_status["state"] = state
         job.job_status["success"] = success
         job.job_status["is_finished"] = is_finished

@@ -44,7 +44,6 @@ crud_operations = (
     PageHandler(cfg),
     QBookingHandler(cfg),
 )
-# page_op = [pages for i in range(len(crud_operations))]
 
 
 app = FastAPI(
@@ -108,5 +107,6 @@ async def startup_event() -> None:
 
 @app.on_event("shutdown")
 async def shuttdown() -> None:
+    await db._engine.dispose()
     db.close()
     logger.info(f"{cfg.name} v{cfg.version} is shutting down.")

@@ -144,7 +144,7 @@ class WorkerBase:
                 routing_key=self.cf.queue_name[2],
                 body=received,
             )
-            # channel.close()
+            channel.close()
             connection.close()
             print(f"Couldnt process task....{e}")
 
@@ -159,6 +159,7 @@ class WorkerBase:
                 task_status, db_task.task_id, result
             )
             ch.basic_ack(delivery_tag=method.delivery_tag)
+            print(result)
 
     def run_forever(self) -> None:
         connection = BlockingConnection(

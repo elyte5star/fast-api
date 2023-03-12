@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from typing import Optional
 import uuid
 
+
 # needed to create table automatically
 from .models.product import Product, SpecialDeals
 from .models.user import User
@@ -15,6 +16,8 @@ from .models.booking import Booking
 from .models.blacklist import BlackList
 from .models.job_task import _Job, _Task
 from .models.worker import _Worker
+
+
 
 
 class AsyncDatabaseSession:
@@ -27,6 +30,7 @@ class AsyncDatabaseSession:
         self.delete = delete
         self.log = logger
         self.cf = cf
+
         if AsyncDatabaseSession._session is None:
             self.int_db()
 
@@ -43,12 +47,14 @@ class AsyncDatabaseSession:
             self.log.info(
                 f"[+] MYSQL Connection to the {self.cf.sql_host} for user {self.cf.sql_username} created successfully."
             )
-
         except Exception as ex:
             self.log.warning(
                 "Connection could not be made due to the following error: \n",
                 ex,
             )
+       
+
+    
 
     def __getattr__(self, name) -> AsyncSession:
         return getattr(self._session, name)

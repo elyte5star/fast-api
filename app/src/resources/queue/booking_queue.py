@@ -34,11 +34,11 @@ class QBookingHandler(RQHandler):
                     success=False, message="Wrong job type."
                 )
             (job, tasks, end) = await self._check_job_and_tasks(job)
+
             if not result_available(job):
                 return GetQBookingRequestResult(
                     success=False, message="Result from job is not available."
                 )
-
             return GetQBookingRequestResult(
                 job=create_jobresponse(job, end),
                 result_data=tasks[0].result,

@@ -84,7 +84,7 @@ class RQHandler(Utilities):
 
     async def _check_job_and_tasks(self, job: Job) -> tuple[Job, list[Task]]:
         states, successes, ends, tasks = ([] for _ in range(4))
-        query = self.select(_Task).where(_Task.job_id == job.job_id)
+        query = self.select(_Task).where(_Task.job_id == job.job_id) ###not updated version
         results = await self.execute(query)
         results = results.scalars().all()
         

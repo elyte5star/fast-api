@@ -35,15 +35,13 @@ class RQHandler(Utilities):
             self.add(_job)
             await self.commit()
             await self.refresh(_job)
-
             for task in tasks_list:
                 aux_task = _Task(**task.dict())
                 self.add(aux_task)
                 await self.commit()
                 await self.refresh(aux_task)
-                
-            
-            
+                await self.close()
+
             # Perform connection
             connection = await connect(self.cf.rabbit_connect_string)
 
@@ -106,7 +104,6 @@ class RQHandler(Utilities):
             return (job, [])
 
         ends.sort()
-        print(jsonable_encoder(tasks))
         success = True
         state = JobState.Finished
         is_finished = True

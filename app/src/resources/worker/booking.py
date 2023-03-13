@@ -1,5 +1,5 @@
 from ..schemas.queue.job_task import Job
-from ..schemas.requests.booking import CreateBooking, BookingRequest
+from ..schemas.requests.booking import BookingRequest
 from ..crud.crud_bookings import Bookings
 from ..settings.config import Settings
 import asyncio

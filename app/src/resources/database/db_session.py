@@ -32,16 +32,12 @@ class AsyncDatabaseSession:
 
         try:
             self._engine = create_async_engine(
-                self.cf.db_url,
-                future=True,
-                echo=False,
+                self.cf.db_url, echo=False, pool_recycle=50000
             )
             self._session = sessionmaker(
                 self._engine, expire_on_commit=False, class_=AsyncSession
             )()
-            self.log.info(
-                f"[+] MYSQL Connection to the {self.cf.sql_host} for user {self.cf.sql_username} created successfully."
-            )
+
         except Exception as ex:
             self.log.warning(
                 "Connection could not be made due to the following error: \n",

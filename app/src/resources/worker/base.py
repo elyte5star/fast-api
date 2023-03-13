@@ -16,7 +16,7 @@ class WorkerBase:
         self, config: Settings, worker_type: WorkerType, queue_name: str
     ) -> None:
         self.cf = config
-        self.db  = AsyncDatabaseSession(self.cf)
+        self.db = AsyncDatabaseSession(self.cf)
         self.id = str(uuid.uuid4())
         self.worker_type = worker_type
         self.queue_name = queue_name
@@ -35,6 +35,9 @@ class WorkerBase:
         self.db.add(db_worker)
         try:
             asyncio.get_event_loop().run_until_complete(self.db.commit())
+            asyncio.get_event_loop().run_until_complete(
+                self.db.refresh(db_worker)
+            )
         except IntegrityError as e:
             asyncio.get_event_loop().run_until_complete(self.db.rollback())
             raise SystemExit(e)
@@ -53,11 +56,10 @@ class WorkerBase:
             )
             .execution_options(synchronize_session="fetch")
         )
-        query_execute = self.db.execute(query)
-        commit_changes = self.db.commit()
+
         try:
-            asyncio.get_event_loop().run_until_complete(query_execute)
-            asyncio.get_event_loop().run_until_complete(commit_changes)
+            asyncio.get_event_loop().run_until_complete(self.db.execute(query))
+            asyncio.get_event_loop().run_until_complete(self.db.commit())
         except Exception as e:
             asyncio.get_event_loop().run_until_complete(self.db.rollback())
             raise SystemExit(f"Couldnt update Task Status to pending..{e}")
@@ -77,11 +79,10 @@ class WorkerBase:
             )
             .execution_options(synchronize_session="fetch")
         )
-        query_execute = self.db.execute(query)
-        commit_changes = self.db.commit()
+
         try:
-            asyncio.get_event_loop().run_until_complete(query_execute)
-            asyncio.get_event_loop().run_until_complete(commit_changes)
+            asyncio.get_event_loop().run_until_complete(self.db.execute(query))
+            asyncio.get_event_loop().run_until_complete(self.db.commit())
         except Exception as e:
             asyncio.get_event_loop().run_until_complete(self.db.rollback())
             raise SystemExit(f"Couldnt update Task Status to finished..{e}")

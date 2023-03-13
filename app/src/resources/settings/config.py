@@ -66,7 +66,7 @@ class Settings:
         self.sql_db = cf.database.db
         self.sql_username = cf.database.user
         self.sql_password = cf.database.pwd
-        self.db_url = f"mariadb+asyncmy://{self.sql_username}:{self.sql_password}@{self.sql_host}/{self.sql_db}"
+        self.db_url = f"mariadb+asyncmy://{self.sql_username}:{self.sql_password}@{self.sql_host}/{self.sql_db}?charset=utf8mb4"
 
         self.rabbit_host_name = cf.queue.params.host_name
         self.rabbit_host_port = cf.queue.params.port

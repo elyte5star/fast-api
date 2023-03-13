@@ -28,8 +28,6 @@ services:
     image: mariadb
     container_name: maria-db
     restart: always
-    ports:
-      - "3306:3306"
     expose:
       - "3306"
     env_file:
@@ -39,6 +37,7 @@ services:
       - ./persistence:/var/lib/mysql
     networks:
       - elyte_net
+  
 
   rabbitQ:
     hostname: rabbitQ
@@ -65,6 +64,6 @@ services:
       - ./api/src:/usr/src
     links:
       - db
-    depends_on:
       - rabbitQ
+    
    

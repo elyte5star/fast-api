@@ -16,7 +16,7 @@ class WorkerBase:
         self, config: Settings, worker_type: WorkerType, queue_name: str
     ) -> None:
         self.cf = config
-        self.db = AsyncDatabaseSession(self.cf)
+        self.db  = AsyncDatabaseSession(self.cf)
         self.id = str(uuid.uuid4())
         self.worker_type = worker_type
         self.queue_name = queue_name
@@ -59,6 +59,7 @@ class WorkerBase:
             asyncio.get_event_loop().run_until_complete(query_execute)
             asyncio.get_event_loop().run_until_complete(commit_changes)
         except Exception as e:
+            asyncio.get_event_loop().run_until_complete(self.db.rollback())
             raise SystemExit(f"Couldnt update Task Status to pending..{e}")
 
     def _update_finished_task_status_in_db(
@@ -82,12 +83,13 @@ class WorkerBase:
             asyncio.get_event_loop().run_until_complete(query_execute)
             asyncio.get_event_loop().run_until_complete(commit_changes)
         except Exception as e:
+            asyncio.get_event_loop().run_until_complete(self.db.rollback())
             raise SystemExit(f"Couldnt update Task Status to finished..{e}")
 
     def callback(self, ch, method, properties, body):
         try:
             # Get job and task from queue item.
-            #print(" [x] Received %r" % json.loads(body.decode()))
+            # print(" [x] Received %r" % json.loads(body.decode()))
             received = body.decode()
             queue_item = json.loads(received)
             queue_task = queue_item["task"]

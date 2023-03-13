@@ -33,7 +33,7 @@ cfg = Settings().from_toml_file()
 logging.basicConfig(encoding=cfg.coding, level=cfg.log_type)
 
 db = AsyncDatabaseSession(cfg)
-db.int_db()
+
 
 routes = (users, auth, products, booking, pages, q_booking, job)
 crud_operations = (

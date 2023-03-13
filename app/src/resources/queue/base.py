@@ -11,6 +11,8 @@ from resources.schemas.queue.job_task import (
 from resources.database.models.job_task import _Job, _Task
 from resources.schemas.responses.job import GetJobRequestResponse
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import selectinload
+
 
 class RQHandler(Utilities):
     def create_job(self, job_type):
@@ -39,7 +41,9 @@ class RQHandler(Utilities):
                 self.add(aux_task)
                 await self.commit()
                 await self.refresh(aux_task)
-
+                
+            
+            
             # Perform connection
             connection = await connect(self.cf.rabbit_connect_string)
 
@@ -84,10 +88,10 @@ class RQHandler(Utilities):
 
     async def _check_job_and_tasks(self, job: Job) -> tuple[Job, list[Task]]:
         states, successes, ends, tasks = ([] for _ in range(4))
-        query = self.select(_Task).where(_Task.job_id == job.job_id) ###not updated version
+        query = self.select(_Task).where(_Task.job_id == job.job_id)
         results = await self.execute(query)
         results = results.scalars().all()
-        
+
         for result in results:
             states.append(result.status["state"])
             successes.append(result.status["success"])

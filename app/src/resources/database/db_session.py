@@ -18,30 +18,25 @@ from .models.job_task import _Job, _Task
 from .models.worker import _Worker
 
 
-
-
 class AsyncDatabaseSession:
     _session = None  # Ensure db initialized once.
 
     def __init__(self, cf):
         self._engine = None
+        self._session = None
         self.select = select
         self.update = update
         self.delete = delete
         self.log = logger
         self.cf = cf
 
-        if AsyncDatabaseSession._session is None:
-            self.int_db()
-
-    def int_db(self):
         try:
             self._engine = create_async_engine(
                 self.cf.db_url,
                 future=True,
                 echo=False,
             )
-            AsyncDatabaseSession._session = sessionmaker(
+            self._session = sessionmaker(
                 self._engine, expire_on_commit=False, class_=AsyncSession
             )()
             self.log.info(
@@ -52,9 +47,6 @@ class AsyncDatabaseSession:
                 "Connection could not be made due to the following error: \n",
                 ex,
             )
-       
-
-    
 
     def __getattr__(self, name) -> AsyncSession:
         return getattr(self._session, name)

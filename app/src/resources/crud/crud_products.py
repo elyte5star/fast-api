@@ -31,7 +31,6 @@ class Products(Discount):
         self.add(product)
         try:
             await self.commit()
-            await self.refresh(product)
             return CreateProductResponse(
                 pid=product.pid,
                 message=f"Product with name {product.name} created!",
@@ -43,6 +42,8 @@ class Products(Discount):
                 success=False,
                 message=str(e),
             )
+        finally:
+            await self._engine.dispose()
 
     async def _create_products(
         self, data: CreateProductsRequest
@@ -103,6 +104,9 @@ class Products(Discount):
                     success=False,
                     message=str(e),
                 )
+            finally:
+                await self._engine.dispose()
+
         return BaseResponse(
             success=False,
             message="Admin rights needed!",
@@ -135,6 +139,8 @@ class Products(Discount):
                     success=False,
                     message=str(e),
                 )
+            finally:
+                await self._engine.dispose()
         return BaseResponse(
             success=False,
             message="Admin rights needed!",

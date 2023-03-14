@@ -32,16 +32,10 @@ class RQHandler(Utilities):
     ) -> tuple[bool, str]:
         try:
             _job = _Job(**job.dict())
-            self.add(_job)
+            aux_task = _Task(**tasks_list[0].dict())
+            self.add_all([_job, aux_task])
             await self.commit()
-            await self.refresh(_job)
-            for task in tasks_list:
-                aux_task = _Task(**task.dict())
-                self.add(aux_task)
-                await self.commit()
-                await self.refresh(aux_task)
-                await self.close()
-
+           
             # Perform connection
             connection = await connect(self.cf.rabbit_connect_string)
 
@@ -63,6 +57,8 @@ class RQHandler(Utilities):
         except Exception as ex:
             await self.rollback()
             return (False, f"Failed to create job. {str(ex)}.")
+        finally:
+            await self._engine.dispose()
 
     async def add_job_with_one_task(self, job, queue_name: str):
         job.number_of_tasks = 1

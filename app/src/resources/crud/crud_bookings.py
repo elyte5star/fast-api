@@ -62,7 +62,6 @@ class Bookings(Discount):
         self.add(booking)
         try:
             await self.commit()
-            await self.refresh(booking)
             return CreateBookingResponse(
                 oid=booking.oid,
                 volume=form_data.volume,
@@ -76,6 +75,8 @@ class Bookings(Discount):
                 success=False,
                 message=str(e),
             )
+        finally:
+            await self._engine.dispose()
 
     async def _confirm_booking(self, oid: str) -> ConfirmBookingResponse:
         query = (
@@ -96,6 +97,8 @@ class Bookings(Discount):
             return ConfirmBookingResponse(
                 oid=oid, success=False, message="Booking not confirmed!"
             )
+        finally:
+            await self._engine.dispose()
 
     async def _get_bookings(
         self, data: BookingsRequest

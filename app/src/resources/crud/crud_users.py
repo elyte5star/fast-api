@@ -21,7 +21,6 @@ class Users(Utilities):
     async def _create_user(
         self, data: CreateUserRequest
     ) -> CreateUserResponse:
-
         hashed_password = self.hash_password(
             data.user.password, self.cf.rounds, self.cf.coding
         )
@@ -33,7 +32,6 @@ class Users(Utilities):
         self.add(db_user)
         try:
             await self.commit()
-            await self.refresh(db_user)
             return CreateUserResponse(
                 userid=db_user.userid,
                 message=f"User with username {db_user.username} created!",
@@ -45,6 +43,8 @@ class Users(Utilities):
                 success=False,
                 message=str(e),
             )
+        finally:
+            await self._engine.dispose()
 
     def is_active(self, user: User) -> bool:
         return False if user.active == false() else True
@@ -92,3 +92,5 @@ class Users(Utilities):
                 success=False,
                 message=f"Deletion not successful for user with id:{data.userid}",
             )
+        finally:
+            await self._engine.dispose()

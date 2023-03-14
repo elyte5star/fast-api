@@ -79,5 +79,8 @@ class AsyncDatabaseSession:
             except IntegrityError as e:
                 self.log.warning(e)
                 await self.rollback()
+            finally:
+                await self._engine.dispose()
+
         else:
             self.log.info("Admin account and other tables exist already!!")

@@ -32,12 +32,19 @@ Starting the project
 
   ```
   docker-compose up db
+
+  docker-compose up rabbitQ
   
   docker-compose build app
+
+  ocker-compose build worker
   ```
 
   - start server with
 
   ```
-  docker-compose up
+  docker-compose up app
+
+  docker-compose up worker
+
   ```

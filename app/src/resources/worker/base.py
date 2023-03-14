@@ -89,7 +89,7 @@ class WorkerBase:
     def callback(self, ch, method, properties, body):
         try:
             # Get job and task from queue item.
-            # print(" [x] Received %r" % json.loads(body.decode()))
+            print(" [x] Received job and task %r" % json.loads(body.decode()))
             received = body.decode()
             queue_item = json.loads(received)
             queue_task = queue_item["task"]
@@ -161,8 +161,7 @@ class WorkerBase:
                 task_status, db_task.task_id, result
             )
             ch.basic_ack(delivery_tag=method.delivery_tag)
-            print(result)
-
+            
     def run_forever(self) -> None:
         connection = BlockingConnection(
             ConnectionParameters(host=self.cf.rabbit_host_name)

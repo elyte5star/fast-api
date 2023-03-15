@@ -117,7 +117,7 @@ pwd="elyteRQ"
 
 [api]
 log_type = "INFO"
-host_url = "http://localhost:8080"
+host_url = "http://localhost:8000"
 debug = true
 auth_type= ["SELF","GOOGLE"]
 google_client_id="864725361364-enrs63jgolid0jpmiffcsnj1rtadtss1.apps.googleusercontent.com"
@@ -129,9 +129,6 @@ username="elyte"
 password="$2b$10$rQcvrrW2JcvjV2XM5TG3zeJd6oHPthld3VfRLsvyV2UJFO0.BxACO"
 is_admin=true
 telephone=40978057
-
-
-
 
 
 [hash.password]

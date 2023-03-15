@@ -2,28 +2,8 @@ version: '3.8'
 networks:
   elyte_net:
 
+
 services:
-  app:
-    container_name: fast-api
-    image: fast-api
-    build:
-      context: ./app/src
-      dockerfile: ./backend.dockerfile
-    networks:
-      - elyte_net
-    ports:
-      # <Port exposed> : < Port running inside container>
-      - "8080:8080"
-    depends_on:
-      - db
-      #- rabbitQ
-    links:
-      - db
-      - rabbitQ
-    env_file:
-      - app.env
-    volumes:
-      - ./app/src:/home
   db:
     image: mariadb
     container_name: maria-db
@@ -37,7 +17,41 @@ services:
       - ./persistence:/var/lib/mysql
     networks:
       - elyte_net
-  
+
+  api:
+    container_name: fast-api
+    image: fast-api
+    build:
+      context: ./api/src
+      dockerfile: ./backend.dockerfile
+    networks:
+      - elyte_net
+    ports:
+      # <Port exposed> : < Port running inside container>
+      - "8000:8000"
+    depends_on:
+      - db
+      #- rabbitQ
+    links:
+      - db
+      - rabbitQ
+    env_file:
+      - app.env
+    volumes:
+      - ./api/src:/home
+
+  frontend:
+    container_name: vue-app
+    image: vue-app
+    build:
+      context: ./api/src/
+      dockerfile: ./frontend.dockerfile
+    networks:
+      - elyte_net
+    ports:
+      - 8080:80
+    depends_on:
+      - api
 
   rabbitQ:
     hostname: rabbitQ
@@ -48,22 +62,20 @@ services:
       - 15672:15672
     networks:
       - elyte_net
-    
+
   worker:
     image: worker
     container_name: main-worker
     build:
-      context: ./app/src
+      context: ./api/src
       dockerfile: ./rabbitworker.dockerfile
     restart: always
     env_file:
       - app.env
     networks:
-        - elyte_net
+      - elyte_net
     volumes:
       - ./api/src:/usr/src
     links:
       - db
       - rabbitQ
-    
-   

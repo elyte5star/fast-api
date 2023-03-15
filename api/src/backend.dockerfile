@@ -1,10 +1,11 @@
-FROM --platform=linux/amd64 python:3.10.0
+
+FROM python:3.10
 
 # Copy only requirements to cache them in docker layer:
-WORKDIR /usr/src
+WORKDIR /usr
 
-
-COPY [ "./src/", "./"]
+# Usage: COPY [from, from, from, to]
+COPY ["./", "./"]
 
 # Set the python path:
 ENV PYTHONPATH="$PYTHONPATH:${PWD}"
@@ -14,4 +15,7 @@ RUN pip install --upgrade pip && pip install poetry==1.1.12
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi --no-root --no-dev
 
-CMD ["python", "-u", "run_worker.py"]
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+EXPOSE 8000

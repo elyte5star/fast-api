@@ -44,7 +44,7 @@ services:
     container_name: vue-app
     image: vue-app
     build:
-      context: ./api/src/
+      context: ./vue_frontend
       dockerfile: ./frontend.dockerfile
     networks:
       - elyte_net

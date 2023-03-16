@@ -1,7 +1,7 @@
-from resources.worker.base import WorkerBase
-from resources.worker.booking import BookingHandler
-from resources.settings.config import Settings
-from resources.schemas.misc.enums import WorkerType
+from modules.worker.base import WorkerBase
+from modules.worker.booking import BookingHandler
+from modules.settings.config import Settings
+from modules.schemas.misc.enums import WorkerType
 
 
 def run():

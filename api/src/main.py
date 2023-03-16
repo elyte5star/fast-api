@@ -7,15 +7,15 @@ from starlette.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.logger import logger
-from resources.settings.config import Settings
-from resources.database.db_session import AsyncDatabaseSession
-from resources.crud.crud_users import Users
-from resources.auth.crud_auth import Auth
-from resources.crud.crud_products import Products
-from resources.crud.crud_bookings import Bookings
-from resources.crud.crud_pages import PageHandler
-from resources.queue.booking_queue import QBookingHandler
-from resources.routers import (
+from modules.settings.config import Settings
+from modules.database.db_session import AsyncDatabaseSession
+from modules.crud.crud_users import Users
+from modules.auth.crud_auth import Auth
+from modules.crud.crud_products import Products
+from modules.crud.crud_bookings import Bookings
+from modules.crud.crud_pages import PageHandler
+from modules.queue.booking_queue import QBookingHandler
+from modules.routers import (
     auth,
     users,
     products,
@@ -72,7 +72,7 @@ app.add_middleware(
 # Include Session
 app.add_middleware(SessionMiddleware, secret_key=cfg.secret_key, max_age=1500)
 app.mount(
-    "/static", StaticFiles(directory="./resources/static"), name="static"
+    "/static", StaticFiles(directory="./modules/static"), name="static"
 )
 
 
@@ -108,5 +108,4 @@ async def startup_event() -> None:
 @app.on_event("shutdown")
 async def shuttdown() -> None:
     await db._engine.dispose()
-    db.close()
     logger.info(f"{cfg.name} v{cfg.version} is shutting down.")

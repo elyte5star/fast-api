@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from modules.schemas.requests.product import (
-    Product_Item,
+    ProductItem,
     CreateProductsRequest,
     GetSortRequest,
     GetProductsRequest,
@@ -28,7 +28,7 @@ router = APIRouter(prefix="/products", tags=["Products"])
     summary="Create Products",
 )
 async def create_products(
-    product_data_list: list[Product_Item],
+    product_data_list: list[ProductItem],
     cred: JWTcredentials = Depends(security),
 ) -> CreateProductsResponse:
     return await handler._create_products(
@@ -85,12 +85,12 @@ async def sort_product(key: str) -> GetProductsResponse:
 
 
 @router.get(
-    "/all/products",
+    "",
     response_model=GetProductsResponse,
     summary="Get all products",
 )
 async def get_products() -> GetProductsResponse:
-    return await handler._get_products()
+    return await handler._get_products(GetProductsRequest())
 
 
 @router.get(

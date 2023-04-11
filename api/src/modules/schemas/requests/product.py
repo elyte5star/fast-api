@@ -15,21 +15,22 @@ class CreateDiscountRequest(RequestBase):
     discount = float
 
 
-class Product_Item(BaseModel):
+class ProductItem(BaseModel):
     name: str
     description: str
     details: str
     image: str
     price: float
     category: str
+    stock_quantity: int
 
 
 class CreateProductRequest(RequestBase):
-    product: Product_Item
+    product: ProductItem
 
 
 class CreateProductsRequest(RequestBase):
-    products: list[Product_Item]
+    products: list[ProductItem]
 
 
 class DeleteProductRequest(RequestBase):

@@ -5,6 +5,7 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
+    Integer
 )
 from datetime import datetime
 from sqlalchemy.orm import relationship
@@ -19,6 +20,7 @@ class Product(Base):
     description = Column(String(250), nullable=False)
     price = Column(Float, nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    stock_quantity = Column(Integer, nullable=False, index=True)
     discount = relationship("SpecialDeals", back_populates="product")
 
 

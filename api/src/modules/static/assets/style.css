@@ -1,5 +1,15 @@
 @import "ol/ol.css";
 
+@font-face {
+    font-family: Raleway;
+    src: url(./google-fonts/Raleway/Raleway-VariableFont_wght.ttf);
+}
+
+@font-face {
+    font-family: Tangerine;
+    src: url(./google-fonts/Tangerine/Tangerine-Bold.ttf);
+}
+
 html {
     position: relative;
     min-height: 100%;
@@ -224,13 +234,14 @@ nav .fa {
 
 
 
-.fa-search{
+.fa-search {
     position: relative;
     left: 300px;
     color: #3299BB;
     text-shadow: 2px 2px 2px #aaa;
     font-size: 20px;
 }
+
 #info {
     color: red;
     margin: 10px;
@@ -611,5 +622,5 @@ mark {
 .current-player {
     border-bottom: 4px solid #FF6633;
     /* Nice orange */
-    ;
+
 }

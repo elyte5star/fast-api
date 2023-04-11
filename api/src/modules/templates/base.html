@@ -16,8 +16,6 @@
     <script src="/static/js/game.js"></script>
     <script src="/static/js/scripts.js"></script>
     <!--     Fonts and icons     -->
-    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Tangerine" rel="stylesheet" />
     <link rel="stylesheet" href="/static/assets/font-awesome-4.7.0/css/font-awesome.min.css">
     <!-- Bootstrap CSS -->
     <link href="/static/assets/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -33,7 +31,6 @@
 </head>
 
 <body>
-
     <header>
         <!-- Navigation bar -->
         <nav>
@@ -43,7 +40,8 @@
                 {% if userinfo['sub']=='elyte' %}
                 <li><a href="/admin"><i class="fa fa-lock"></i>Admin module</a></li>
                 {% endif %}
-                <li><a href="javascript:void(0)"><i class="fa fa-fw fa-user"></i>Signed in as {{ userinfo['sub'] }}</a></li>
+                <li><a href="javascript:void(0)"><i class="fa fa-fw fa-user"></i>Signed in as {{ userinfo['sub'] }}</a>
+                </li>
                 <li><a href="javascript:void(0)" onclick="onSignout();"><i class="fa fa-sign-out"></i>Logout</a></li>
                 {% else %}
                 <li><a href="/login"><i class="fa fa-fw fa-user"></i>Login</a></li>
@@ -83,13 +81,10 @@
         <div class="icon-div"><a href="/game"><i class="fa fa-gamepad"></i><span class="icon-text">Games</span></a>
         </div>
         <div class="icon-div"><a href="javascript:void(0)"><i class="fa fa-gift"></i><span
-                    class="icon-text">Gift</span></a>
-        </div>
-        <div class="icon-div"><a href="javascript:void(0)"><i class="fa fa-car"></i><span class="icon-text" ">Automobile</span></a>
-        </div>
+                    class="icon-text">Gift</span></a></div>
+        <div class="icon-div"><a href="javascript:void(0)"><i class="fa fa-car"></i><span class="icon-text" ">Automobile</span></a></div>
         <div class=" icon-div"><a href=" javascript:void(0)"><i class="fa fa-bed"></i><span
-                            class="icon-text">Hotels</span></a>
-        </div>
+                            class="icon-text">Hotels</span></a></div>
         <div class="icon-div"><a href="/news"><i class="fa fa-newspaper-o"></i><span class="icon-text">News</span></a>
         </div>
     </div>

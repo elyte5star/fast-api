@@ -6,7 +6,7 @@ from modules.schemas.requests.product import (
     GetProductsRequest,
     GetSortRequest,
     DeleteProductRequest,
-    Product_Item,
+    ProductItem,
     CreateDiscountRequest,
 )
 from modules.schemas.responses.product import (
@@ -25,7 +25,7 @@ from sqlalchemy.orm import selectinload
 
 class Products(Discount):
     async def _create_product(
-        self, data: Product_Item
+        self, data: ProductItem
     ) -> CreateProductResponse:
         product = Product(**data.dict(), pid=self.get_indent())
         self.add(product)
@@ -112,7 +112,9 @@ class Products(Discount):
             message="Admin rights needed!",
         )
 
-    async def _get_products(self) -> GetProductsResponse:
+    async def _get_products(
+        self, data: GetProductsRequest
+    ) -> GetProductsResponse:
         query = self.select(Product).options(selectinload(Product.discount))
         products = await self.execute(query)
         products = products.scalars().all()

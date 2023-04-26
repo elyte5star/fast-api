@@ -13,14 +13,13 @@ from modules.crud.crud_users import Users
 from modules.auth.crud_auth import Auth
 from modules.crud.crud_products import Products
 from modules.crud.crud_bookings import Bookings
-from modules.crud.crud_pages import PageHandler
+
 from modules.queue.booking_queue import QBookingHandler
 from modules.routers import (
     auth,
     users,
     products,
     booking,
-    pages,
     q_booking,
     job,
 )
@@ -35,13 +34,12 @@ logging.basicConfig(encoding=cfg.coding, level=cfg.log_type)
 db = AsyncDatabaseSession(cfg)
 
 
-routes = (users, auth, products, booking, pages, q_booking, job)
+routes = (users, auth, products, booking, q_booking, job)
 crud_operations = (
     Users(cfg),
     Auth(cfg),
     Products(cfg),
     Bookings(cfg),
-    PageHandler(cfg),
     QBookingHandler(cfg),
 )
 
@@ -88,6 +86,14 @@ for route, crud in zip(routes, crud_operations):
     route.logger = logger
     route.handler = crud
     app.include_router(route.router)
+
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return StaticFiles(directory="./modules/static")
+
+
 
 
 @app.middleware("http")

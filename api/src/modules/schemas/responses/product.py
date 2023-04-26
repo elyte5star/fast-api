@@ -1,6 +1,6 @@
 from modules.schemas.responses.base_response import BaseResponse
 from pydantic.types import Any
-from modules.schemas.requests.product import Product_Item
+
 
 
 class GetProductDetailsResponse(BaseResponse):

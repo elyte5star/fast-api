@@ -5,8 +5,8 @@ import router from './router'
 
 
 
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import '../node_modules/bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap';
 
 
 

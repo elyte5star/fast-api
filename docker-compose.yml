@@ -11,7 +11,7 @@ services:
     expose:
       - "3306"
     env_file:
-      - app.env
+      - api.env
     volumes:
       # folder to hold the actual db data
       - ./persistence:/var/lib/mysql
@@ -36,7 +36,7 @@ services:
       - db
       - rabbitQ
     env_file:
-      - app.env
+      - api.env
     volumes:
       - ./api/src:/home
 
@@ -48,11 +48,16 @@ services:
       dockerfile: ./frontend.dockerfile
     networks:
       - elyte_net
+    environment:
+      - VUE_APP_API_URL=api/v1/
+      - VUE_APP_CLIENT_ID=elyte
+      - VUE_APP_BASE_URL=http://localhost/
+      - VUE_APP_AUTH_TYPE=MANUAL
+      - NGINX_PROXY_PASS=http://api:8000/
+      - NGINX_PORT=8000
     ports:
-      - 8080:80
-    depends_on:
-      - api
-
+      - 80:8000
+    
   rabbitQ:
     hostname: rabbitQ
     image: rabbitmq:3-management
@@ -71,7 +76,7 @@ services:
       dockerfile: ./rabbitworker.dockerfile
     restart: always
     env_file:
-      - app.env
+      - api.env
     networks:
       - elyte_net
     volumes:

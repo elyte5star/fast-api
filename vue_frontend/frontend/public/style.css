@@ -63,8 +63,11 @@ nav ul {
 }
 
 nav span{
-    color: white;
+    color: yellow;
     font-size: 1.2em;
+    position: relative;
+    bottom: 12px;
+    right: 3px;
 }
 
 

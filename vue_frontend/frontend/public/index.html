@@ -8,9 +8,7 @@
   <link rel="stylesheet" href="<%= BASE_URL %>style.css" />
   <link rel="icon" href="<%= BASE_URL %>favicon.ico">
   <!--   Core JS Files   -->
-  <script src="<%= BASE_URL %>static/js/game.js"></script>
-  <script src="<%= BASE_URL %>static/js/scripts.js"></script>
-  <script src="<%= BASE_URL %>env-config.js"></script>
+  
   <!--     Fonts and icons     -->
   <link rel="stylesheet" href="<%= BASE_URL %>font-awesome-4.7.0/css/font-awesome.min.css">
   <title>E-MARKET</title>
@@ -27,3 +25,7 @@
 </body>
 
 </html>
+<script>
+console.log(process.env.VUE_APP_API_URL)
+
+</script>

@@ -2,7 +2,6 @@
     <!-- Login panel -->
     <div id="login_access">
         <h2>Login</h2>
-        <input type="hidden" id="gid" name="gid" value="{{ google_id }}" />
         <table>
             <tr>
                 <td>Username :</td>
@@ -11,7 +10,7 @@
                     <div class="container" id="g_id">
                         <div class="row justify-content-center">
                             <div class="col">
-                                <a onmouseenter="hide_add_entry('add_entry')" class="btn btn-outline-dark"
+                                <a @mouseover="hide_add_entry('add_entry')" class="btn btn-outline-dark"
                                     href="javascript:void(0)" onclick="getGoogleToken()" role="button"
                                     style="text-transform:none">
                                     <img :src="'./images/gg.png'" class="google" v-bind:alt="'Google'" />
@@ -24,21 +23,19 @@
             </tr>
             <tr>
                 <td>Password :</td>
-                <td> <input type="password" onfocus="hide_add_entry('add_entry')" id="password" name="password"
-                        minlength="4" size="20" required></td>
+                <td> <input type="password" id="password" name="password" minlength="4" size="20" required></td>
             </tr>
             <tr>
                 <td> Login :</td>
-                <td><a href="javascript:void(0)" onclick="login();"><i class="fa fa-sign-in"
+                <td><a href="javascript:void(0)" v-on:click="login()"><i class="fa fa-sign-in"
                             style="font-size:60px;"></i></a></td>
             </tr>
         </table>
     </div>
-
     <!-- Create user account -->
     <div id="add_entry" style="display: none">
         <div class="close">
-            <a href="javascript:void(0)" onclick="hide_add_entry('add_entry');"><i class="fa fa-remove"></i></a>
+            <a href="javascript:void(0)" @click="hide_add_entry('add_entry');"><i class="fa fa-remove"></i></a>
         </div>
         <h2>Please Create A User Account</h2>
         <table>
@@ -78,10 +75,10 @@
             </tr>
             <tr>
                 <td>
-                    <input id="b1" type="button" value="Create Account" onclick="signUP();" style="width: 100%" />
+                    <input id="b1" type="button" value="Create Account" v-on:click=" signUP(); " style="width: 100%" />
                 </td>
                 <td>
-                    <input id="b2" type="button" value="Cancel" onclick="hide_add_entry('add_entry');"
+                    <input id="b2" type="button" value="Cancel" v-on:click=" hide_add_entry('add_entry'); "
                         style="width: 100%" />
                 </td>
             </tr>
@@ -92,13 +89,52 @@
     <div><span id="info"></span></div>
 
     <!-- the button to Sign up -->
-    <button class="form-btn" v-on:click="show_add_entry('add_entry')" type="button" id="add_p">Please, create a
-        User Account.</button>
+    <button class="form-btn" @click=" show_add_entry('add_entry') " role="link" type="button" id="add_p">Please, create a
+        User
+        Account.</button>
 </template>
 <script>
-export default {
-  name: 'LoginView',
 
+import { userAuthStore } from '@/stores/auth_store';
+
+
+export default {
+    name: 'LoginView',
+    methods: {
+        async login() {
+            let userName = document.getElementById("username").value;
+            let passWord = document.getElementById("password").value;
+
+            if (userName != "" || passWord != "") {
+
+                let form = new FormData();
+                form.append("username", userName);
+                form.append("password", passWord);
+                const userData = new URLSearchParams();
+
+                for (const pair of form) {
+                    userData.append(pair[0], pair[1]);
+                }
+                const authStore = userAuthStore();
+                await authStore.login(userData);
+
+            } else {
+                document.getElementById("info").innerHTML = "<strong>Wrong!</strong> " + " Empty fields!";
+            }
+
+        },
+        show_add_entry(id) {
+            let element = document.getElementById(id);
+            element.style.display = "";
+
+        },
+        hide_add_entry(id) {
+            let element = document.getElementById(id);
+            element.style.display = "none";
+        }
+
+
+    }
 
 }
 </script>

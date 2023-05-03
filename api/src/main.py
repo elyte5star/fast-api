@@ -76,7 +76,6 @@ app.mount(
 
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(request, exc):
-    request.session.pop("user", None)
     logger.warning(f"{repr(exc.detail)}!!")
     return await http_exception_handler(request, exc)
 

@@ -23,18 +23,15 @@ class JWTBearer(HTTPBearer):
         ).__call__(request)
         if credentials:
             if not credentials.scheme == "Bearer":
-                request.session.pop("user", None)
                 raise HTTPException(
                     status_code=403, detail="Invalid authentication scheme."
                 )
 
             if self.verify_jwt(credentials.credentials) is None:
-                request.session.pop("user", None)
                 raise HTTPException(
                     status_code=403, detail="Invalid token or expired token."
                 )
             if await black_list.is_token_blacklisted(self.payload["token_id"]):
-                request.session.pop("user", None)
                 raise HTTPException(
                     status_code=403, detail="Invalid token.Token in blacklist"
                 )

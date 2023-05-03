@@ -253,3 +253,6 @@ persistence/*
 !persistence/*.file
 
 *.env
+
+nodemodules
+dist

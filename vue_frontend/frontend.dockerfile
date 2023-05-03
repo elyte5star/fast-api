@@ -17,15 +17,10 @@ RUN npm run build
 # production stage
 FROM nginx:stable-alpine as production-stage
 
-
-# Set working directory to nginx asset directory
-WORKDIR /usr/share/nginx/html
-
-COPY ./frontend/nginx.conf /etc/nginx/templates/nginx.conf.template
-
-
 COPY --from=build-stage /vue-ui/dist /usr/share/nginx/html
 
-EXPOSE 8080
+COPY --from=build-stage /vue-ui/nginx.conf /etc/nginx/templates/nginx.conf.template
 
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+EXPOSE 8000
+
+CMD ["nginx", "-g", "daemon off;"]

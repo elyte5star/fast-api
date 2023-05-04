@@ -30,8 +30,7 @@ export const userAuthStore = defineStore({
             try {
                 
                 const response = await postToTokenEndpoint(baseURL + '/token', userData)
-                console.log(response);
-
+                
                 // update pinia state
                 this.user = response.token_data;
 
@@ -39,7 +38,7 @@ export const userAuthStore = defineStore({
                 localStorage.setItem('user', JSON.stringify(response.token_data));
 
                 // redirect to previous url or default to home page
-                return router.push(this.returnUrl || '/');
+                return router.push(this.returnUrl || '/products');
 
 
             } catch (error) {

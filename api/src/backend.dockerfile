@@ -10,7 +10,7 @@ COPY ["./", "./"]
 # Set the python path:
 ENV PYTHONPATH="$PYTHONPATH:${PWD}"
 
-RUN pip install --upgrade pip && pip install poetry==1.1.12
+RUN pip install --upgrade pip && pip install poetry==1.1.12 && pip install urllib3==1.26.15
 
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi --no-root --no-dev

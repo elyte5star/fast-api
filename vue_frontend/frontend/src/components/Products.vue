@@ -27,21 +27,10 @@
 </template>
   
 <script>
-import axios from 'axios'
 
 export default {
     name: 'MainProducts',
-    data() {
-        return { products: [] }
-    }
-    ,
-    mounted() {
-    axios
-      .get('/')
-      .then((response) => {
-        this.products = response.products
-      })
-  }
+
 
 }
 </script>

@@ -57,6 +57,7 @@ class Auth(BlackListHandler):
                         "host_url": self.cf.host_url,
                         "userid": user.userid,
                         "username": user.username,
+                        "admin": admin,
                     },
                     message=f"User {user.username} is authorized:Blacklist created!",
                 )
@@ -114,6 +115,7 @@ class Auth(BlackListHandler):
                         "host_url": self.cf.host_url,
                         "userid": payload.token_load.userid,
                         "username": payload.token_load.username,
+                        "admin": payload.token_load.admin,
                     },
                     message="Fresh token created : Blacklist created!",
                 )

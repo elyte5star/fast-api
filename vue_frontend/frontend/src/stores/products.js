@@ -8,7 +8,7 @@ const baseURL = process.env.VUE_APP_API_URL + 'products';
 export const productStore = defineStore({
     id: 'products',
     state: () => ({
-        products: {}, product: {}
+        products: {}, product: {}, key: ""
     }),
     actions: {
         async getProducts() {

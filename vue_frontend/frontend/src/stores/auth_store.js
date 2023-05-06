@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 
-//import { fetchMethodWrapper } from '@/helpers/methodWrapper';
+import { fetchMethodWrapper } from '@/helpers/methodWrapper';
 
 import { userAlertStore } from './alert';
 
@@ -28,9 +28,9 @@ export const userAuthStore = defineStore({
     actions: {
         async login(userData) {
             try {
-                
+
                 const response = await postToTokenEndpoint(baseURL + '/token', userData)
-                
+
                 // update pinia state
                 this.user = response.token_data;
 
@@ -38,7 +38,7 @@ export const userAuthStore = defineStore({
                 localStorage.setItem('user', JSON.stringify(response.token_data));
 
                 // redirect to previous url or default to home page
-                return router.push(this.returnUrl || '/products');
+                return router.push(this.returnUrl || '/');
 
 
             } catch (error) {
@@ -48,10 +48,18 @@ export const userAuthStore = defineStore({
         },
         async logout() {
             try {
-                //await fetchMethodWrapper.get(baseURL + '/logout');
-                this.user = null;
-                localStorage.removeItem('user');
-                router.push('/');
+                let response = await fetchMethodWrapper.get(baseURL + '/logout');
+
+                if (response.success === true) {
+                    this.user = null;
+                    localStorage.removeItem('user');
+                    router.push('/');
+
+                } else {
+                    const alertStore = userAlertStore();
+                    alertStore.error(response);
+                }
+
 
             } catch (error) {
                 const alertStore = userAlertStore();

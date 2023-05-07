@@ -1,4 +1,5 @@
 <template>
+  <div>
   <header>
     <nav>
       <ul v-if="user">
@@ -16,7 +17,7 @@
     </nav>
   </header>
   <router-view />
-  
+</div> 
 </template>
 
 <script setup>

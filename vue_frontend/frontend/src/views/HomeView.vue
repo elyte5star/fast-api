@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <BigIcons />
-    <MainProducts />
+    <MainProducts v-bind:products="products"/>
     <FooterContact />
   </div>
 </template>
@@ -11,10 +11,27 @@
 import BigIcons from '@/components/BigIcons.vue'
 import MainProducts from '@/components/Products.vue'
 import FooterContact from '@/components/FooterContact.vue'
+import { storeToRefs } from 'pinia';
+import { productStore } from '@/stores/products'
+
 export default {
   name: 'HomeView',
   components: {
     BigIcons, MainProducts, FooterContact
-  }
+  },
+  data () {
+    return {
+      products:null,
+    }
+  },
+  async created () {
+    const pStore = productStore();
+    await pStore.getProducts();
+    const {products} = storeToRefs(pStore);
+    this.products = products;
+  },
+  
 }
+
 </script>
+

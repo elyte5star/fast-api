@@ -8,13 +8,14 @@ const baseURL = process.env.VUE_APP_API_URL + 'products';
 export const productStore = defineStore({
     id: 'products',
     state: () => ({
-        products: {}, product: {}, key: ""
+        products: [], product: {}, key: ""
     }),
     actions: {
         async getProducts() {
             try {
-                this.products = await fetchMethodWrapper.get(baseURL);
-
+                const response = await fetchMethodWrapper.get(baseURL);
+                this.products = response.products;
+            
             } catch (error) {
                 this.products = { error };
             }
@@ -22,7 +23,8 @@ export const productStore = defineStore({
         },
         async getProductById(id) {
             try {
-                this.product = await fetchMethodWrapper.get(baseURL + '/' + id);
+                const response = await fetchMethodWrapper.get(baseURL + '/' + id);
+                this.product = response.product;
 
             } catch (error) {
                 this.product = { error };

@@ -1,4 +1,5 @@
 <template>
+    <div>
     <!-- Login panel -->
     <div id="login_access">
         <h2>Login</h2>
@@ -87,11 +88,11 @@
     </div>
 
     <div><span id="info"></span></div>
-
     <!-- the button to Sign up -->
     <button class="form-btn" @click=" show_add_entry('add_entry') " role="link" type="button" id="add_p">Please, create a
         User
         Account.</button>
+    </div>
 </template>
 <script>
 

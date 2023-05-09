@@ -4,7 +4,7 @@
     <nav>
       <ul v-if="user">
         <li><router-link to="/products"><i class="fa fa-fw fa-home"></i>Home</router-link></li>
-        <li v-if="user.username =='elyte'"><router-link to="/admin"><i class="fa fa-lock"></i>Manage Users</router-link></li>
+        <li v-show="user.admin"><router-link to="/admin"><i class="fa fa-lock"></i>Manage Users</router-link></li>
         <li><router-link to="javascript:void(0)">Signed in as {{ user.username }}</router-link></li>
         <li><router-link to="javascript:void(0)" v-on:click="authStore.logout()"><i class="fa fa-sign-out"></i>Logout</router-link></li>
         <li><router-link to="/basket"><i class="fa fa-shopping-cart" style="font-size: 25px"></i><span id="items">0</span></router-link></li>

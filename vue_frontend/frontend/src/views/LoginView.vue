@@ -89,7 +89,7 @@
 
     <div><span id="info"></span></div>
     <!-- the button to Sign up -->
-    <button class="form-btn" @click=" show_add_entry('add_entry') " role="link" type="button" id="add_p">Please, create a
+    <button class="form-btn" @click=" show_add_entry('add_entry') " type="button" id="add_p">Please, create a
         User
         Account.</button>
     </div>

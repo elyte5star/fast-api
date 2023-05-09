@@ -38,6 +38,7 @@ export const productStore = defineStore({
         },
         async sortProductsBykey(key) {
             try {
+                this.key = key;
                 this.products = await fetchMethodWrapper.get(baseURL + '/sort/' + key);
 
             } catch (error) {

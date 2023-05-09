@@ -27,12 +27,16 @@ router.beforeEach(async (to) => {
 
   // clear alert on route change
   const alertStore = userAlertStore();
+  
   alertStore.clear();
 
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login','/'];
+  const publicPages = ['/login','/','/users/signup'];
+
   const authRequired = !publicPages.includes(to.path);
+
   const auth = userAuthStore();
+
 
   if (authRequired && !auth.user) {
     auth.returnUrl = to.fullPath;

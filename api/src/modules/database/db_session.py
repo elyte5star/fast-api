@@ -43,6 +43,7 @@ class AsyncDatabaseSession:
                 "Connection could not be made due to the following error: \n",
                 ex,
             )
+        
 
     def __getattr__(self, name) -> AsyncSession:
         return getattr(self._session, name)

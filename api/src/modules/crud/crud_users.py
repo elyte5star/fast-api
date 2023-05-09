@@ -18,9 +18,7 @@ from sqlalchemy.orm import selectinload, defer
 
 
 class Users(Utilities):
-    async def _create_user(
-        self, data: CreateUserRequest
-    ) -> CreateUserResponse:
+    async def _create_user(self, data: CreateUserRequest) -> CreateUserResponse:
         hashed_password = self.hash_password(
             data.user.password, self.cf.rounds, self.cf.coding
         )
@@ -59,10 +57,16 @@ class Users(Utilities):
             defer(User.password), selectinload(User.bookings)
         )
         users = await self.execute(query)
-        users = users.scalars().all()
-        return GetUsersResponse(
-            users=users, message=f"Total number of users: {len(users)}"
-        )
+        if users:
+            users = users.scalars().all()
+            return GetUsersResponse(
+                users=users, message=f"Total number of users: {len(users)}"
+            )
+        else:
+            return BaseResponse(
+                success=False,
+                message=f"Users not found!!",
+            )
 
     async def _get_user(self, data: GetUserRequest) -> GetUserResponse:
         query = (
@@ -71,11 +75,17 @@ class Users(Utilities):
             .options(defer(User.password), selectinload(User.bookings))
         )
         users = await self.execute(query)
-        (user,) = users.first()
-        return GetUserResponse(
-            user=user,
-            message=f"User with id:{data.userid} found!",
-        )
+        if users:
+            user = users.first()
+            return GetUserResponse(
+                user=user,
+                message=f"User with id:{data.userid} found!",
+            )
+        else:
+            return BaseResponse(
+                success=False,
+                message=f"User with id:{data.userid} not found!!",
+            )
 
     async def _delete_user(self, data: DeleteUserRequest) -> BaseResponse:
         query = self.delete(User).where(User.userid == data.userid)

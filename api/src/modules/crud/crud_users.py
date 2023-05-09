@@ -57,7 +57,7 @@ class Users(Utilities):
             defer(User.password), selectinload(User.bookings)
         )
         users = await self.execute(query)
-        if users:
+        if users is not None:
             users = users.scalars().all()
             return GetUsersResponse(
                 users=users, message=f"Total number of users: {len(users)}"
@@ -75,7 +75,7 @@ class Users(Utilities):
             .options(defer(User.password), selectinload(User.bookings))
         )
         users = await self.execute(query)
-        if users:
+        if users is not None:
             user = users.first()
             return GetUserResponse(
                 user=user,

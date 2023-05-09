@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 
-//import { fetchMethodWrapper } from '@/helpers/methodWrapper';
+import { fetchMethodWrapper } from '@/helpers/methodWrapper';
 
 import { userAlertStore } from './alert';
 
-import router from '@/router/index';
+import router from '@/router/index'
 
 const baseURL = process.env.VUE_APP_API_URL + 'auth';
 
@@ -28,15 +28,15 @@ export const userAuthStore = defineStore({
     actions: {
         async login(userData) {
             try {
+
                 const response = await postToTokenEndpoint(baseURL + '/token', userData)
-                // update pinia state
+
                 this.user = response.token_data;
 
-                // store user details and jwt in local storage to keep user logged in between page refreshes
                 localStorage.setItem('user', JSON.stringify(response.token_data));
 
-                // redirect to previous url or default to home page
                 return router.push(this.returnUrl || '/');
+
 
             } catch (error) {
                 const alertStore = userAlertStore();
@@ -44,10 +44,21 @@ export const userAuthStore = defineStore({
             }
         },
         async logout() {
-            //await fetchMethodWrapper.get(baseURL + '/logout');
-            this.user = null;
-            localStorage.removeItem('user');
-            router.push('/');
+
+            const response = await fetchMethodWrapper.get(baseURL + '/logout');
+
+            if (response.success === true) {
+                this.user = null;
+                localStorage.removeItem('user');
+                router.push('/');
+
+            } else {
+                const alertStore = userAlertStore();
+                this.user = null;
+                localStorage.removeItem('user');
+                router.push('/');
+                alertStore.error(response.message);
+            }
 
         }
     }

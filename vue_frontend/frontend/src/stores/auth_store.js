@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 
+//import { fetchMethodWrapper } from '@/helpers/methodWrapper';
 
 import { userAlertStore } from './alert';
 
@@ -46,9 +47,12 @@ export const userAuthStore = defineStore({
             }
         },
         async logout() {
+            //const response = await fetchMethodWrapper.get(baseURL + '/logout');
             this.user = null;
             localStorage.removeItem('user');
             router.push('/');
+
+
         }
     }
 });

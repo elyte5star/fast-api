@@ -1,5 +1,5 @@
 from pydantic import BaseModel, SecretStr, EmailStr
-from pydantic.types import List, Any
+from pydantic.types import Any
 from .base_response import BaseResponse
 from datetime import datetime
 
@@ -20,11 +20,11 @@ class CreateUserResponse(BaseResponse):
 
 
 class GetUserResponse(BaseResponse):
-    user: Any = None
+    user: Any = {}
 
 
 class GetUsersResponse(BaseResponse):
-    users: List = []
+    users: list = []
 
 
 class UserInDb(BaseResponse):

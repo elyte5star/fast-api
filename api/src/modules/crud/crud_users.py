@@ -53,12 +53,11 @@ class Users(Utilities):
     async def _get_users(
         self,
     ) -> GetUsersResponse:
-        query = self.select(User).options(
-            defer(User.password), selectinload(User.bookings)
+        result = await self.execute(
+            self.select(User).options(defer(User.password), selectinload(User.bookings))
         )
-        users = await self.execute(query)
-        if users is not None:
-            users = users.scalars().all()
+        if result is not None:
+            users = result.scalars().all()
             return GetUsersResponse(
                 users=users, message=f"Total number of users: {len(users)}"
             )
@@ -69,14 +68,13 @@ class Users(Utilities):
             )
 
     async def _get_user(self, data: GetUserRequest) -> GetUserResponse:
-        query = (
+        result = await self.execute(
             self.select(User)
             .where(User.userid == data.userid)
             .options(defer(User.password), selectinload(User.bookings))
         )
-        users = await self.execute(query)
-        if users is not None:
-            user = users.first()
+        if result is not None:
+            (user,) = result.first()
             return GetUserResponse(
                 user=user,
                 message=f"User with id:{data.userid} found!",

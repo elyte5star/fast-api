@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 
 import { userAlertStore } from './alert';
 
-import { router } from '@/router/index'
+import router from '@/router/index';
 
 const baseURL = process.env.VUE_APP_API_URL + 'auth';
 
@@ -28,9 +28,7 @@ export const userAuthStore = defineStore({
     actions: {
         async login(userData) {
             try {
-
                 const response = await postToTokenEndpoint(baseURL + '/token', userData)
-
                 // update pinia state
                 this.user = response.token_data;
 
@@ -40,18 +38,16 @@ export const userAuthStore = defineStore({
                 // redirect to previous url or default to home page
                 return router.push(this.returnUrl || '/');
 
-
             } catch (error) {
                 const alertStore = userAlertStore();
                 alertStore.error(error);
             }
         },
         async logout() {
-            //const response = await fetchMethodWrapper.get(baseURL + '/logout');
+            //await fetchMethodWrapper.get(baseURL + '/logout');
             this.user = null;
             localStorage.removeItem('user');
             router.push('/');
-
 
         }
     }

@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import false
 from fastapi.encoders import jsonable_encoder
 
+
 class BlackListHandler(Utilities):
     async def create_blacklist(self, payload: BlackList) -> bool:
         self.add(payload)
@@ -36,13 +37,12 @@ class BlackListHandler(Utilities):
         return False
 
     async def is_token_blacklisted(self, token_id: str) -> bool:
-        result = await  self.execute(self.select(BlackList).where(BlackList.token_id == token_id))
-        row = result.first()
-        # if result:
-        #     data = result.first()
-        #     print(data.__dict__)
-
-        #     if data.active == false():
-        #         return True
-        # # black list a strange token
-        # return False
+        result = await self.execute(
+            self.select(BlackList).where(BlackList.token_id == token_id)
+        )
+        if result is not None:
+            (data,) = result.first()
+            if data.active == false():
+                return True
+        # black list a strange token
+        return False

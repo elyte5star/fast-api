@@ -13,12 +13,11 @@ from .blacklist import BlackListHandler
 
 class Auth(BlackListHandler):
     async def authenticate_user(self, data: LoginDataRequest) -> TokenResponse:
-        query = self.select(User).where(User.username == data.username)
-        users = await self.execute(query)
+        users = await self.execute(
+            self.select(User).where(User.username == data.username)
+        )
         (user,) = users.first()
-        if user and self.verify_password(
-            data.password, user.password, self.cf.coding
-        ):
+        if user and self.verify_password(data.password, user.password, self.cf.coding):
             active = True
             admin = False
             if user.username == self.cf.username:
@@ -39,9 +38,7 @@ class Auth(BlackListHandler):
             )
             refresh_token = self.create_token(
                 data=token_data,
-                expires_delta=self.time_delta(
-                    self.cf.refresh_token_expire_minutes
-                ),
+                expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
             )
 
             blacklist_orm_data = BlackList(
@@ -55,6 +52,7 @@ class Auth(BlackListHandler):
                         "token_id": blacklist_orm_data.token_id,
                         "token_type": "bearer",
                         "host_url": self.cf.host_url,
+                        "email": user.email,
                         "userid": user.userid,
                         "username": user.username,
                         "admin": admin,
@@ -79,9 +77,7 @@ class Auth(BlackListHandler):
             )
         return BaseResponse(message="Bad Operation", success=False)
 
-    async def refresh_token(
-        self, payload: RefreshTokenRequest
-    ) -> TokenResponse:
+    async def refresh_token(self, payload: RefreshTokenRequest) -> TokenResponse:
         if (
             payload.token_load.username == self.cf.username
             and payload.data.type == self.cf.grant_type
@@ -96,9 +92,7 @@ class Auth(BlackListHandler):
             )
             refresh_token = self.create_token(
                 data=data_dict,
-                expires_delta=self.time_delta(
-                    self.cf.refresh_token_expire_minutes
-                ),
+                expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
             )
             blacklist_orm_data = BlackList(
                 token_id=payload.token_load.token_id,

@@ -1,6 +1,6 @@
 <template>
     <div id="user" class="card">
-        <img src="img.jpg" alt="John" style="width:100%">
+        <img :src="'../images/' + user_image" v-bind:alt="man" style="width:100%">
         <h1>John Doe</h1>
         <p class="title">CEO & Founder, Example</p>
         <p>Harvard University</p>
@@ -12,12 +12,13 @@
         <!-- the button to Sign up -->
     <button class="form-btn" @click=" showHistory('history') " type="button" id="add_p">Shopping History.</button>
     </div>
-    </div>
 </template>
 
 <script>
 
 import { userStore } from '@/stores/userAccount';
+
+import { storeToRefs } from 'pinia';
 
 
 export default {
@@ -27,7 +28,54 @@ export default {
             console.log("Hello");
 
         }
+    },
+
+    computed:{
+        user_image(){
+        const uStore = userStore();
+        const { user } = storeToRefs(uStore)
+        return (user.admin ? 'admin-icon.png' :'user-icon.png')
+
     }
+    },
 
 }
 </script>
+
+<style scoped>
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .title {
+    color: grey;
+    font-size: 18px;
+  }
+  
+  button {
+    border: none;
+    outline: 0;
+    display: inline-block;
+    padding: 8px;
+    color: white;
+    background-color: #000;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    font-size: 18px;
+  }
+  
+  a {
+    text-decoration: none;
+    font-size: 22px;
+    color: black;
+  }
+  
+  button:hover, a:hover {
+    opacity: 0.7;
+  }
+    
+</style>

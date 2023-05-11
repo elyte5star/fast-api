@@ -21,13 +21,12 @@ class BlackListHandler(Utilities):
 
     async def blacklist_token(self, token_id: str) -> bool:
         if token_id:
-            query = (
+            await self.execute(
                 self.update(_BlackList)
                 .where(_BlackList.token_id == token_id)
                 .values(dict(active=False))
                 .execution_options(synchronize_session="fetch")
             )
-            await self.execute(query)
             try:
                 await self.commit()
                 return True

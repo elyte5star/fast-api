@@ -32,10 +32,6 @@ class JWTBearer(HTTPBearer):
                     status_code=403, detail="Invalid token or expired token."
                 )
 
-            if await black_list.is_token_blacklisted(self.payload["token_id"]):
-                raise HTTPException(
-                    status_code=403, detail="Invalid token.Token in blacklist"
-                )
             _credentials = JWTcredentials(
                 userid=self.payload["userid"],
                 email=self.payload["email"],

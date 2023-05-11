@@ -21,12 +21,13 @@ class Product(Base):
     price = Column(Float, nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     stock_quantity = Column(Integer, nullable=False, index=True)
-    discount = relationship("SpecialDeals", back_populates="product")
+    discount = relationship("SpecialDeals", back_populates="product",cascade='save-update, merge, delete',
+        passive_deletes=True,)
 
 
 class SpecialDeals(Base):
     sid = Column(String(60), primary_key=True, index=True)
     new_price = Column(Float, nullable=False, index=True)
-    product_id = Column(String(60), ForeignKey("product.pid"), unique=True)
+    product_id = Column(String(60), ForeignKey("product.pid",ondelete='CASCADE'), unique=True,nullable=False)
     discount = Column(Float, nullable=False, index=True)
     product = relationship("Product", back_populates="discount")

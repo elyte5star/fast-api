@@ -31,6 +31,7 @@ class JWTBearer(HTTPBearer):
                 raise HTTPException(
                     status_code=403, detail="Invalid token or expired token."
                 )
+
             if await black_list.is_token_blacklisted(self.payload["token_id"]):
                 raise HTTPException(
                     status_code=403, detail="Invalid token.Token in blacklist"
@@ -48,17 +49,13 @@ class JWTBearer(HTTPBearer):
             )
             return _credentials
         else:
-            raise HTTPException(
-                status_code=403, detail="Invalid authorization code."
-            )
+            raise HTTPException(status_code=403, detail="Invalid authorization code.")
 
     def verify_jwt(self, token: str):
         if token is None:
             return None
         try:
-            self.payload = jwt.decode(
-                token, cf.secret_key, algorithms=[cf.algorithm]
-            )
+            self.payload = jwt.decode(token, cf.secret_key, algorithms=[cf.algorithm])
             return self.payload if self.payload["exp"] >= time.time() else None
         except JWTError:
             return None

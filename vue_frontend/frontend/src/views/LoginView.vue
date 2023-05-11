@@ -11,11 +11,17 @@
                     <div class="container" id="g_id">
                         <div class="row justify-content-center">
                             <div class="col">
-                                <a @mouseover="hide_add_entry('add_entry')" class="btn btn-outline-dark"
+                                <a  id="google_img" @mouseover="hide_add_entry('add_entry')" class="btn btn-outline-dark"
                                     href="javascript:void(0)" onclick="getGoogleToken()" role="button"
                                     style="text-transform:none">
                                     <img :src="'./images/gg.png'" class="google" v-bind:alt="'Google'" />
-                                    Login with Google for registered Users
+                                    Login with Google
+                                </a>
+                                <a id="msoft" @mouseover="hide_add_entry('add_entry')" class="btn btn-outline-dark"
+                                    href="javascript:void(0)" onclick="MToken()" role="button"
+                                    style="text-transform:none">
+                                    <img :src="'./images/microsoft.png'" class="microsoft" v-bind:alt="'microsoft'" />
+                                     Login with Microsoft
                                 </a>
                             </div>
                         </div>

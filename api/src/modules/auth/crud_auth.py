@@ -2,19 +2,20 @@ from modules.schemas.requests.auth import (
     LoginDataRequest,
     RefreshTokenRequest,
     GoogleLoginDataRequest,
+    JWTcredentials,
+    BlackListRequest,
 )
 from modules.schemas.responses.auth import TokenResponse
-from modules.database.models.user import User
-from starlette.responses import RedirectResponse
+from modules.database.models.user import _User
 from modules.schemas.responses.base_response import BaseResponse
-from modules.database.models.blacklist import BlackList
+from modules.database.models.blacklist import _BlackList
 from .blacklist import BlackListHandler
 
 
 class Auth(BlackListHandler):
     async def authenticate_user(self, data: LoginDataRequest) -> TokenResponse:
         users = await self.execute(
-            self.select(User).where(User.username == data.username)
+            self.select(_User).where(_User.username == data.username)
         )
         (user,) = users.first()
         if user and self.verify_password(data.password, user.password, self.cf.coding):
@@ -41,7 +42,7 @@ class Auth(BlackListHandler):
                 expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
             )
 
-            blacklist_orm_data = BlackList(
+            blacklist_orm_data = BlackListRequest(
                 token_id=token_data["token_id"], token=access_token
             )
             if await self.create_blacklist(blacklist_orm_data):
@@ -65,15 +66,15 @@ class Auth(BlackListHandler):
         )
 
     async def google_auth(self, data: GoogleLoginDataRequest) -> TokenResponse:
-        query = self.select(User).where(User.email == data.google_data.email)
+        query = self.select(_User).where(_User.email == data.google_data.email)
         users = await self.execute(query)
         (user,) = users.first()
         pass
 
-    async def _logout(self, cred, request):
-        if await self.blacklist_token(cred.token_id):
+    async def _logout(self, data: JWTcredentials):
+        if await self.blacklist_token(data.token_id):
             return BaseResponse(
-                message=f" user token id: {cred.token_id} added to blacklist"
+                message=f" user token id: {data.token_id} added to blacklist"
             )
         return BaseResponse(message="Bad Operation", success=False)
 
@@ -94,7 +95,7 @@ class Auth(BlackListHandler):
                 data=data_dict,
                 expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
             )
-            blacklist_orm_data = BlackList(
+            blacklist_orm_data = _BlackList(
                 token_id=payload.token_load.token_id,
                 token=access_token,
                 active=True,

@@ -10,13 +10,13 @@ import uuid
 
 
 # needed to create table automatically
-from .models.product import Product, SpecialDeals
-from .models.user import User
-from .models.booking import Booking
-from .models.blacklist import BlackList
+
+from .models.user import _User
+from .models.booking import _Booking
+from .models.blacklist import _BlackList
 from .models.job_task import _Job, _Task
 from .models.worker import _Worker
-
+from .models.product import Product, SpecialDeals
 
 class AsyncDatabaseSession:
     _session = None  # Ensure db initialized once.
@@ -50,20 +50,20 @@ class AsyncDatabaseSession:
 
     async def create_all(self):
         async with self._engine.begin() as conn:
-            # await conn.run_sync(Base.metadata.drop_all)
+            #await conn.run_sync(Base.metadata.drop_all)
             await conn.run_sync(Base.metadata.create_all)
             await self.create_admin_account()
 
-    async def get_by_email(self, email: str) -> Optional[User]:
+    async def get_by_email(self, email: str) -> Optional[_User]:
         async with self._engine.begin() as conn:
             result = await conn.execute(
-                self.select(User).where(User.email == email)
+                self.select(_User).where(_User.email == email)
             )
             return result.first()
 
     async def create_admin_account(self):
         if await self.get_by_email(self.cf.email) is None:
-            admin_user = User(
+            admin_user = _User(
                 userid=str(uuid.uuid4()),
                 email=self.cf.email,
                 password=self.cf.password,

@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
 from starlette.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.responses import RedirectResponse
 from modules.schemas.responses.auth import TokenResponse
 from starlette.requests import Request
 from modules.schemas.responses.base_response import BaseResponse
@@ -12,6 +11,7 @@ from modules.schemas.requests.auth import (
     GrantType,
     GoogleLoginDataRequest,
     GoogleLoginData,
+    LogOutRequest,
 )
 from modules.auth.dependency import security
 
@@ -33,19 +33,15 @@ async def token(
 
 
 @router.get("/logout")
-async def logout(request: Request, cred: JWTcredentials = Depends(security)):
-    return await handler._logout(cred, request)
+async def logout(cred: JWTcredentials = Depends(security)):
+    return await handler._logout(LogOutRequest(token_load=cred))
 
 
-@router.post(
-    "/refresh_token", response_model=TokenResponse, summary="Refresh token"
-)
+@router.post("/refresh_token", response_model=TokenResponse, summary="Refresh token")
 async def refresh_token(
     request: Request, data: GrantType, cred: JWTcredentials = Depends(security)
 ) -> TokenResponse:
-    return await handler.refresh_token(
-        RefreshTokenRequest(request=request, data=data, token_load=cred)
-    )
+    return await handler.refresh_token(RefreshTokenRequest(data=data, token_load=cred))
 
 
 @router.post(
@@ -53,9 +49,7 @@ async def refresh_token(
     summary="Get token for Google user",
     response_model=TokenResponse,
 )
-async def google_token(
-    request: Request, data: GoogleLoginData
-) -> TokenResponse:
+async def google_token(request: Request, data: GoogleLoginData) -> TokenResponse:
     return await handler.google_auth(
         GoogleLoginDataRequest(request=request, google_data=data)
     )

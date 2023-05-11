@@ -12,7 +12,7 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/users',
+    path: '/users/profile',
     name: 'oneUser',
     component: UserView
   },

@@ -1,5 +1,5 @@
 from modules.utils.base_functions import Utilities
-from modules.database.models.booking import Booking
+from modules.database.models.booking import _Booking
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 from modules.schemas.requests.booking import BookingsRequest, BookingRequest
@@ -52,7 +52,7 @@ class Bookings(Discount):
             sale_price = self.calculate_discount(
                 sale_price, form_data.cred.discount
             )
-        booking = Booking(
+        booking = _Booking(
             oid=self.get_indent(),
             sale_price=sale_price,
             pid=form_data.pid,
@@ -80,8 +80,8 @@ class Bookings(Discount):
 
     async def _confirm_booking(self, oid: str) -> ConfirmBookingResponse:
         query = (
-            self.update(Booking)
-            .where(Booking.oid == oid)
+            self.update(_Booking)
+            .where(_Booking.oid == oid)
             .values(dict(confirmed=True))
             .execution_options(synchronize_session="fetch")
         )
@@ -104,8 +104,8 @@ class Bookings(Discount):
         self, data: BookingsRequest
     ) -> GetBookingsResponse:
         if data.token_load.username == self.cf.username:
-            query = self.select(Booking).options(selectinload(Booking.owner))
-            bookings = await self.execute(query)
+            
+            bookings = await self.execute(self.select(_Booking).options(selectinload(_Booking.owner)))
             bookings = bookings.scalars().all()
             return GetBookingsResponse(
                 bookings=bookings,

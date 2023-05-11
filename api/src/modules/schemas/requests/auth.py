@@ -37,3 +37,12 @@ class JWTcredentials(BaseModel):
 
 class RefreshTokenRequest(RequestBase):
     data: GrantType = None
+
+
+class LogOutRequest(BaseModel):
+    token_load: JWTcredentials
+
+
+class BlackListRequest(BaseModel):
+    token_id:str
+    token:str

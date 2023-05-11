@@ -277,11 +277,21 @@ img.google {
     width: 100px;
     margin-bottom: 3px;
     margin-right: 5px;
-
 }
 
+img.microsoft{
+    border-top: 5px solid #3299BB;
+    border-bottom: 5px solid #3299BB;
+    width: 100px;
+    margin-bottom: 3px;
+    margin-right: 5px;
 
-
+}
+#msoft{
+    position: relative;
+    left: 100px;
+    padding: 30px;
+}
 /* .contact {
     border-width: 1px 5px 1px 5px;
     border-style: solid;

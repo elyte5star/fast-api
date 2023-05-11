@@ -13,7 +13,7 @@ from modules.schemas.responses.users import (
     BaseResponse,
 )
 from sqlalchemy.sql.expression import false
-from modules.database.models.user import User
+from modules.database.models.user import _User
 from sqlalchemy.orm import selectinload, defer
 
 
@@ -26,7 +26,7 @@ class Users(Utilities):
         user_data_dict["userid"] = self.get_indent()
         user_data_dict["discount"] = None
         user_data_dict["password"] = hashed_password
-        db_user = User(**user_data_dict)
+        db_user = _User(**user_data_dict)
         self.add(db_user)
         try:
             await self.commit()
@@ -44,17 +44,17 @@ class Users(Utilities):
         finally:
             await self._engine.dispose()
 
-    def is_active(self, user: User) -> bool:
+    def is_active(self, user: _User) -> bool:
         return False if user.active == false() else True
 
-    def is_admin(self, user: User) -> bool:
+    def is_admin(self, user: _User) -> bool:
         return False if user.admin == false() else True
 
     async def _get_users(
         self,
     ) -> GetUsersResponse:
         result = await self.execute(
-            self.select(User).options(defer(User.password), selectinload(User.bookings))
+            self.select(_User).options(defer(_User.password), selectinload(_User.bookings))
         )
         if result is not None:
             users = result.scalars().all()
@@ -69,11 +69,11 @@ class Users(Utilities):
 
     async def _get_user(self, data: GetUserRequest) -> GetUserResponse:
         result = await self.execute(
-            self.select(User)
-            .where(User.userid == data.userid)
-            .options(defer(User.password), selectinload(User.bookings))
+            self.select(_User)
+            .where(_User.userid == data.userid)
+            .options(defer(_User.password), selectinload(_User.bookings))
         )
-        if result is not None:
+        if data and result is not None:
             (user,) = result.first()
             return GetUserResponse(
                 user=user,
@@ -86,7 +86,7 @@ class Users(Utilities):
             )
 
     async def _delete_user(self, data: DeleteUserRequest) -> BaseResponse:
-        query = self.delete(User).where(User.userid == data.userid)
+        query = self.delete(_User).where(_User.userid == data.userid)
         await self.execute(query)
         try:
             await self.commit()

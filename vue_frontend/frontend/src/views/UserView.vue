@@ -1,46 +1,43 @@
 <template>
     <div id="user" class="card">
         <img :src="'../images/' + user_image" v-bind:alt="man" style="width:100%">
-        <h1>John Doe</h1>
-        <p class="title">CEO & Founder, Example</p>
+        <h1></h1>
+        <p class="title">{{user.username}}</p>
         <p>Harvard University</p>
-        <a href="#"><i class="fa fa-dribbble"></i></a>
-        <a href="#"><i class="fa fa-twitter"></i></a>
-        <a href="#"><i class="fa fa-linkedin"></i></a>
-        <a href="#"><i class="fa fa-facebook"></i></a>
+        
         <p><button>Update Contact</button></p>
         <!-- the button to Sign up -->
-    <button class="form-btn" @click=" showHistory('history') " type="button" id="add_p">Shopping History.</button>
     </div>
+    
 </template>
 
 <script>
 
 import { userStore } from '@/stores/userAccount';
-
+import { userAuthStore } from '@/stores/auth_store';
 import { storeToRefs } from 'pinia';
 
 
 export default {
     name: 'UserView',
-    methods: {
-        async updateUser() {
-            console.log("Hello");
+    data(){
+        const authStore = userAuthStore();
+        const { user } = storeToRefs(authStore);
+      return {
+        user_image:null,user
+      }},
+  async created () {
+    const user_store = userStore();
+    await user_store.getUserById(this.user.userid);
+    this.user_image = this.user.admin ? 'admin-icon.png' :'user-icon.png';
+  
+  },
+} 
 
-        }
-    },
-
-    computed:{
-        user_image(){
-        const uStore = userStore();
-        const { user } = storeToRefs(uStore)
-        return (user.admin ? 'admin-icon.png' :'user-icon.png')
-
-    }
-    },
-
-}
 </script>
+
+
+
 
 <style scoped>
 .card {

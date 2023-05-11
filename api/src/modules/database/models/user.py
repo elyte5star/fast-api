@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from .booking import Booking  # noqa: F401
+    from .booking import _Booking  # noqa: F401
 
 
-class User(Base):
+class _User(Base):
     userid = Column(String(40), primary_key=True, index=True)
     email = Column(String(50), unique=True, index=True)
     username = Column(String(50), unique=True, index=True)
@@ -19,4 +19,4 @@ class User(Base):
     discount = Column(Float)
     telephone = Column(Integer, index=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
-    bookings = relationship("Booking", back_populates="owner")
+    bookings = relationship("_Booking", back_populates="owner",cascade='save-update, merge, delete',passive_deletes=True)

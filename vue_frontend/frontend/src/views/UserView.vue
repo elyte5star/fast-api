@@ -1,5 +1,5 @@
 <template>
-  <div id="user" class="card">
+  <div v-if="user" id="user" class="card">
     <img
       :src="'../images/' + user_image"
       v-bind:alt="man"

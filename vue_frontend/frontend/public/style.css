@@ -319,7 +319,7 @@ img.microsoft{
     font-size: 0.9em;
 } */
 
-#add_p:hover {
+#add_p,#update_p:hover {
     background-color: lightgoldenrodyellow;
 }
 
@@ -343,7 +343,7 @@ img.microsoft{
     background-color: lightgoldenrodyellow;
 }
 
-#add_p {
+#add_p,#update_p {
     width: 98%;
     border-width: 5px 1px 5px 1px;
     border-style: solid;
@@ -396,6 +396,7 @@ main h1 {
     color: white;
     padding: 5px;
     font-size: 1.2em;
+    margin-top: 5px;
 }
 
 
@@ -429,12 +430,12 @@ a {
 }
 
 /** product **/
-.prod_left {
+.prod_left,.item_left {
     width: 200px;
     float: left;
 }
 
-.prod_right {
+.prod_right,.item_right{
     float: none;
     /* just to make it clear */
     padding-left: 10px;
@@ -457,7 +458,7 @@ article .details {
     outline: 1px solid #BCBCBC;
 }
 
-article .details:hover {
+article .details,.update:hover {
     background-color: #FF9900;
 }
 
@@ -484,9 +485,9 @@ article:hover {
 
 /* News column*/
 .columnx {
-    width: 99%;
+    width: 98%;
     /* set the amount of columns */
-    margin: 0.5%;
+    margin: 13px;
     float: left;
 }
 
@@ -494,7 +495,7 @@ article h3 {
     margin: 0;
 }
 
-.place {
+.place,.customer_id {
     position: absolute;
     left: 5px;
     bottom: 8px;

@@ -1,16 +1,33 @@
 <template>
-  <div v-if="user" id="user" class="card">
-    <img
-      :src="'../images/' + user_image"
-      v-bind:alt="man"
-      style="width: 100%"
-    />
-    <h1></h1>
-    <p class="title">{{ user.username }}</p>
-    <p>Harvard University</p>
-
-    <p><button>Update Contact</button></p>
-    <!-- the button to Sign up -->
+  <div v-if="user">
+    <main id="user" class="container">
+      <h1>Profile card for {{ user.username }}.</h1>
+      <article class="framed columnx" id="{{ user.userid }}">
+        <div class="close">
+          <a href="javascript:void(0)" @click="hide_delete_entry('modify_entry')"
+            ><i class="fa fa-trash-o" style="font-size:30px;text-shadow: 2px 2px 2px #aaa;"></i
+          ></a>
+        </div>
+        <div class="item_left">
+          <img :src="'../images/' + user_image" v-bind:alt="user.name" />
+          <div class="customer_id">{{ user.userid }}</div>
+        </div>
+        <div class="item_right">
+          <h3>{{ user.username }}</h3>
+          <h5>{{ user.email }}</h5>
+          <p>Registered since {{ formatDate(user.created_at) }}.</p>
+          <h4>user id : {{ user.userid }}.</h4>
+        </div>
+      </article>
+      <button
+        class="form-btn"
+        @click="modify('modify_entry')"
+        type="button"
+        id="update_p"
+      >
+        Update User Details.
+      </button>
+    </main>
   </div>
 </template>
 
@@ -18,6 +35,7 @@
 import { userStore } from "@/stores/userAccount";
 import { userAuthStore } from "@/stores/auth_store";
 import { storeToRefs } from "pinia";
+import moment from "moment";
 
 export default {
   name: "UserView",
@@ -34,46 +52,13 @@ export default {
     await user_store.getUserById(this.user.userid);
     this.user_image = this.user.admin ? "admin-icon.png" : "user-icon.png";
   },
+  methods: {
+    formatDate(value) {
+      if (value) {
+        return moment(String(value)).format("DD-MM-YYYY hh:mm");
+      }
+    },
+  },
 };
 </script>
 
-
-
-
-<style scoped>
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  max-width: 300px;
-  margin: auto;
-  text-align: center;
-}
-
-.title {
-  color: grey;
-  font-size: 18px;
-}
-
-button {
-  border: none;
-  outline: 0;
-  display: inline-block;
-  padding: 8px;
-  color: white;
-  background-color: #000;
-  text-align: center;
-  cursor: pointer;
-  width: 100%;
-  font-size: 18px;
-}
-
-a {
-  text-decoration: none;
-  font-size: 22px;
-  color: black;
-}
-
-button:hover,
-a:hover {
-  opacity: 0.7;
-}
-</style>

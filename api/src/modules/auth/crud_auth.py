@@ -52,7 +52,7 @@ class Auth(BlackListHandler):
                         "refresh_token": refresh_token,
                         "token_id": blacklist_orm_data.token_id,
                         "token_type": "bearer",
-                        "host_url": self.cf.host_url,
+                        "created_at":user.created_at,
                         "email": user.email,
                         "userid": user.userid,
                         "username": user.username,

@@ -1,0 +1,78 @@
+<template>
+    <div v-if="user_info" id="update_entry">
+        <div class="close">
+            <a href="javascript:void(0)" @click="changeActiveComponent('user_details')"><i class="fa fa-remove"></i></a>
+        </div>
+        <h2>Please Modify Account Details</h2>
+        <table>
+            <tr>
+                <td>Username:</td>
+                <td>
+                    <input type="text" name="username_" id="mod_username" size="20" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>Email:</td>
+                <td>
+                    <input type="text" name="email_" id="mod_email_" size="20" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>Password:</td>
+                <td>
+                    <input type="password" name="pass" id="mod_pass" size="20" minlength="4" required />
+                </td>
+            </tr>
+
+            <tr>
+                <td>Confirm Password:</td>
+                <td>
+                    <input type="password" name="pass_" id="mod_pass_" size="20" minlength="4" required />
+                </td>
+            </tr>
+
+            <tr>
+                <td>Telephone:</td>
+                <td>
+                    <input type="text" name="tel" id="mod_tel" size="20" minlength="6" required />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="b1" type="button" value="Modify Details" v-on:click="updateDetails(user_info.userid)"
+                        style="width: 100%" />
+                </td>
+                <td>
+                    <input id="b2" type="button" value="Cancel" v-on:click="changeActiveComponent('user_details')"
+                        style="width: 100%" />
+                </td>
+            </tr>
+        </table>
+        <button class="form-btn" @click="changeActiveComponent('user_details')" type="button" id="update_p">
+            Back to User Details.
+        </button>
+    </div>
+</template>
+
+<script>
+
+export default {
+    name: 'EditUser',
+    props: {
+        user_info: {
+            type: new Object(null),
+        }
+    },
+    methods: {
+        changeActiveComponent(str) {
+            this.$emit('changeActiveComponent', str);
+        },
+        async updateDetails(id) {
+            console.log(id);
+        }
+
+    }
+}
+</script>

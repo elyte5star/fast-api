@@ -62,7 +62,7 @@ nav ul {
 
 }
 
-nav span{
+nav span {
     color: yellow;
     font-size: 1.2em;
     position: relative;
@@ -116,7 +116,7 @@ nav .fa {
     padding-right: 30px;
     border-radius: 10px;
     border-color: #3299BB;
-    
+
 }
 
 /* Search End */
@@ -279,7 +279,7 @@ img.google {
     margin-right: 5px;
 }
 
-img.microsoft{
+img.microsoft {
     border-top: 5px solid #3299BB;
     border-bottom: 5px solid #3299BB;
     width: 100px;
@@ -287,11 +287,13 @@ img.microsoft{
     margin-right: 5px;
 
 }
-#msoft{
+
+#msoft {
     position: relative;
     left: 100px;
     padding: 30px;
 }
+
 /* .contact {
     border-width: 1px 5px 1px 5px;
     border-style: solid;
@@ -319,7 +321,8 @@ img.microsoft{
     font-size: 0.9em;
 } */
 
-#add_p,#update_p:hover {
+#add_p,
+#update_p:hover {
     background-color: lightgoldenrodyellow;
 }
 
@@ -343,7 +346,8 @@ img.microsoft{
     background-color: lightgoldenrodyellow;
 }
 
-#add_p,#update_p {
+#add_p,
+#update_p {
     width: 98%;
     border-width: 5px 1px 5px 1px;
     border-style: solid;
@@ -360,6 +364,7 @@ img.microsoft{
 
 #login_access,
 #add_entry,
+#update_entry,
 #confirm-table {
     border: 5px solid #ececec;
     margin: 10px;
@@ -430,12 +435,14 @@ a {
 }
 
 /** product **/
-.prod_left,.item_left {
+.prod_left,
+.item_left {
     width: 200px;
     float: left;
 }
 
-.prod_right,.item_right{
+.prod_right,
+.item_right {
     float: none;
     /* just to make it clear */
     padding-left: 10px;
@@ -458,7 +465,8 @@ article .details {
     outline: 1px solid #BCBCBC;
 }
 
-article .details,.update:hover {
+article .details,
+.update:hover {
     background-color: #FF9900;
 }
 
@@ -495,7 +503,8 @@ article h3 {
     margin: 0;
 }
 
-.place,.customer_id {
+.place,
+.discount {
     position: absolute;
     left: 5px;
     bottom: 8px;
@@ -503,7 +512,7 @@ article h3 {
     /* width of the image */
     z-index: 1;
     background-color: #E9E9E9;
-    opacity: 0.7;
+    opacity: 1.7;
     text-align: center;
 }
 

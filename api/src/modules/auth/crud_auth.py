@@ -50,10 +50,7 @@ class Auth(BlackListHandler):
                     token_data={
                         "access_token": access_token,
                         "refresh_token": refresh_token,
-                        "token_id": blacklist_orm_data.token_id,
                         "token_type": "bearer",
-                        "created_at":user.created_at,
-                        "email": user.email,
                         "userid": user.userid,
                         "username": user.username,
                         "admin": admin,

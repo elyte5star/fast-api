@@ -14,6 +14,7 @@ import FooterContact from '@/components/FooterContact.vue'
 import { storeToRefs } from 'pinia';
 import { productStore } from '@/stores/products'
 
+
 export default {
   name: 'HomeView',
   components: {

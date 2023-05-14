@@ -1,22 +1,13 @@
 import { defineStore } from 'pinia';
 
-//import { fetchMethodWrapper } from '@/helpers/methodWrapper';
 
 import { userAlertStore } from './alert';
 
 import router from '@/router/index'
 
-const baseURL = process.env.VUE_APP_API_URL + 'auth';
+import { postToTokenEndpoint } from "@/helpers/script.js";
 
-async function postToTokenEndpoint(url = "", data = {}) {
-    let options = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: data // JSON.stringify(data)
-    }
-    const response = await fetch(url, options);
-    return response.json();
-}
+const baseURL = process.env.VUE_APP_API_URL + 'auth';
 
 export const userAuthStore = defineStore({
     id: 'auth',
@@ -44,12 +35,9 @@ export const userAuthStore = defineStore({
             }
         },
         async logout() {
-
-            //await fetchMethodWrapper.get(baseURL + '/logout');
             this.user = null;
             localStorage.removeItem('user');
             router.push('/');
-
 
         }
     }

@@ -50,5 +50,6 @@ export default {
             this.$emit('changeActiveComponent',str);
         },
     },
+    
 };
 </script>

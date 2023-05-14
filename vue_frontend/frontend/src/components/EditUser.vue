@@ -15,7 +15,7 @@
             <tr>
                 <td>Email:</td>
                 <td>
-                    <input type="text" name="email_" id="mod_email_" size="20" />
+                    <input type="text" name="email_" id="mod_email" size="20" />
                 </td>
             </tr>
 
@@ -50,9 +50,6 @@
                 </td>
             </tr>
         </table>
-        <button class="form-btn" @click="changeActiveComponent('user_details')" type="button" id="update_p">
-            Back to User Details.
-        </button>
     </div>
 </template>
 
@@ -73,6 +70,12 @@ export default {
             console.log(id);
         }
 
-    }
+    },
+    mounted() {
+        document.getElementById("mod_username").value = this.user_info.username;
+        document.getElementById("mod_tel").value = this.user_info.telephone;
+        document.getElementById("mod_email").value = this.user_info.email;
+    },
+
 }
 </script>

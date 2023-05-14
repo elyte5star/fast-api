@@ -39,12 +39,10 @@ export default {
     _changeActiveComponent(str) {
       if (str === 'update_details') {
         this.activeComponent = EditUser;
-        console.log(str);
-
+      
       } else {
         this.activeComponent = UserProfile;
-        console.log(str);
-
+       
       }
 
     },

@@ -496,7 +496,6 @@ article:hover {
     width: 98%;
     /* set the amount of columns */
     margin: 13px;
-    float: left;
 }
 
 article h3 {

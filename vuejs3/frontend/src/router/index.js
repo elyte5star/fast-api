@@ -12,7 +12,7 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/users/profile',
+    path: '/profile',
     name: 'oneUser',
     component: UserView
   },
@@ -37,7 +37,7 @@ router.beforeEach(async (to) => {
   alertStore.clear();
 
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login','/','/users/signup'];
+  const publicPages = ['/login','/'];
 
   const authRequired = !publicPages.includes(to.path);
 

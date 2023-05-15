@@ -17,7 +17,7 @@
                 <tr>
                     <td>Email:</td>
                     <td>
-                        <input type="text" name="email_" id="email_" size="20" />
+                        <input type="text" name="email" id="email_" size="20" />
                     </td>
                 </tr>
 
@@ -43,7 +43,8 @@
                 </tr>
                 <tr>
                     <td>
-                        <input id="b1" type="button" value="Create Account" v-on:click="signUp()" style="width: 100%" />
+                        <input id="b1" type="button" value="Create Account" v-on:click="registerUser()"
+                            style="width: 100%" />
                     </td>
                     <td>
                         <input id="b2" type="button" value="Cancel" v-on:click="changeActiveComponent('login_user')"
@@ -63,20 +64,36 @@
     </div>
 </template>
 <script>
-export default {
-name:'RegisterUser',
-methods:{
+import { is_Input_Error } from '@/helpers/script';
+import { userStore } from "@/stores/userAccount";
 
-    changeActiveComponent(str) {
+export default {
+    name: 'RegisterUser',
+    methods: {
+        changeActiveComponent(str) {
             this.$emit('changeActiveComponent', str);
         },
-        async signUp() {
-            console.log("create route");
+        async registerUser() {
+            const userName = document.getElementById("username_").value;
+            const email = document.getElementById("email_").value;
+            const password1 = document.getElementById("pass").value;
+            const passWord2 = document.getElementById("pass_").value;
+            const tel = document.getElementById("tel").value;
+            if (!is_Input_Error(userName, email, password1, passWord2, tel)) {
+                const user = { "username": userName, "email": email, "password": password1, "telephone": tel };
+                const user_store = userStore();
+                await user_store.signUP(user);
+            }
+
         }
-
-
-}
-
+    },
+    mounted: function () {
+        document.getElementById("username_").value=" ";
+        document.getElementById("email_").value=" ";
+        document.getElementById("pass").value=" ";
+        document.getElementById("pass_").value=" ";
+        document.getElementById("tel").value=" ";
+    }
 }
 
 </script>

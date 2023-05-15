@@ -42,7 +42,7 @@
             </table>
         </div>
         <div><span id="info"></span></div>
-        <!-- the button to Sign up -->
+        
         <button class="form-btn" @click="changeActiveComponent('register_user')" type="button" id="add_p">
             Please, create a User Account.
         </button>
@@ -52,6 +52,7 @@
 <script>
 
 import { userAuthStore } from "@/stores/auth_store.js";
+import { isUserNameValid } from "@/helpers/script";
 
 export default {
     name: 'LoginUser',
@@ -61,10 +62,10 @@ export default {
             this.$emit('changeActiveComponent', str);
         },
         async login() {
-            let userName = document.getElementById("username").value;
-            let passWord = document.getElementById("password").value;
+            const userName = document.getElementById("username").value;
+            const passWord = document.getElementById("password").value;
 
-            if (userName != "" || passWord != "") {
+            if (isUserNameValid(userName) && passWord != "") {
                 let form = new FormData();
                 form.append("username", userName);
                 form.append("password", passWord);
@@ -76,7 +77,7 @@ export default {
                 const authStore = userAuthStore();
                 await authStore.login(userData);
             } else {
-                document.getElementById("info").innerHTML ="<strong>Wrong!</strong> " + " Empty fields!";
+                document.getElementById("info").innerHTML ="<strong>Wrong!</strong> " + " Empty fields/Invalid letters !";
             }
         },
 

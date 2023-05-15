@@ -1,5 +1,4 @@
 from modules.database.base import Base
-from datetime import datetime
 from ...schemas.misc.enums import JobType
 from sqlalchemy import (
     Column,

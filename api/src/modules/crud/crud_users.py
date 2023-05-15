@@ -41,8 +41,6 @@ class Users(Utilities):
                 success=False,
                 message=str(e),
             )
-        finally:
-            await self._engine.dispose()
 
     def is_active(self, user: _User) -> bool:
         return False if user.active == false() else True
@@ -54,7 +52,9 @@ class Users(Utilities):
         self,
     ) -> GetUsersResponse:
         result = await self.execute(
-            self.select(_User).options(defer(_User.password), selectinload(_User.bookings))
+            self.select(_User).options(
+                defer(_User.password), selectinload(_User.bookings)
+            )
         )
         if result is not None:
             users = result.scalars().all()
@@ -64,7 +64,7 @@ class Users(Utilities):
         else:
             return BaseResponse(
                 success=False,
-                message=f"Users not found!!",
+                message="Users not found!!",
             )
 
     async def _get_user(self, data: GetUserRequest) -> GetUserResponse:
@@ -100,5 +100,3 @@ class Users(Utilities):
                 success=False,
                 message=f"Deletion not successful for user with id:{data.userid}",
             )
-        finally:
-            await self._engine.dispose()

@@ -9,10 +9,12 @@ from modules.schemas.responses.auth import TokenResponse
 from modules.database.models.user import _User
 from modules.schemas.responses.base_response import BaseResponse
 from modules.database.models.blacklist import _BlackList
-from .blacklist import BlackListHandler
+
+# from .blacklist import BlackListHandler
+from modules.utils.base_functions import Utilities
 
 
-class Auth(BlackListHandler):
+class Auth(Utilities):
     async def authenticate_user(self, data: LoginDataRequest) -> TokenResponse:
         users = await self.execute(
             self.select(_User).where(_User.username == data.username)
@@ -42,21 +44,17 @@ class Auth(BlackListHandler):
                 expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
             )
 
-            blacklist_orm_data = BlackListRequest(
-                token_id=token_data["token_id"], token=access_token
+            return TokenResponse(
+                token_data={
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                    "token_type": "bearer",
+                    "userid": user.userid,
+                    "username": user.username,
+                    "admin": admin,
+                },
+                message=f"User {user.username} is authorized!",
             )
-            if await self.create_blacklist(blacklist_orm_data):
-                return TokenResponse(
-                    token_data={
-                        "access_token": access_token,
-                        "refresh_token": refresh_token,
-                        "token_type": "bearer",
-                        "userid": user.userid,
-                        "username": user.username,
-                        "admin": admin,
-                    },
-                    message=f"User {user.username} is authorized:Blacklist created!",
-                )
         return TokenResponse(
             success=False,
             message=f"User {user.username} is not authorized.Incorrect username or password",

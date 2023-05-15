@@ -106,6 +106,7 @@ async def add_process_time_header(request: Request, call_next):
 
 @app.on_event("startup")
 async def startup_event() -> None:
+    await db.int_db()
     await db.create_all()
     logger.info(f"{cfg.name} v{cfg.version} is starting.")
 

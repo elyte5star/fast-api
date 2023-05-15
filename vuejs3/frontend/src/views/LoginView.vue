@@ -1,8 +1,6 @@
 <template>
     <div>
-        <keep-alive>
-            <component :is="activeComponent" @changeActiveComponent="_changeActiveComponent" />
-        </keep-alive>
+    <component :is="activeComponent" @changeActiveComponent="_changeActiveComponent" />
     </div>
 </template>
 

@@ -11,7 +11,7 @@ class User(BaseModel):
     email: EmailStr
     active: bool = True
     discount: float = 0.0
-    telephone: int = 0
+    telephone: str = ""
     created_at: datetime = datetime.utcnow
 
 

@@ -1,4 +1,6 @@
 
+import Swal from 'sweetalert2/dist/sweetalert2';
+
 /* eslint-disable */
 export const decodeJwtResponse = (token) => {
     let base64Url = token.split(".")[1];
@@ -49,4 +51,52 @@ export const show_add_entry = (id) => {
 export const hide_add_entry = (id) => {
     let element = document.getElementById(id);
     element.style.display = "none";
+}
+
+function is_valid_Email(email) {
+    return email.match(
+        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+}
+
+function isValidTel(tel) {
+    // check for allowed characters using a regular expression
+    const re = /^[0-9()+\-\s]*$/
+    return re.test(tel);
+}
+
+export const  is_Input_Error = (name, email, password, password_, tel) =>{
+    if (name.length == 0) {
+        return Swal.fire("Empty username!");
+    }
+    else if (email.length == 0) {
+        return Swal.fire(" Empty email field!");
+    }
+    else if (tel.length == 0) {
+
+        return Swal.fire("Empty Telephone field!");
+    }
+    else if (password.length == 0 || password_.length == 0) {
+        return Swal.fire(" Empty Password Field!");
+    }
+    else if (password !== password_) {
+        return Swal.fire(" Invalid Credentials.Password mismatch!");
+    }
+    // check for valid telephone
+    else if (tel.length > 0 && !isValidTel(tel)) {
+        return Swal.fire("Invalid letters for telephone!");
+    }
+    // check for valid email
+    else if (email.length > 0 && !is_valid_Email(email)) {
+        Swal.fire("Invalid email address!");
+    }
+    // check for valid letters
+    else if (name.length > 0 && !isUserNameValid(name)) {
+        return Swal.fire(" Invalid letters for username!");
+    }
+    // no error
+    else {
+        return false;
+    }
+    return true;
 }

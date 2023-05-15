@@ -10,7 +10,6 @@ from .blacklist import BlackListHandler
 
 cf = Settings().from_toml_file()
 
-black_list = BlackListHandler(cf)
 
 
 class JWTBearer(HTTPBearer):

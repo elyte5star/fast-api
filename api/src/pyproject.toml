@@ -128,7 +128,7 @@ email="checkuti@gmail.com"
 username="elyte"
 password="$2b$10$rQcvrrW2JcvjV2XM5TG3zeJd6oHPthld3VfRLsvyV2UJFO0.BxACO"
 is_admin=true
-telephone=40978057
+telephone="40978057"
 
 
 [hash.password]

@@ -28,7 +28,6 @@ export const userAuthStore = defineStore({
 
                 return router.push(this.returnUrl || '/');
 
-
             } catch (error) {
                 const alertStore = userAlertStore();
                 alertStore.error(error);

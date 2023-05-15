@@ -24,9 +24,7 @@ from sqlalchemy.orm import selectinload
 
 
 class Products(Discount):
-    async def _create_product(
-        self, data: ProductItem
-    ) -> CreateProductResponse:
+    async def _create_product(self, data: ProductItem) -> CreateProductResponse:
         product = Product(**data.dict(), pid=self.get_indent())
         self.add(product)
         try:
@@ -42,8 +40,6 @@ class Products(Discount):
                 success=False,
                 message=str(e),
             )
-        finally:
-            await self._engine.dispose()
 
     async def _create_products(
         self, data: CreateProductsRequest
@@ -104,17 +100,13 @@ class Products(Discount):
                     success=False,
                     message=str(e),
                 )
-            finally:
-                await self._engine.dispose()
 
         return BaseResponse(
             success=False,
             message="Admin rights needed!",
         )
 
-    async def _get_products(
-        self, data: GetProductsRequest
-    ) -> GetProductsResponse:
+    async def _get_products(self, data: GetProductsRequest) -> GetProductsResponse:
         query = self.select(Product).options(selectinload(Product.discount))
         products = await self.execute(query)
         products = products.scalars().all()
@@ -123,9 +115,7 @@ class Products(Discount):
             message=f"Total number of products: {len(products)}",
         )
 
-    async def _delete_product(
-        self, data: DeleteProductRequest
-    ) -> BaseResponse:
+    async def _delete_product(self, data: DeleteProductRequest) -> BaseResponse:
         if data.token_load.username == self.cf.username:
             query = self.delete(Product).where(Product.pid == data.pid)
             await self.execute(query)
@@ -141,8 +131,7 @@ class Products(Discount):
                     success=False,
                     message=str(e),
                 )
-            finally:
-                await self._engine.dispose()
+
         return BaseResponse(
             success=False,
             message="Admin rights needed!",

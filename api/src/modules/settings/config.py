@@ -58,7 +58,7 @@ class Settings:
         self.password: str = ""
         self.username: str = ""
         self.is_admin: bool = True
-        self.telephone: int = 0
+        self.telephone: str = ""
 
     def from_toml_file(self):
         self.sql_host = cf.database.host
@@ -112,7 +112,7 @@ class Settings:
 
         print("Overriding  variables for FastAPI, MySQL")
 
-        self.sql_port = str(getenv("MYSQL_HOST"))
+        self.sql_host = str(getenv("MYSQL_HOST"))
         self.sql_db = str(getenv("MYSQL_DATABASE"))
         self.sql_username = str(getenv("MYSQL_USER"))
         self.sql_password = str(getenv("MYSQL_ROOT_PASSWORD"))

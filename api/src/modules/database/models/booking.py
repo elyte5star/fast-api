@@ -9,7 +9,7 @@ from sqlalchemy import (
     Boolean,
     Integer,
 )
-from datetime import datetime
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ class _Booking(Base):
     volume = Column(Integer, nullable=False, index=True)
     sale_price = Column(Float, nullable=False, index=True)
     confirmed = Column(Boolean, default=False)
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
     pid = Column(String(60), ForeignKey("product.pid",ondelete='CASCADE'))
     owner = relationship("_User", back_populates="bookings")
     owner_id = Column(String(60), ForeignKey("_user.userid"))

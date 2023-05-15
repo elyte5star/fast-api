@@ -325,7 +325,11 @@ img.microsoft {
     background-color: lightgoldenrodyellow;
 }
 #update_p:hover {
-    background-color: lightgoldenrodyellow;
+    background-color: yellow;
+}
+
+#delete_user:hover {
+    background-color: red;
 }
 
 
@@ -350,7 +354,7 @@ img.microsoft {
 }
 
 #add_p,
-#update_p {
+#update_p,#delete_user {
     width: 98%;
     border-width: 5px 1px 5px 1px;
     border-style: solid;

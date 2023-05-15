@@ -1,4 +1,5 @@
 <template>
+    <div>
     <div v-if="user_info" id="update_entry">
         <div class="close">
             <a href="javascript:void(0)" @click="changeActiveComponent('user_details')"><i class="fa fa-remove"></i></a>
@@ -51,6 +52,11 @@
             </tr>
         </table>
     </div>
+    <button class="form-btn" @click="deleteUser(user_info.userid)" type="button" id="delete_user">
+        Delete Account.
+    </button>
+
+</div>
 </template>
 
 <script>
@@ -67,6 +73,11 @@ export default {
             this.$emit('changeActiveComponent', str);
         },
         async updateDetails(id) {
+            this.$swal('Hello Vue world!!!');
+            console.log(id);
+        },
+        async deleteUser(id) {
+            this.$swal('Hello Vue world!!!');
             console.log(id);
         }
 

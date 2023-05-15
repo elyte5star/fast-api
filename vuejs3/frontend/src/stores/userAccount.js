@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 import { fetchMethodWrapper } from '@/helpers/methodWrapper';
 
@@ -24,7 +25,18 @@ export const userStore = defineStore({
 
         },
         async signUP(user) {
-            await fetchMethodWrapper.post(baseURL + '/signup', user);
+            const response = await fetchMethodWrapper.post(baseURL + '/signup', user);
+            if (response["success"]) {
+                Swal.fire('Good job!', "User with ID " + response.userid + " has been created!", 'success');
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Email/Username already registered!',
+                    footer: '<a href="/">Return to home page.</a>'
+                })
+
+            }
         },
         async getUserById(id) {
             try {
@@ -57,7 +69,7 @@ export const userStore = defineStore({
             await fetchMethodWrapper.delete(baseURL + '/' + id);
             // remove user from list after deleted
             this.users = this.users.filter(x => x.id !== id);
-            
+
             const authStore = userAuthStore();
             if (id === authStore.user.userid) {
                 authStore.logout();

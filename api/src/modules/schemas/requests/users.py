@@ -6,7 +6,7 @@ class User(BaseModel):
     username: str
     email: EmailStr
     password: str
-    telephone: int
+    telephone: str
 
 
 class CreateUserRequest(RequestBase):

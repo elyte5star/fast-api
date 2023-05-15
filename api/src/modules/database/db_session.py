@@ -18,47 +18,52 @@ from .models.job_task import _Job, _Task
 from .models.worker import _Worker
 from .models.product import Product, SpecialDeals
 
+
 class AsyncDatabaseSession:
     _session = None  # Ensure db initialized once.
 
     def __init__(self, cf):
         self._engine = None
-        self._session = None
         self.select = select
         self.update = update
         self.delete = delete
         self.log = logger
         self.cf = cf
-
-        try:
-            self._engine = create_async_engine(
-                self.cf.db_url, echo=False, pool_recycle=50000
-            )
-            self._session = sessionmaker(
-                self._engine, expire_on_commit=False, class_=AsyncSession
-            )()
-
-        except Exception as ex:
-            self.log.warning(
-                "Connection could not be made due to the following error: \n",
-                ex,
-            )
         
+
+    async def int_db(self):
+        if AsyncDatabaseSession._session is None:
+            try:
+                self._engine = create_async_engine(
+                    self.cf.db_url,
+                    future=True,
+                    echo=False,
+                )
+                AsyncDatabaseSession._session = sessionmaker(
+                    self._engine, expire_on_commit=False, class_=AsyncSession
+                )()
+                self.log.info("[+] MYSQL Connection created successfully.")
+
+            except Exception as ex:
+                self.log.warning(
+                    "Connection could not be made due to the following error: \n",
+                    ex,
+                )
+            finally:
+                await self._engine.dispose()
 
     def __getattr__(self, name) -> AsyncSession:
         return getattr(self._session, name)
 
     async def create_all(self):
         async with self._engine.begin() as conn:
-            #await conn.run_sync(Base.metadata.drop_all)
+            # await conn.run_sync(Base.metadata.drop_all)
             await conn.run_sync(Base.metadata.create_all)
             await self.create_admin_account()
 
     async def get_by_email(self, email: str) -> Optional[_User]:
         async with self._engine.begin() as conn:
-            result = await conn.execute(
-                self.select(_User).where(_User.email == email)
-            )
+            result = await conn.execute(self.select(_User).where(_User.email == email))
             return result.first()
 
     async def create_admin_account(self):
@@ -80,8 +85,5 @@ class AsyncDatabaseSession:
             except IntegrityError as e:
                 self.log.warning(e)
                 await self.rollback()
-            finally:
-                await self._engine.dispose()
-
         else:
-            self.log.info("Admin account and other tables exist already!!")
+            self.log.info("Admin account exist already!!")

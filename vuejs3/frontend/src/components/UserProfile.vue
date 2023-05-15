@@ -19,7 +19,7 @@
                 </div>
             </article>
             <button class="form-btn" @click="changeActiveComponent('update_details')" type="button" id="update_p">
-                Update User Details.
+                Modify User Details.
             </button>
         </main>
     </div>

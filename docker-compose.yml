@@ -44,12 +44,12 @@ services:
     container_name: vue-app
     image: vue-app
     build:
-      context: ./vue_frontend
+      context: ./vuejs3
       dockerfile: ./frontend.dockerfile
     networks:
       - elyte_net
     env_file:
-      - ./vue_frontend/frontend/.env
+      - ./vuejs3/frontend/.env
     ports:
       - 9000:8000
     

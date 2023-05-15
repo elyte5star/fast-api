@@ -1,0 +1,88 @@
+<template>
+    <div>
+        <!-- Login panel -->
+        <div id="login_access">
+            <h2>Login</h2>
+            <table>
+                <tr>
+                    <td>Username :</td>
+                    <td><input type="text" name="username" id="username" size="20" /></td>
+                    <td rowspan="3">
+                        <div class="container" id="g_id">
+                            <div class="row justify-content-center">
+                                <div class="col">
+                                    <a id="google_img" class="btn btn-outline-dark" href="javascript:void(0)"
+                                        onclick="getGoogleToken()" role="button" style="text-transform: none">
+                                        <img :src="'./images/gg.png'" class="google" v-bind:alt="'Google'" />
+                                        Login with Google
+                                    </a>
+                                    <a id="msoft" class="btn btn-outline-dark" href="javascript:void(0)" onclick="MToken()"
+                                        role="button" style="text-transform: none">
+                                        <img :src="'./images/microsoft.png'" class="microsoft" v-bind:alt="'microsoft'" />
+                                        Login with Microsoft
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Password :</td>
+                    <td>
+                        <input type="password" id="password" name="password" minlength="4" size="20" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Login :</td>
+                    <td>
+                        <a href="javascript:void(0)" v-on:click="login()"><i class="fa fa-sign-in"
+                                style="font-size: 60px"></i></a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div><span id="info"></span></div>
+        <!-- the button to Sign up -->
+        <button class="form-btn" @click="changeActiveComponent('register_user')" type="button" id="add_p">
+            Please, create a User Account.
+        </button>
+    </div>
+</template>
+
+<script>
+
+import { userAuthStore } from "@/stores/auth_store.js";
+
+export default {
+    name: 'LoginUser',
+    methods: {
+
+        changeActiveComponent(str) {
+            this.$emit('changeActiveComponent', str);
+        },
+        async login() {
+            let userName = document.getElementById("username").value;
+            let passWord = document.getElementById("password").value;
+
+            if (userName != "" || passWord != "") {
+                let form = new FormData();
+                form.append("username", userName);
+                form.append("password", passWord);
+                const userData = new URLSearchParams();
+
+                for (const pair of form) {
+                    userData.append(pair[0], pair[1]);
+                }
+                const authStore = userAuthStore();
+                await authStore.login(userData);
+            } else {
+                document.getElementById("info").innerHTML ="<strong>Wrong!</strong> " + " Empty fields!";
+            }
+        },
+
+    }
+
+
+}
+
+</script>

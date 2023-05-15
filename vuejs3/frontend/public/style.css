@@ -321,10 +321,13 @@ img.microsoft {
     font-size: 0.9em;
 } */
 
-#add_p,
+#add_p:hover {
+    background-color: lightgoldenrodyellow;
+}
 #update_p:hover {
     background-color: lightgoldenrodyellow;
 }
+
 
 .fa-sign-out:hover {
     background-color: lightgoldenrodyellow;
@@ -465,8 +468,7 @@ article .details {
     outline: 1px solid #BCBCBC;
 }
 
-article .details,
-.update:hover {
+article .details:hover {
     background-color: #FF9900;
 }
 

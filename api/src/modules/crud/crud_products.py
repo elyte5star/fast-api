@@ -3,7 +3,6 @@ from modules.schemas.requests.product import (
     CreateProductRequest,
     CreateProductsRequest,
     GetProductDetailsRequest,
-    GetProductsRequest,
     GetSortRequest,
     DeleteProductRequest,
     ProductItem,
@@ -17,29 +16,29 @@ from modules.schemas.responses.product import (
     BaseResponse,
     CreateDiscountResponse,
 )
-from sqlalchemy.exc import IntegrityError
 from modules.database.models.product import Product, SpecialDeals
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import selectinload
 
+admin_msg = "Admin rights needed!"
+
 
 class Products(Discount):
     async def _create_product(self, data: ProductItem) -> CreateProductResponse:
-        product = Product(**data.dict(), pid=self.get_indent())
-        self.add(product)
-        try:
-            await self.commit()
-            return CreateProductResponse(
-                pid=product.pid,
-                message=f"Product with name {product.name} created!",
-            )
-        except IntegrityError as e:
-            self.log.info(e)
-            await self.rollback()
-            return BaseResponse(
-                success=False,
-                message=str(e),
-            )
+        if await self.product_name_exist(data.name) is None:
+            product = Product(**data.dict(), pid=self.get_indent())
+            async with self.get_session() as session:
+                session.add(product)
+                await session.commit()
+                return CreateProductResponse(
+                    pid=product.pid,
+                    message=f"Product with name {product.name} created!",
+                )
+
+        return BaseResponse(
+            success=False,
+            message=f"Product with name {data.name} already exists!!",
+        )
 
     async def _create_products(
         self, data: CreateProductsRequest
@@ -56,21 +55,27 @@ class Products(Discount):
             )
         return CreateProductsResponse(
             success=False,
-            message="Admin rights needed!",
+            message=admin_msg,
         )
 
     async def _get_product(
         self, prod_data: GetProductDetailsRequest
     ) -> GetProductDetailsResponse:
-        query = (
-            self.select(Product)
-            .where(Product.pid == prod_data.pid)
-            .options(selectinload(Product.discount))
-        )
-        products = await self.execute(query)
-        (product,) = products.first()
+        if await self.pid_exist(prod_data.pid) is not None:
+            async with self.get_session() as session:
+                query = (
+                    self.select(Product)
+                    .where(Product.pid == prod_data.pid)
+                    .options(selectinload(Product.discount))
+                )
+                result = await session.execute(query)
+
+                (product,) = result.first()
+                return GetProductDetailsResponse(
+                    product=product, message=f"Product with id:{product.pid} found!"
+                )
         return GetProductDetailsResponse(
-            product=product, message=f"Product with id:{product.pid} found!"
+            success=False, message=f"Product with id:{prod_data.pid} not found!"
         )
 
     async def _create_discount(self, data: CreateDiscountRequest):
@@ -86,65 +91,69 @@ class Products(Discount):
                 product_id=data.pid,
                 discount=data.discount,
             )
-            self.add(aux_prod)
-            try:
-                await self.commit()
+            async with self.get_session() as session:
+                session.add(aux_prod)
+                await session.commit()
                 return CreateDiscountResponse(
                     sid=aux_prod.sid,
                     message=f"Discount created for Product with id {aux_prod.product_id}!",
                 )
-            except IntegrityError as e:
-                self.log.warning(e)
-                await self.rollback()
-                return BaseResponse(
-                    success=False,
-                    message=str(e),
-                )
 
         return BaseResponse(
             success=False,
-            message="Admin rights needed!",
+            message=admin_msg,
         )
 
-    async def _get_products(self, data: GetProductsRequest) -> GetProductsResponse:
-        query = self.select(Product).options(selectinload(Product.discount))
-        products = await self.execute(query)
-        products = products.scalars().all()
-        return GetProductsResponse(
-            products=products,
-            message=f"Total number of products: {len(products)}",
-        )
+    async def _get_products(self) -> GetProductsResponse:
+        async with self.get_session() as session:
+            result = await session.execute(
+                self.select(Product).options(selectinload(Product.discount))
+            )
+            products = result.scalars().all()
+            if len(products) > 0:
+                return GetProductsResponse(
+                    products=products,
+                    message=f"Total number of products: {len(products)}",
+                )
+            return GetProductsResponse(
+                success=False,
+                message="Products not found!!",
+            )
 
     async def _delete_product(self, data: DeleteProductRequest) -> BaseResponse:
         if data.token_load.username == self.cf.username:
-            query = self.delete(Product).where(Product.pid == data.pid)
-            await self.execute(query)
-            try:
-                await self.commit()
-                return BaseResponse(
-                    message=f"User with id:{data.pid} deleted",
-                )
-            except IntegrityError as e:
-                self.log.warning(repr(e))
-                await self.rollback()
-                return BaseResponse(
-                    success=False,
-                    message=str(e),
-                )
+            if await self.pid_exist(data.pid) is not None:
+                async with self.get_session() as session:
+                    await session.execute(
+                        self.delete(Product).where(Product.pid == data.pid)
+                    )
+                    await session.commit()
+                    return BaseResponse(
+                        message=f"User with id:{data.pid} deleted",
+                    )
 
+            return BaseResponse(
+                success=False,
+                message=f"Product with id:{data.pid} doesnt exist!",
+            )
         return BaseResponse(
             success=False,
-            message="Admin rights needed!",
+            message=admin_msg,
         )
 
     async def _special_deals(self) -> list:
-        query = self.select(SpecialDeals)
-        products = await self.execute(query)
-        products = products.scalars().all()
-        return GetProductsResponse(
-            products=products,
-            message=f"Total number of special deals : {len(products)}",
-        )
+        async with self.get_session() as session:
+            result = await session.execute(self.select(SpecialDeals))
+            deals = result.scalars().all()
+            if len(deals) > 0:
+                return GetProductsResponse(
+                    products=deals,
+                    message=f"Total number of special deals : {len(deals)}",
+                )
+            return GetProductsResponse(
+                success=False,
+                message="No special deals",
+            )
 
     async def _sort_items(self, data: GetSortRequest) -> GetProductsResponse:
         model_res = await self._get_products()

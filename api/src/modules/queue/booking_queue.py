@@ -21,29 +21,27 @@ class QBookingHandler(RQHandler):
         job.booking_request = json_obj
         return await self.add_job_with_one_task(job, self.cf.queue_name[1])
 
-    async def get_booking_result(
-        self, data: GetJobRequest
-    ) -> GetQBookingRequestResult:
-        query = self.select(_Job).where(_Job.job_id == data.job_id)
-        jobs = await self.execute(query)
-        (job,) = jobs.first()
-        
-        if job is not None:
-            if job.job_type != JobType.CreateBooking:
-                return GetQBookingRequestResult(
-                    success=False, message="Wrong job type."
-                )
-            (job, tasks, end) = await self._check_job_and_tasks(job)
+    async def get_booking_result(self, data: GetJobRequest) -> GetQBookingRequestResult:
+        if await self.job_exist(data.job_id) is not None:
+            async with self.get_session() as session:
+                query = self.select(_Job).where(_Job.job_id == data.job_id)
+                jobs = await session.execute(query)
+                (job,) = jobs.first()
+                if job.job_type != JobType.CreateBooking:
+                    return GetQBookingRequestResult(
+                        success=False, message="Wrong job type."
+                    )
+                (job, tasks, end) = await self._check_job_and_tasks(job)
 
-            if not result_available(job):
+                if not result_available(job):
+                    return GetQBookingRequestResult(
+                        success=False, message="Result from job is not available."
+                    )
                 return GetQBookingRequestResult(
-                    success=False, message="Result from job is not available."
+                    job=create_jobresponse(job, end),
+                    result_data=tasks[0].result,
+                    message=f"Success result for job with id: {data.job_id}.",
                 )
-            return GetQBookingRequestResult(
-                job=create_jobresponse(job, end),
-                result_data=tasks[0].result,
-                message=f"Success result for job with id: {data.job_id}.",
-            )
 
         return GetQBookingRequestResult(
             success=False, message=f"Job with id: {data.job_id} not found."

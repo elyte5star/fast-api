@@ -3,7 +3,6 @@ from modules.schemas.requests.product import (
     ProductItem,
     CreateProductsRequest,
     GetSortRequest,
-    GetProductsRequest,
     GetProductDetailsRequest,
     DeleteProductRequest,
     CreateDiscountRequest,
@@ -90,7 +89,7 @@ async def sort_product(key: str) -> GetProductsResponse:
     summary="Get all products",
 )
 async def get_products() -> GetProductsResponse:
-    return await handler._get_products(GetProductsRequest())
+    return await handler._get_products()
 
 
 @router.get(

@@ -77,7 +77,7 @@ export default {
                 const authStore = userAuthStore();
                 await authStore.login(userData);
             } else {
-                document.getElementById("info").innerHTML ="<strong>Wrong!</strong> " + " Empty fields/Invalid letters !";
+                this.$swal("<strong>Wrong!</strong> " + " Empty fields/Invalid letters !");
             }
         },
 

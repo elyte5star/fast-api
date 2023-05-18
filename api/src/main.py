@@ -9,6 +9,7 @@ from fastapi.exception_handlers import http_exception_handler
 from fastapi.logger import logger
 from modules.settings.config import Settings
 from modules.database.db_session import AsyncDatabaseSession
+from modules.utils.base_functions import Utilities
 from modules.crud.crud_users import Users
 from modules.auth.crud_auth import Auth
 from modules.crud.crud_products import Products
@@ -21,7 +22,6 @@ from modules.routers import (
     products,
     booking,
     q_booking,
-    job,
 )
 import time
 
@@ -31,10 +31,10 @@ cfg = Settings().from_toml_file()
 
 logging.basicConfig(encoding=cfg.coding, level=cfg.log_type)
 
-db = AsyncDatabaseSession(cfg)
+db = Utilities(cfg)
+db.async_session_generator()
 
-
-routes = (users, auth, products, booking, q_booking, job)
+routes = (users, auth, products, booking, q_booking)
 crud_operations = (
     Users(cfg),
     Auth(cfg),
@@ -69,9 +69,7 @@ app.add_middleware(
 
 # Include Session
 app.add_middleware(SessionMiddleware, secret_key=cfg.secret_key, max_age=1500)
-app.mount(
-    "/static", StaticFiles(directory="./modules/static"), name="static"
-)
+app.mount("/static", StaticFiles(directory="./modules/static"), name="static")
 
 
 @app.exception_handler(StarletteHTTPException)
@@ -87,12 +85,9 @@ for route, crud in zip(routes, crud_operations):
     app.include_router(route.router)
 
 
-
 @app.get("/favicon.ico", include_in_schema=False)
 def favicon():
     return StaticFiles(directory="./modules/static")
-
-
 
 
 @app.middleware("http")
@@ -106,7 +101,6 @@ async def add_process_time_header(request: Request, call_next):
 
 @app.on_event("startup")
 async def startup_event() -> None:
-    await db.int_db()
     await db.create_all()
     logger.info(f"{cfg.name} v{cfg.version} is starting.")
 

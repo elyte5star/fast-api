@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 
+import Swal from 'sweetalert2/dist/sweetalert2';
 
 import { userAlertStore } from './alert';
 
@@ -22,11 +23,23 @@ export const userAuthStore = defineStore({
 
                 const response = await postToTokenEndpoint(baseURL + '/token', userData)
 
-                this.user = response.token_data;
+                if (response["success"]) {
 
-                localStorage.setItem('user', JSON.stringify(response.token_data));
+                    this.user = response.token_data;
 
-                return router.push(this.returnUrl || '/');
+                    localStorage.setItem('user', JSON.stringify(response.token_data));
+
+                    return router.push(this.returnUrl || '/');
+
+                } else {
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'User accoount not found!',
+                        footer: '<a href="/">Return to home page.</a>'
+                    });
+                }
+
 
             } catch (error) {
                 const alertStore = userAlertStore();

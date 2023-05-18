@@ -2,9 +2,8 @@ from modules.schemas.responses.base_response import BaseResponse
 from pydantic.types import Any
 
 
-
 class GetProductDetailsResponse(BaseResponse):
-    product: Any = None
+    product: Any = {}
 
 
 class GetProductsResponse(BaseResponse):

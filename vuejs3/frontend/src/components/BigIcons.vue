@@ -2,7 +2,7 @@
   <div class="big-icons">
     <!-- Search content -->
     <div id="search">
-      <i class="fa fa-search"></i><input type="text" name="search" id="search-icon" size="15"
+      <i class="fa fa-search"></i><input @keyup="searchEntries()" type="text" name="search" id="search-icon" size="15"
         placeholder="Search content" />
     </div>
     <h1 id="welcome">Welcome to e-Market</h1>
@@ -36,12 +36,19 @@
   </div>
 </template>
 
-<style scoped>
 
-</style>
 <script>
+
+import { filterEntries } from '@/helpers/script';
+
+
 export default {
   name: 'BigIcons',
+  methods: {
+    searchEntries(){
+      filterEntries();
+    }
+  },
 
 }
 </script>

@@ -2,6 +2,8 @@
 import Swal from 'sweetalert2/dist/sweetalert2';
 
 /* eslint-disable */
+
+
 export const decodeJwtResponse = (token) => {
     let base64Url = token.split(".")[1];
     let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -65,7 +67,7 @@ function isValidTel(tel) {
     return re.test(tel);
 }
 
-export const  is_Input_Error = (name, email, password, password_, tel) =>{
+export const is_Input_Error = (name, email, password, password_, tel) => {
     if (name.length == 0) {
         return Swal.fire("Empty username!");
     }
@@ -100,3 +102,54 @@ export const  is_Input_Error = (name, email, password, password_, tel) =>{
     }
     return true;
 }
+
+/* Search functions */
+function checkString(str, ele_txt) {
+    str = str.toLowerCase();
+    return (ele_txt.toLowerCase().indexOf(str) > -1);
+}
+
+
+
+/* Mark terms functions */
+function mark_text() {
+    let strSearch = document.getElementById("search-icon").value;
+    let patt = /"(.*?)"/gi;
+    let matches = new Array();
+    while ((match = patt.exec(strSearch)) !== null) {
+        matches.push(match[1]);
+    }
+    let txt = strSearch.replace(patt, "");
+    matches = matches.concat(txt.trim().split(" "));
+    matches.forEach(function (term) {
+        let regex_text = new RegExp("\\b(" + term + ")\\b", "i"); // RegExp
+        let instance  = new Mark(document.querySelector("article.framed .prod_right h3,h4"));
+        instance.each(function (i, e) {
+            console.log(e);
+            e.markRegExp(regex_text, { className: "orange", accuracy: "exactly" });
+        });
+    });
+}
+
+
+
+export const filterEntries = () => {
+    let strSearch = document.getElementById("search-icon").value;
+    document.querySelectorAll("article.framed").forEach(
+        function (article_ele) {
+            let art = document.getElementById(article_ele.id);
+            let h = article_ele.querySelectorAll("h3,h4");
+            if (strSearch.length > 0 && !checkString(strSearch, h[0].innerHTML) && !checkString(strSearch, h[1].innerHTML)) {
+                art.style.display = "none";
+            } else if (strSearch.length == "") {
+                let instance  = new Mark(document.querySelector("div.products"));
+                instance.unmark();
+                art.style.display = "";
+            } else {
+                art.style.display = "";
+                mark_text();
+            }
+        })
+
+}
+/* End Search functions */

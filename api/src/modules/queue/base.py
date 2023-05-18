@@ -32,10 +32,12 @@ class RQHandler(Utilities):
     ) -> tuple[bool, str]:
         try:
             _job = _Job(**job.dict())
-            aux_task = _Task(**tasks_list[0].dict())
-            self.add_all([_job, aux_task])
-            await self.commit()
-           
+            # aux_task = _Task(**tasks_list[0].dict())
+            async with self.get_session() as session:
+                joinedlist = [_job] + tasks_list
+                session.add_all(joinedlist)
+                await session.commit()
+
             # Perform connection
             connection = await connect(self.cf.rabbit_connect_string)
 
@@ -55,10 +57,7 @@ class RQHandler(Utilities):
             return (True, f"Job with id '{job.job_id}' created.")
 
         except Exception as ex:
-            await self.rollback()
             return (False, f"Failed to create job. {str(ex)}.")
-        finally:
-            await self._engine.dispose()
 
     async def add_job_with_one_task(self, job, queue_name: str):
         job.number_of_tasks = 1
@@ -82,43 +81,43 @@ class RQHandler(Utilities):
 
     async def _check_job_and_tasks(self, job: Job) -> tuple[Job, list[Task]]:
         states, successes, ends, tasks = ([] for _ in range(4))
-        query = self.select(_Task).where(_Task.job_id == job.job_id)
-        results = await self.execute(query)
-        results = results.scalars().all()
+        async with self.get_session() as session:
+            query = self.select(_Task).where(_Task.job_id == job.job_id)
+            results = await session.execute(query)
+            results = results.scalars().all()
+            for result in results:
+                states.append(result.status["state"])
+                successes.append(result.status["success"])
+                ends.append(result.finished)
+                tasks.append(result)
 
-        for result in results:
-            states.append(result.status["state"])
-            successes.append(result.status["success"])
-            ends.append(result.finished)
-            tasks.append(result)
+            # No tasks in database.
+            if len(tasks) == 0:
+                job.job_status["state"] = JobState.NoTasks
+                job.job_status["success"] = False
+                job.job_status["is_finished"] = True
+                return (job, [])
 
-        # No tasks in database.
-        if len(tasks) == 0:
-            job.job_status["state"] = JobState.NoTasks
-            job.job_status["success"] = False
-            job.job_status["is_finished"] = True
-            return (job, [])
-
-        ends.sort()
-        success = True
-        state = JobState.Finished
-        is_finished = True
-
-        if JobState.Timeout in states:
-            state = JobState.Timeout
-            success = False
+            ends.sort()
+            success = True
+            state = JobState.Finished
             is_finished = True
-        elif JobState.NotSet in states:
-            state = JobState.NotSet
-            success = False
-            is_finished = False
-        elif JobState.Received in states or JobState.Pending in states:
-            state = JobState.Pending
-            success = False
-            is_finished = False
 
-        job.job_status["state"] = state
-        job.job_status["success"] = success
-        job.job_status["is_finished"] = is_finished
+            if JobState.Timeout in states:
+                state = JobState.Timeout
+                success = False
+                is_finished = True
+            elif JobState.NotSet in states:
+                state = JobState.NotSet
+                success = False
+                is_finished = False
+            elif JobState.Received in states or JobState.Pending in states:
+                state = JobState.Pending
+                success = False
+                is_finished = False
 
-        return (job, tasks, ends[-1])
+            job.job_status["state"] = state
+            job.job_status["success"] = success
+            job.job_status["is_finished"] = is_finished
+
+            return (job, tasks, ends[-1])

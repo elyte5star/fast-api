@@ -20,9 +20,7 @@ class Utilities(AsyncDatabaseSession):
         return datetime(1980, 1, 1)
 
     def get_user_string(self, stringLength: int = 10) -> str:
-        letters = (
-            string.ascii_lowercase + "0123456789" + string.ascii_uppercase
-        )
+        letters = string.ascii_lowercase + "0123456789" + string.ascii_uppercase
         return "".join(random.choice(letters) for i in range(stringLength))
 
     def get_indent(self):
@@ -51,16 +49,12 @@ class Utilities(AsyncDatabaseSession):
         rd = np.datetime64(start_date) + np.random.choice(days_to_add)
         return str(rd)
 
-    def create_token(
-        self, data: dict, expires_delta: Optional[timedelta] = None
-    ):
+    def create_token(self, data: dict, expires_delta: Optional[timedelta] = None):
         _encode = data.copy()
         if expires_delta:
             _expire = self.time_now() + expires_delta
         else:
-            _expire = self.time_now() + self.time_delta(
-                self.cf.token_expire_min
-            )
+            _expire = self.time_now() + self.time_delta(self.cf.token_expire_min)
         _encode.update({"exp": _expire})
         jwt_encode = jwt.encode(
             _encode, self.cf.secret_key, algorithm=self.cf.algorithm

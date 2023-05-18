@@ -7,7 +7,7 @@ from sqlalchemy import update, delete
 from sqlalchemy.exc import IntegrityError
 from typing import Optional
 import uuid
-
+from contextlib import asynccontextmanager
 
 # needed to create table automatically
 
@@ -17,43 +17,49 @@ from .models.blacklist import _BlackList
 from .models.job_task import _Job, _Task
 from .models.worker import _Worker
 from .models.product import Product, SpecialDeals
+from sqlalchemy import or_
+from sqlalchemy.orm import selectinload, defer
 
 
 class AsyncDatabaseSession:
-    _session = None  # Ensure db initialized once.
-
     def __init__(self, cf):
         self._engine = None
+        self._session = None
         self.select = select
         self.update = update
         self.delete = delete
         self.log = logger
         self.cf = cf
-        
 
-    async def int_db(self):
-        if AsyncDatabaseSession._session is None:
-            try:
-                self._engine = create_async_engine(
-                    self.cf.db_url,
-                    future=True,
-                    echo=False,
-                )
-                AsyncDatabaseSession._session = sessionmaker(
-                    self._engine, expire_on_commit=False, class_=AsyncSession
-                )()
-                self.log.info("[+] MYSQL Connection created successfully.")
+    def async_session_generator(self) -> AsyncSession:
+        try:
+            self._engine = create_async_engine(
+                self.cf.db_url,
+                future=True,
+                echo=False,
+            )
+            self._session = sessionmaker(
+                self._engine, expire_on_commit=False, class_=AsyncSession
+            )()
+            self.log.info("[+] MYSQL/MARIADB Connection created successfully.")
+            return self._session
+        except Exception as ex:
+            self.log.warning(
+                "Connection could not be made due to the following error: \n",
+                ex,
+            )
 
-            except Exception as ex:
-                self.log.warning(
-                    "Connection could not be made due to the following error: \n",
-                    ex,
-                )
-            finally:
-                await self._engine.dispose()
-
-    def __getattr__(self, name) -> AsyncSession:
-        return getattr(self._session, name)
+    @asynccontextmanager
+    async def get_session(self) -> AsyncSession:
+        try:
+            async with self.async_session_generator() as session:
+                yield session
+        except IntegrityError as e:
+            await session.rollback()
+            self.log.warning(e)
+        finally:
+            self.log.warning("[+] Closing connection to MYSQL/MARIA database!")
+            await session.close()
 
     async def create_all(self):
         async with self._engine.begin() as conn:
@@ -61,13 +67,59 @@ class AsyncDatabaseSession:
             await conn.run_sync(Base.metadata.create_all)
             await self.create_admin_account()
 
-    async def get_by_email(self, email: str) -> Optional[_User]:
-        async with self._engine.begin() as conn:
-            result = await conn.execute(self.select(_User).where(_User.email == email))
+    async def username_email_exists(self, email: str, username: str) -> Optional[_User]:
+        async with self.get_session() as session:
+            result = await session.execute(
+                self.select(_User.email, _User.username).where(
+                    or_(_User.email == email, _User.username == username)
+                )
+            )
+            return result.first()
+
+    async def userid_exist(self, userid: str) -> Optional[_User]:
+        async with self.get_session() as session:
+            result = await session.execute(
+                self.select(_User.userid).where(_User.userid == userid)
+            )
+            return result.first()
+
+    async def username_exist(self, username: str) -> Optional[_User]:
+        async with self.get_session() as session:
+            result = await session.execute(
+                self.select(_User.username).where(_User.username == username)
+            )
+            return result.first()
+
+    async def pid_exist(self, pid: str) -> Optional[Product]:
+        async with self.get_session() as session:
+            result = await session.execute(
+                self.select(Product.pid).where(Product.pid == pid)
+            )
+            return result.first()
+
+    async def product_name_exist(self, name: str) -> Optional[Product]:
+        async with self.get_session() as session:
+            result = await session.execute(
+                self.select(Product.name).where(Product.name == name)
+            )
+            return result.first()
+
+    async def oid_exist(self, oid: str) -> Optional[_Booking]:
+        async with self.get_session() as session:
+            result = await session.execute(
+                self.select(_Booking.oid).where(_Booking.oid == oid)
+            )
+            return result.first()
+
+    async def job_exist(self, job_id: str) -> Optional[_Job]:
+        async with self.get_session() as session:
+            result = await session.execute(
+                self.select(_Job.job_id).where(_Job.job_id == job_id)
+            )
             return result.first()
 
     async def create_admin_account(self):
-        if await self.get_by_email(self.cf.email) is None:
+        if await self.username_email_exists(self.cf.email, self.cf.username) is None:
             admin_user = _User(
                 userid=str(uuid.uuid4()),
                 email=self.cf.email,
@@ -76,14 +128,10 @@ class AsyncDatabaseSession:
                 telephone=self.cf.telephone,
                 admin=self.cf.is_admin,
             )
-            self.add(admin_user)
-            try:
-                await self.commit()
-                await self.refresh(admin_user)
-                self.log.info("Tables created successfully!!")
-                self.log.info("Admin account created successfully!!")
-            except IntegrityError as e:
-                self.log.warning(e)
-                await self.rollback()
+            async with self.get_session() as session:
+                async with session.begin():
+                    session.add(admin_user)
+                    self.log.info("Tables created successfully!!")
+                    self.log.info("Admin account created successfully!!")
         else:
             self.log.info("Admin account exist already!!")

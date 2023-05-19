@@ -8,10 +8,10 @@ services:
     image: mariadb
     container_name: maria-db
     restart: always
-    expose:
-      - "3306"
     env_file:
       - api.env
+    ports:
+      - "3306:3306"
     volumes:
       # folder to hold the actual db data
       - ./persistence:/var/lib/mysql
@@ -52,7 +52,7 @@ services:
       - ./vuejs3/frontend/.env
     ports:
       - 9000:8000
-    
+
   # rabbitQ:
   #   hostname: rabbitQ
   #   image: rabbitmq:3-management

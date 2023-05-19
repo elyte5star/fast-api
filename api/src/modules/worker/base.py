@@ -1,14 +1,16 @@
 from ..schemas.worker.worker import Worker
 import uuid
 from datetime import datetime
-from ..settings.config import Settings
-from ..database.db_session import AsyncDatabaseSession, _Worker, _Task, _Job
-from ..schemas.misc.enums import JobType, JobStatus, JobState
+from modules.settings.config import Settings
+from modules.database.db_session import _Worker, _Task, _Job
+from modules.schemas.misc.enums import JobType, JobStatus, JobState
 from sqlalchemy.exc import IntegrityError
 import json
-import asyncio
 from pika import ConnectionParameters, BlockingConnection
-from ..schemas.misc.enums import WorkerType
+from modules.schemas.misc.enums import WorkerType
+from sqlalchemy.orm import sessionmaker
+from contextlib import contextmanager
+from sqlalchemy import select, update, create_engine
 
 
 class WorkerBase:
@@ -16,7 +18,6 @@ class WorkerBase:
         self, config: Settings, worker_type: WorkerType, queue_name: str
     ) -> None:
         self.cf = config
-        self.db = AsyncDatabaseSession(self.cf)
         self.id = str(uuid.uuid4())
         self.worker_type = worker_type
         self.queue_name = queue_name
@@ -30,61 +31,56 @@ class WorkerBase:
         worker.queue_host = self.cf.rabbit_host_name
         return worker
 
+    def session_generator(self):
+        engine = create_engine(
+            f"mariadb+mysqldb://{self.cf.sql_username}:{self.cf.sql_password}@{self.cf.sql_host}/{self.cf.sql_db}?charset=utf8mb4",
+            echo=False,
+        )
+        return sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+    @contextmanager
+    def get_session(self):
+        try:
+            session_local = self.session_generator()
+            print("[+] Worker connected to MYSQL/MARIADB successfully.")
+            with session_local() as session:
+                yield session
+        except:
+            session.rollback()
+            raise
+        finally:
+            print("[+] Worker connection to MYSQL/MARIA database closed!")
+            session.close()
+
     def insert_worker_to_db(self, worker: Worker):
         db_worker = _Worker(**worker.dict())
-        self.db.add(db_worker)
-        try:
-            asyncio.get_event_loop().run_until_complete(self.db.commit())
-        except IntegrityError as e:
-            asyncio.get_event_loop().run_until_complete(self.db.rollback())
-            raise SystemExit(e)
+        with self.get_session() as session:
+            session.add(db_worker)
+            session.commit()
+            session.refresh(db_worker)
 
-    def _update_ongoing_task_status_in_db(
-        self, status_dict: dict, task_id: str
-    ):
-        query = (
-            self.db.update(_Task)
-            .where(_Task.task_id == task_id)
-            .values(
-                dict(
-                    started=datetime.utcnow(),
-                    status=status_dict,
-                )
+    def _update_ongoing_task_status_in_db(self, status_dict: dict, task_id: str):
+        with self.get_session() as session:
+            stmt = (
+                update(_Task)
+                .where(_Task.task_id == task_id)
+                .values(dict(started=datetime.utcnow(), status=status_dict))
             )
-            .execution_options(synchronize_session="fetch")
-        )
-        query_execute = self.db.execute(query)
-        commit_changes = self.db.commit()
-        try:
-            asyncio.get_event_loop().run_until_complete(query_execute)
-            asyncio.get_event_loop().run_until_complete(commit_changes)
-        except Exception as e:
-            asyncio.get_event_loop().run_until_complete(self.db.rollback())
-            raise SystemExit(f"Couldnt update Task Status to pending..{e}")
+            session.execute(stmt)
+            session.commit()
 
     def _update_finished_task_status_in_db(
         self, status_dict: dict, task_id: str, result: dict
     ):
-        query = (
-            self.db.update(_Task)
+        stmt = (
+            update(_Task)
             .where(_Task.task_id == task_id)
-            .values(
-                dict(
-                    finished=datetime.utcnow(),
-                    status=status_dict,
-                    result=result,
-                )
-            )
-            .execution_options(synchronize_session="fetch")
+            .values(dict(finished=datetime.utcnow(), status=status_dict, result=result))
         )
-        query_execute = self.db.execute(query)
-        commit_changes = self.db.commit()
-        try:
-            asyncio.get_event_loop().run_until_complete(query_execute)
-            asyncio.get_event_loop().run_until_complete(commit_changes)
-        except Exception as e:
-            asyncio.get_event_loop().run_until_complete(self.db.rollback())
-            raise SystemExit(f"Couldnt update Task Status to finished..{e}")
+
+        with self.get_session() as session:
+            session.execute(stmt)
+            session.commit()
 
     def callback(self, ch, method, properties, body):
         try:
@@ -99,23 +95,17 @@ class WorkerBase:
             result = {}
 
             # Find task in db, update started, status before doing any work.
-            query = self.db.select(_Task).where(
-                _Task.task_id == queue_task["task_id"]
-            )
+            with self.get_session() as session:
+                stmt = select(_Task).where(_Task.task_id == queue_task["task_id"])
+                (db_task,) = session.execute(stmt).first()
 
-            db_tasks = asyncio.get_event_loop().run_until_complete(
-                self.db.execute(query)
-            )
-            db_task = db_tasks.scalars().first()
             # Update task status
             task_status = {
                 "state": JobState.Pending,
                 "success": False,
                 "is_finished": False,
             }
-            self._update_ongoing_task_status_in_db(
-                task_status, db_task.task_id
-            )
+            self._update_ongoing_task_status_in_db(task_status, db_task.task_id)
 
             # Switch on job type.
             success = False
@@ -125,9 +115,7 @@ class WorkerBase:
                 case JobType.CreateSearch:
                     raise SystemExit("Create Search job in wrong queue.")
                 case JobType.CreateBooking:
-                    (success, result) = self.booking_handler.create_booking(
-                        queue_job
-                    )
+                    (success, result) = self.booking_handler.create_booking(queue_job)
 
                 case _:
                     raise SystemExit(f"Unknown job type: {job_type}")
@@ -137,9 +125,7 @@ class WorkerBase:
                 ConnectionParameters(host=self.rabbit_host_name)
             )
             channel = connection.channel()
-            channel.queue_declare(
-                queue=self.cf.queue_name[2], durable=True
-            )  # durable?
+            channel.queue_declare(queue=self.cf.queue_name[2], durable=True)  # durable?
             channel.basic_qos(prefetch_count=1)
             channel.basic_publish(
                 exchange="",
@@ -161,7 +147,7 @@ class WorkerBase:
                 task_status, db_task.task_id, result
             )
             ch.basic_ack(delivery_tag=method.delivery_tag)
-            
+
     def run_forever(self) -> None:
         connection = BlockingConnection(
             ConnectionParameters(host=self.cf.rabbit_host_name)
@@ -169,9 +155,7 @@ class WorkerBase:
         channel = connection.channel()
         channel.queue_declare(queue=self.queue_name, durable=False)
         channel.basic_qos(prefetch_count=1)
-        channel.basic_consume(
-            queue=self.queue_name, on_message_callback=self.callback
-        )
+        channel.basic_consume(queue=self.queue_name, on_message_callback=self.callback)
         self.insert_worker_to_db(self.create_worker())
         print(" [*] Worker Waiting for Task.")
         channel.start_consuming()

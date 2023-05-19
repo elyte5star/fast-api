@@ -32,10 +32,11 @@ class RQHandler(Utilities):
     ) -> tuple[bool, str]:
         try:
             _job = _Job(**job.dict())
-            # aux_task = _Task(**tasks_list[0].dict())
             async with self.get_session() as session:
-                joinedlist = [_job] + tasks_list
-                session.add_all(joinedlist)
+                for task in tasks_list:
+                    aux_task = _Task(**task.dict())
+                    session.add(aux_task)
+                session.add(_job)
                 await session.commit()
 
             # Perform connection
@@ -85,39 +86,40 @@ class RQHandler(Utilities):
             query = self.select(_Task).where(_Task.job_id == job.job_id)
             results = await session.execute(query)
             results = results.scalars().all()
-            for result in results:
-                states.append(result.status["state"])
-                successes.append(result.status["success"])
-                ends.append(result.finished)
-                tasks.append(result)
 
-            # No tasks in database.
-            if len(tasks) == 0:
-                job.job_status["state"] = JobState.NoTasks
-                job.job_status["success"] = False
-                job.job_status["is_finished"] = True
-                return (job, [])
+        for result in results:
+            states.append(result.status["state"])
+            successes.append(result.status["success"])
+            ends.append(result.finished)
+            tasks.append(result)
 
-            ends.sort()
-            success = True
-            state = JobState.Finished
+        # No tasks in database.
+        if len(tasks) == 0:
+            job.job_status["state"] = JobState.NoTasks
+            job.job_status["success"] = False
+            job.job_status["is_finished"] = True
+            return (job, [])
+
+        ends.sort()
+        success = True
+        state = JobState.Finished
+        is_finished = True
+
+        if JobState.Timeout in states:
+            state = JobState.Timeout
+            success = False
             is_finished = True
+        elif JobState.NotSet in states:
+            state = JobState.NotSet
+            success = False
+            is_finished = False
+        elif JobState.Received in states or JobState.Pending in states:
+            state = JobState.Pending
+            success = False
+            is_finished = False
 
-            if JobState.Timeout in states:
-                state = JobState.Timeout
-                success = False
-                is_finished = True
-            elif JobState.NotSet in states:
-                state = JobState.NotSet
-                success = False
-                is_finished = False
-            elif JobState.Received in states or JobState.Pending in states:
-                state = JobState.Pending
-                success = False
-                is_finished = False
+        job.job_status["state"] = state
+        job.job_status["success"] = success
+        job.job_status["is_finished"] = is_finished
 
-            job.job_status["state"] = state
-            job.job_status["success"] = success
-            job.job_status["is_finished"] = is_finished
-
-            return (job, tasks, ends[-1])
+        return (job, tasks, ends[-1])

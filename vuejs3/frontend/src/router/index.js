@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import UserView from '../views/UserView'
+import NotFound from '@/views/NotFound'
+import ProductView from '@/views/ProductView'
 import { userAuthStore } from '@/stores/auth_store'
 import { userAlertStore } from '@/stores/alert'
 
@@ -17,11 +19,21 @@ const routes = [
     component: UserView
   },
   {
+    path: '/product/:pid',
+    name: 'oneProduct',
+    component: ProductView,
+    props: true
+  },
+  {
     path: '/login',
     name: 'login',
     component: LoginView
 
-  }, { path: '/:pathMatch(.*)*', redirect: '/' }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: NotFound
+  }
 ]
 
 const router = createRouter({
@@ -33,11 +45,11 @@ router.beforeEach(async (to) => {
 
   // clear alert on route change
   const alertStore = userAlertStore();
-  
+
   alertStore.clear();
 
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login','/'];
+  const publicPages = ['/login', '/', '/product'];
 
   const authRequired = !publicPages.includes(to.path);
 
@@ -49,7 +61,7 @@ router.beforeEach(async (to) => {
   }
 
 
-  
+
 });
 
 export default router

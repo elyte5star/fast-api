@@ -324,6 +324,7 @@ img.microsoft {
 #add_p:hover {
     background-color: lightgoldenrodyellow;
 }
+
 #update_p:hover {
     background-color: yellow;
 }
@@ -354,7 +355,8 @@ img.microsoft {
 }
 
 #add_p,
-#update_p,#delete_user {
+#update_p,
+#delete_user {
     width: 98%;
     border-width: 5px 1px 5px 1px;
     border-style: solid;
@@ -392,7 +394,8 @@ img.microsoft {
 }
 
 /** Main content **/
-main {
+main,
+#product {
     overflow: auto;
     position: relative;
     padding-top: 100px;
@@ -411,8 +414,23 @@ main h1 {
     margin-top: 5px;
 }
 
+#product h1 {
+    background-color: #BCBCBC;
+    color: white;
+    padding: 5px;
+    font-size: 1.2em;
+    margin-top: 5px;
+}
+
 
 main img {
+    height: 200px;
+    width: 200px;
+}
+
+
+
+#product img {
     height: 200px;
     width: 200px;
 }

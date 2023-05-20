@@ -36,6 +36,7 @@ export const productStore = defineStore({
             await fetchMethodWrapper.delete(baseURL + '/' + id);
 
         },
+        
         async sortProductsBykey(key) {
             try {
                 this.key = key;

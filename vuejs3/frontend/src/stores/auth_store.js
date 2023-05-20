@@ -6,6 +6,8 @@ import { userAlertStore } from './alert';
 
 import router from '@/router/index'
 
+import { fetchMethodWrapper } from '@/helpers/methodWrapper';
+
 import { postToTokenEndpoint } from "@/helpers/script.js";
 
 const baseURL = process.env.VUE_APP_API_URL + 'auth';
@@ -35,7 +37,7 @@ export const userAuthStore = defineStore({
                     return Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
-                        text: 'User accoount not found!',
+                        text: response.message,
                         footer: '<a href="/">Return to home page.</a>'
                     });
                 }
@@ -47,9 +49,22 @@ export const userAuthStore = defineStore({
             }
         },
         async logout() {
-            this.user = null;
-            localStorage.removeItem('user');
-            router.push('/');
+
+            const response = await fetchMethodWrapper.get(baseURL + '/logout');
+
+            if (response.success) {
+                this.user = null;
+                localStorage.removeItem('user');
+                router.push('/');
+
+            } else {
+
+                this.user = null;
+                localStorage.removeItem('user');
+                const alertStore = userAlertStore();
+                alertStore.error(response.message);
+
+            }
 
         }
     }

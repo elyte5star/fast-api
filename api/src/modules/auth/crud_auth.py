@@ -19,56 +19,56 @@ class Auth(BlackListHandler):
                     self.select(_User).where(_User.username == data.username)
                 )
                 (user,) = result.first()
-                if self.verify_password(data.password, user.password, self.cf.coding):
-                    active = True
-                    admin = False
-                    if user.username == self.cf.username:
-                        admin = True
-                    data = {
-                        "userid": user.userid,
-                        "sub": user.username,
-                        "email": user.email,
-                        "admin": admin,
-                        "active": active,
-                        "discount": user.discount,
-                        "telephone": user.telephone,
-                        "token_id": self.get_indent(),
-                    }
-                    access_token = self.create_token(
-                        data=data,
-                        expires_delta=self.time_delta(self.cf.token_expire_min),
-                    )
-                    refresh_token = self.create_token(
-                        data=data,
-                        expires_delta=self.time_delta(
-                            self.cf.refresh_token_expire_minutes
-                        ),
-                    )
-                    blacklist_data = {
-                        "token_id": data["token_id"],
-                        "token": access_token,
-                    }
-                    if await self.create_blacklist(blacklist_data):
-                        return TokenResponse(
-                            token_data={
-                                "access_token": access_token,
-                                "refresh_token": refresh_token,
-                                "token_type": "bearer",
-                                "host_url": self.cf.host_url,
-                                "userid": user.userid,
-                                "username": user.username,
-                                "admin": admin,
-                            },
-                            message=f"User {user.username} is authorized!",
-                        )
+            if self.verify_password(data.password, user.password, self.cf.coding):
+                active = True
+                admin = False
+                if user.username == self.cf.username:
+                    admin = True
+                data = {
+                    "userid": user.userid,
+                    "sub": user.username,
+                    "email": user.email,
+                    "admin": admin,
+                    "active": active,
+                    "discount": user.discount,
+                    "telephone": user.telephone,
+                    "token_id": self.get_indent(),
+                }
+                access_token = self.create_token(
+                    data=data,
+                    expires_delta=self.time_delta(self.cf.token_expire_min),
+                )
+                refresh_token = self.create_token(
+                    data=data,
+                    expires_delta=self.time_delta(
+                        self.cf.refresh_token_expire_minutes
+                    ),
+                )
+                blacklist_data = {
+                    "token_id": data["token_id"],
+                    "token": access_token,
+                }
+                if await self.create_blacklist(blacklist_data):
                     return TokenResponse(
-                        success=False,
-                        message="Couldnt create blacklist!",
+                        token_data={
+                            "access_token": access_token,
+                            "refresh_token": refresh_token,
+                            "token_type": "bearer",
+                            "host_url": self.cf.host_url,
+                            "userid": user.userid,
+                            "username": user.username,
+                            "admin": admin,
+                        },
+                        message=f"User {user.username} is authorized!",
                     )
                 return TokenResponse(
                     success=False,
-                    message=f"User {data.username} is not authorized.Incorrect password",
+                    message="Couldnt create blacklist!",
                 )
+            return TokenResponse(
+                success=False,
+                message=f"User {data.username} is not authorized.Incorrect password",
+            )
         return TokenResponse(
             success=False,
             message=f"User {data.username} is not authorized.Incorrect username",

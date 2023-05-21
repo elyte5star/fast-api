@@ -69,32 +69,32 @@ function isValidTel(tel) {
 
 export const is_Input_Error = (name, email, password, password_, tel) => {
     if (name.length == 0) {
-        return Swal.fire("Empty username!");
+        return Swal.fire("<strong>Wrong!</strong> " + "Empty username!");
     }
     else if (email.length == 0) {
-        return Swal.fire(" Empty email field!");
+        return Swal.fire("<strong>Wrong!</strong> " + " Empty email field!");
     }
     else if (tel.length == 0) {
 
-        return Swal.fire("Empty Telephone field!");
+        return Swal.fire("<strong>Wrong!</strong> " + "Empty Telephone field!");
     }
     else if (password.length == 0 || password_.length == 0) {
-        return Swal.fire(" Empty Password Field!");
+        return Swal.fire("<strong>Wrong!</strong> " + " Empty Password Field!");
     }
     else if (password !== password_) {
-        return Swal.fire(" Invalid Credentials.Password mismatch!");
+        return Swal.fire("<strong>Wrong!</strong> " + " Invalid Credentials.Password mismatch!");
     }
     // check for valid telephone
     else if (tel.length > 0 && !isValidTel(tel)) {
-        return Swal.fire("Invalid letters for telephone!");
+        return Swal.fire("<strong>Wrong!</strong> " + "Invalid letters for telephone!");
     }
     // check for valid email
     else if (email.length > 0 && !is_valid_Email(email)) {
-        Swal.fire("Invalid email address!");
+        Swal.fire("<strong>Wrong!</strong> " + "Invalid email address!");
     }
     // check for valid letters
     else if (name.length > 0 && !isUserNameValid(name)) {
-        return Swal.fire(" Invalid letters for username!");
+        return Swal.fire("<strong>Wrong!</strong> " + " Invalid letters for username!");
     }
     // no error
     else {

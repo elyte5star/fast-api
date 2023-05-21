@@ -13,9 +13,9 @@
                 </div>
                 <div class="prod_order">
                     <label :id="lb4">Quantity(multiples of 1):
-                        <input type="number" name="volume" :id="num_items" placeholder="e.g 1,2" step="1" :min="1"
+                        <input type="number" name="volume" id="num_items" placeholder="e.g 1,2" step="1" :min="1"
                             :max="productQuantity" :value="1"></label>
-                    <button class="form-btn" @click="addToCart(product.pid)" :disabled="!inStock" type="button" id="add_p">
+                    <button class="form-btn" @click="addToCart()" :disabled="!inStock" type="button" id="add_p">
                         Add to Cart.
                     </button>
                 </div>
@@ -23,14 +23,19 @@
             <h1>Product Details</h1>
             <div class="framed">{{ product.details }}</div>
         </div>
-       
+
     </div>
 </template>
 
 <script>
 
 import { productStore } from '@/stores/products'
+import { userAuthStore } from "@/stores/auth_store.js";
+
 import { storeToRefs } from 'pinia';
+
+
+
 
 export default {
     name: "ProductView",
@@ -42,14 +47,14 @@ export default {
     data() {
         return {
             product: {},
-            cart: 0,
             productQuantity: 0
         }
     },
     methods: {
-        addToCart(id) {
-            this.cart += 1;
-            console.log(id)
+        addToCart() {
+            const authStore = userAuthStore();
+            const volume = document.getElementById("num_items").value;
+            authStore.addToCart(this.pid, volume)
         }
     },
     watch: {
@@ -58,11 +63,16 @@ export default {
         }
     },
     async created() {
-        const pStore = productStore();
-        await pStore.getProductById(this.pid);
-        const { product } = storeToRefs(pStore);
-        this.product = product;
-        this.productQuantity = this.product.stock_quantity;
+        if (this.pid) {
+            const pStore = productStore();
+            await pStore.getProductById(this.pid);
+            const { product } = storeToRefs(pStore);
+            this.product = product;
+            this.productQuantity = this.product.stock_quantity;
+        } else {
+            this.$swal("<strong>Wrong!</strong> " + " Product not found!");
+        }
+
     },
     computed: {
         inStock() {

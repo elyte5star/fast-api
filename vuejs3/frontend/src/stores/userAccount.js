@@ -88,19 +88,6 @@ export const userStore = defineStore({
                 }
             })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
             await fetchMethodWrapper.delete(baseURL + '/' + id);
             // remove user from list after deleted
             this.users = this.users.filter(x => x.id !== id);

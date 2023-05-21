@@ -8,14 +8,14 @@ const baseURL = process.env.VUE_APP_API_URL + 'products';
 export const productStore = defineStore({
     id: 'products',
     state: () => ({
-        products: [], product: {}, key: ""
+        products: [], product: {}, key: "",
     }),
     actions: {
         async getProducts() {
             try {
                 const response = await fetchMethodWrapper.get(baseURL);
                 this.products = response.products;
-            
+
             } catch (error) {
                 this.products = { error };
             }
@@ -36,7 +36,7 @@ export const productStore = defineStore({
             await fetchMethodWrapper.delete(baseURL + '/' + id);
 
         },
-        
+
         async sortProductsBykey(key) {
             try {
                 this.key = key;

@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 
-import Swal from 'sweetalert2/dist/sweetalert2';
 
 import { userAlertStore } from './alert';
 
@@ -17,9 +16,36 @@ export const userAuthStore = defineStore({
     state: () => ({
         // initialize state from local storage to enable user to stay logged in
         user: JSON.parse(localStorage.getItem('user')),
-        returnUrl: null
+        returnUrl: null,
+        cart: [], itemsInCart: 0
     }),
     actions: {
+
+        addToCart(pid, volume) {
+
+            for (let i = 1; i < volume; i++) {
+                this.cart.unshift(pid);
+
+            }
+            this.cart.unshift(pid);
+            this.itemsInCart = this.cart.length;
+            console.log(volume, this.cart);
+
+        },
+        removeFromCart(pid) {
+            const index = this.cart.indexOf(pid);
+            if (index > -1) {
+                this.cart.splice(index, 1);
+                this.itemsInCart = this.cart.length;
+            }
+
+        },
+        clearCart() {
+            while (this.cart.length > 0) {
+                this.cart.pop();
+            }
+            this.itemsInCart = 0;
+        },
         async login(userData) {
             try {
 
@@ -33,15 +59,7 @@ export const userAuthStore = defineStore({
 
                     return router.push(this.returnUrl || '/');
 
-                } else {
-                    return Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: response.message,
-                        footer: '<a href="/">Return to home page.</a>'
-                    });
                 }
-
 
             } catch (error) {
                 const alertStore = userAlertStore();

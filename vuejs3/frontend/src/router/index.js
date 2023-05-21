@@ -7,6 +7,9 @@ import ProductView from '@/views/ProductView'
 import { userAuthStore } from '@/stores/auth_store'
 import { userAlertStore } from '@/stores/alert'
 
+
+
+
 const routes = [
   {
     path: '/',
@@ -33,7 +36,31 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     component: NotFound
+  },
+  {
+    path: "/logout",
+    name: "logout",
+    component: {
+      async beforeRouteEnter(to, from, next) {
+        console.log({ from });
+        const destination = {
+          path: from.path || "/",
+          query: from.query,
+          params: from.params
+        };
+        if (!from) {
+          console.log("no from");
+        }
+        console.log("running before hook");
+        const auth = userAuthStore();
+        await auth.logout();
+        next(destination);
+      }
+
+    },
+
   }
+
 ]
 
 const router = createRouter({
@@ -49,12 +76,12 @@ router.beforeEach(async (to) => {
   alertStore.clear();
 
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login', '/', '/product'];
+  const publicPages = ['/login', '/', '/product*', '/basket'];
 
   const authRequired = !publicPages.includes(to.path);
 
   const auth = userAuthStore();
-
+  
   if (authRequired && !auth.user) {
     auth.returnUrl = to.fullPath;
     return { name: 'login' }

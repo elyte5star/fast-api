@@ -6,17 +6,17 @@
             <table>
                 <tr>
                     <td>Username :</td>
-                    <td><input type="text" name="username" id="username" size="20" /></td>
+                    <td><input type="text" placeholder='username' name="username" id="username" size="20" /></td>
                     <td rowspan="3">
                         <div class="container" id="g_id">
                             <div class="row justify-content-center">
                                 <div class="col">
-                                    <a id="google_img" class="btn btn-outline-dark" href="javascript:void(0)"
-                                        onclick="getGoogleToken()" role="button" style="text-transform: none">
+                                    <a id:="google_img" class="btn btn-outline-dark" href="javascript:void(0)"
+                                        @click="getGoogleToken()" role="button" style="text-transform: none">
                                         <img :src="'./images/gg.png'" class="google" v-bind:alt="'Google'" />
                                         Login with Google
                                     </a>
-                                    <a id="msoft" class="btn btn-outline-dark" href="javascript:void(0)" onclick="MToken()"
+                                    <a id:="msoft" class="btn btn-outline-dark" href="javascript:void(0)" @click="MToken()"
                                         role="button" style="text-transform: none">
                                         <img :src="'./images/microsoft.png'" class="microsoft" v-bind:alt="'microsoft'" />
                                         Login with Microsoft
@@ -29,7 +29,8 @@
                 <tr>
                     <td>Password :</td>
                     <td>
-                        <input type="password" id="password" name="password" minlength="4" size="20" required />
+                        <input placeholder='password' type="password" @keyup.enter='login()' id="password" name="password"
+                            minlength="4" size="20" required />
                     </td>
                 </tr>
                 <tr>
@@ -41,8 +42,6 @@
                 </tr>
             </table>
         </div>
-        <div><span id="info"></span></div>
-        
         <button class="form-btn" @click="changeActiveComponent('register_user')" type="button" id="add_p">
             Please, create a User Account.
         </button>
@@ -64,8 +63,19 @@ export default {
         async login() {
             const userName = document.getElementById("username").value;
             const passWord = document.getElementById("password").value;
+            if ((userName == null || userName == "") && (passWord == null || passWord == "")) {
 
-            if (isUserNameValid(userName) && passWord != "") {
+                this.$swal("<strong>Wrong!</strong> " + "Please Fill In All Required Fields!");
+
+                return false;
+
+            } else if (!isUserNameValid(userName)) {
+
+                this.$swal("<strong>Wrong!</strong> " + "Invalid Username!");
+                return false;
+
+            } else {
+
                 let form = new FormData();
                 form.append("username", userName);
                 form.append("password", passWord);
@@ -76,12 +86,12 @@ export default {
                 }
                 const authStore = userAuthStore();
                 await authStore.login(userData);
-            } else {
-                this.$swal("<strong>Wrong!</strong> " + " Empty fields/Invalid letters !");
             }
-        },
 
-    }
+        },
+        
+
+    },
 
 
 }

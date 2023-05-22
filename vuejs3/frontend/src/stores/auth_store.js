@@ -21,30 +21,26 @@ export const userAuthStore = defineStore({
     }),
     actions: {
 
-        addToCart(pid, volume) {
+        addToCart(product, volume) {
 
-            for (let i = 1; i < volume; i++) {
-                this.cart.unshift(pid);
-
+            for (let i = 0; i < volume; i++) {
+                this.cart.unshift(product);
             }
-            this.cart.unshift(pid);
             this.itemsInCart = this.cart.length;
-            console.log(volume, this.cart);
+        
 
         },
-        removeFromCart(pid) {
-            const index = this.cart.indexOf(pid);
-            if (index > -1) {
-                this.cart.splice(index, 1);
-                this.itemsInCart = this.cart.length;
-            }
-
+        removeFromCart(product) {
+            const itemToBeRemoved = product
+            this.cart.splice(this.cart.findIndex(a => a.pid === itemToBeRemoved.pid), 1)
+            this.itemsInCart = this.cart.length;
         },
         clearCart() {
             while (this.cart.length > 0) {
                 this.cart.pop();
             }
             this.itemsInCart = 0;
+            //return router.push(this.returnUrl || '/');
         },
         async login(userData) {
             try {

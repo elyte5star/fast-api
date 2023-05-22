@@ -54,7 +54,7 @@ export default {
         addToCart() {
             const authStore = userAuthStore();
             const volume = document.getElementById("num_items").value;
-            authStore.addToCart(this.pid, volume)
+            authStore.addToCart(this.product, volume)
         },
 
     },
@@ -73,7 +73,7 @@ export default {
             const elem = document.getElementById("add_to_cart");
             if (!this.productQuantity) elem.innerHTML = "Out of Stock";
             else elem.innerHTML = "Add to Cart";
-            
+
         } else {
             this.$swal("<strong>Wrong!</strong> " + " Product not found!");
         }

@@ -12,14 +12,14 @@
             }
           }">Logged in as {{ user.username }}</router-link></li>
           <li><router-link :to="{ name: 'logout' }"><i class="fa fa-sign-out"></i>Logout</router-link></li>
-          <li><router-link :to="{ name: 'cart' }" :class="{ disabled: !itemsInCart }"><i class="fa fa-shopping-cart"
+          <li><router-link :to="{ name: 'cart' }"><i class="fa fa-shopping-cart"
                 style="font-size: 25px"></i><span id="items">{{
                   itemsInCart }}</span></router-link></li>
         </ul>
         <ul v-else>
           <li><router-link to="/"><i class="fa fa-fw fa-home"></i>Home</router-link></li>
           <li><router-link to="/login"><i class="fa fa-sign-in"></i>Login</router-link></li>
-          <li><router-link :class="{ disabled: !itemsInCart }" :to="{ name: 'cart' }"><i class="fa fa-shopping-cart"
+          <li><router-link  :to="{ name: 'cart' }"><i class="fa fa-shopping-cart"
                 style="font-size: 25px;color: white;"></i><span id="items">{{ itemsInCart }}</span></router-link></li>
         </ul>
       </nav>

@@ -4,7 +4,7 @@
             <h1>Profile card for {{ user_info.username }}.</h1>
             <article class="framed columnx" id="{{ user.userid }}">
                 <div class="close">
-                    <a href="javascript:void(0)"><i class="fa fa-trash-o" style="font-size: 30px"></i></a>
+                    <a href="javascript:void(0)" v-on:click="deleteUser(user_info.userid)"><i class="fa fa-trash-o" style="font-size: 30px"></i></a>
                 </div>
                 <div class="item_left">
                     <img :src="'../images/' + user_image" v-bind:alt="user_info.username" />
@@ -28,7 +28,7 @@
 
 <script>
 import moment from "moment";
-
+import { userStore } from "@/stores/userAccount";
 
 export default {
     name: "UserProfile",
@@ -49,6 +49,11 @@ export default {
         changeActiveComponent(str){
             this.$emit('changeActiveComponent',str);
         },
+        async deleteUser(id) {
+            const user_store = userStore();
+            await user_store.deleteUserAccount(id);
+
+        }
     },
     
 };

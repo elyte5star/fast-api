@@ -29,3 +29,7 @@ class GetUsersResponse(BaseResponse):
 
 class UserInDb(BaseResponse):
     hashed_password: str = ""
+
+
+class GetInfoResponse(BaseResponse):
+    info: Any = {}

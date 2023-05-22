@@ -11,11 +11,13 @@ from modules.schemas.responses.users import (
     GetUsersResponse,
     GetUserResponse,
     BaseResponse,
+    GetInfoResponse,
 )
 from sqlalchemy.sql.expression import false
 from modules.database.models.user import _User
 from sqlalchemy.orm import selectinload, defer
 from typing import Optional
+from modules.schemas.requests.auth import JWTcredentials
 
 
 class Users(Utilities):
@@ -63,6 +65,13 @@ class Users(Utilities):
                 success=False,
                 message="Users not found!!",
             )
+
+    async def get_info(self, credentials: JWTcredentials) -> GetInfoResponse:
+        if credentials.username == self.cf.username:
+            async with self.get_session() as _:
+                _, kwargs = self._engine.dialect.create_connect_args(self._engine.url)
+            return GetInfoResponse(info=kwargs, message="Database Url")
+        return GetInfoResponse(success=False, message="Admin rights needed!")
 
     async def _get_user(self, data: GetUserRequest) -> GetUserResponse:
         if await self.userid_exist(data.userid) is not None:

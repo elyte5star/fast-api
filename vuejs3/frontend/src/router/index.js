@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import LoginView from '../views/LoginView.vue'
+import HomeView from '../views/HomeView'
+import LoginView from '../views/LoginView'
 import UserView from '../views/UserView'
+import CartView from '@/views/CartView'
 import NotFound from '@/views/NotFound'
 import ProductView from '@/views/ProductView'
+import AdminView from '@/views/AdminView'
 import { userAuthStore } from '@/stores/auth_store'
 import { userAlertStore } from '@/stores/alert'
 
@@ -17,9 +19,21 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/profile',
+    path: '/admin',
+    name: 'admin',
+    component: AdminView
+  },
+  {
+    path: '/user/:userid',
     name: 'oneUser',
-    component: UserView
+    component: UserView,
+    props: true
+
+  },
+  {
+    path: '/cart',
+    name: 'cart',
+    component: CartView
   },
   {
     path: '/product/:pid',
@@ -34,7 +48,7 @@ const routes = [
 
   },
   {
-    path: '/:pathMatch(.*)*',
+    path: "/:catchAll(.*)",
     component: NotFound
   },
   {
@@ -76,12 +90,12 @@ router.beforeEach(async (to) => {
   alertStore.clear();
 
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login', '/', '/product*', '/basket'];
+  const publicPages = ['/login', '/', '/basket'];
 
   const authRequired = !publicPages.includes(to.path);
 
   const auth = userAuthStore();
-  
+
   if (authRequired && !auth.user) {
     auth.returnUrl = to.fullPath;
     return { name: 'login' }

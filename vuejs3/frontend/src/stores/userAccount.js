@@ -74,28 +74,27 @@ export const userStore = defineStore({
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
+            }).then( async (result) => {
                 if (result.isConfirmed) {
 
+                    await fetchMethodWrapper.delete(baseURL + '/' + id);
+                    // remove user from list after deleted
+                    this.users = this.users.filter(x => x.id !== id);
 
+                    const authStore = userAuthStore();
+                    if (id === authStore.user.userid) {
+                        authStore.logout();
+                    }
 
-                    
                     Swal.fire(
                         'Deleted!',
-                        'Your file has been deleted.',
+                        'Your account has been deleted.',
                         'success'
                     )
                 }
             })
 
-            await fetchMethodWrapper.delete(baseURL + '/' + id);
-            // remove user from list after deleted
-            this.users = this.users.filter(x => x.id !== id);
 
-            const authStore = userAuthStore();
-            if (id === authStore.user.userid) {
-                authStore.logout();
-            }
 
         },
 

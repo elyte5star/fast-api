@@ -4,17 +4,23 @@
       <nav>
         <ul v-if="user">
           <li><router-link to="/"><i class="fa fa-fw fa-home"></i>Home</router-link></li>
-          <li v-show="user.admin"><router-link to="/admin"><i class="fa fa-lock"></i>Admin module</router-link></li>
-          <li><router-link :to="{ name: 'oneUser' }">Logged in as {{ user.username }}</router-link></li>
+          <li v-show="user.admin"><router-link :to="{ name: 'admin' }" :style="{ pointerEvents: 'none' }"><i
+                class="fa fa-lock"></i>Admin page</router-link></li>
+          <li><router-link :to="{
+            name: 'oneUser', params: {
+              userid: user.userid
+            }
+          }">Logged in as {{ user.username }}</router-link></li>
           <li><router-link :to="{ name: 'logout' }"><i class="fa fa-sign-out"></i>Logout</router-link></li>
-          <li><router-link to="/basket"><i class="fa fa-shopping-cart" style="font-size: 25px"></i><span id="items">{{
-            itemsInCart }}</span></router-link></li>
+          <li><router-link :to="{ name: 'cart' }" :class="{ disabled: !itemsInCart }"><i class="fa fa-shopping-cart"
+                style="font-size: 25px"></i><span id="items">{{
+                  itemsInCart }}</span></router-link></li>
         </ul>
         <ul v-else>
           <li><router-link to="/"><i class="fa fa-fw fa-home"></i>Home</router-link></li>
           <li><router-link to="/login"><i class="fa fa-sign-in"></i>Login</router-link></li>
-          <li><router-link to="/basket"><i class="fa fa-shopping-cart" style="font-size: 25px;color: white;"></i><span
-                id="items">{{ itemsInCart }}</span></router-link></li>
+          <li><router-link :class="{ disabled: !itemsInCart }" :to="{ name: 'cart' }"><i class="fa fa-shopping-cart"
+                style="font-size: 25px;color: white;"></i><span id="items">{{ itemsInCart }}</span></router-link></li>
         </ul>
       </nav>
     </header>

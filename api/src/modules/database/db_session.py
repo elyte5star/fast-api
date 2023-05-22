@@ -37,6 +37,8 @@ class AsyncDatabaseSession:
                 self.cf.db_url,
                 future=True,
                 echo=False,
+                pool_size=20,
+                max_overflow=20,
             )
             self._session = sessionmaker(
                 self._engine, expire_on_commit=False, class_=AsyncSession
@@ -60,6 +62,7 @@ class AsyncDatabaseSession:
         finally:
             self.log.warning("[+] Closing connection to MYSQL/MARIA database!")
             await session.close()
+            # await self._engine.dispose()
 
     async def create_all(self):
         async with self._engine.begin() as conn:

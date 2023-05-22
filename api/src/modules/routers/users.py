@@ -10,6 +10,7 @@ from modules.schemas.responses.users import (
     CreateUserResponse,
     GetUsersResponse,
     GetUserResponse,
+    GetInfoResponse,
 )
 from modules.schemas.requests.auth import JWTcredentials
 from modules.auth.dependency import security
@@ -18,9 +19,7 @@ from modules.auth.dependency import security
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.post(
-    "/signup", response_model=CreateUserResponse, summary="Create User"
-)
+@router.post("/signup", response_model=CreateUserResponse, summary="Create User")
 async def create_user(user_data: User) -> CreateUserResponse:
     return await handler._create_user(CreateUserRequest(user=user_data))
 
@@ -32,18 +31,19 @@ async def get_users(
     return await handler._get_users()
 
 
-@router.get(
-    "/{userid}", response_model=GetUserResponse, summary="Get one user"
-)
+@router.get("/{userid}", response_model=GetUserResponse, summary="Get one user")
 async def get_user(
     userid: str, cred: JWTcredentials = Depends(security)
 ) -> GetUserResponse:
     return await handler._get_user(GetUserRequest(userid=userid))
 
 
-@router.delete(
-    "/{userid}", response_model=BaseResponse, summary="Delete a user"
-)
+@router.get("/admin/info", response_model=GetInfoResponse, summary="System Information")
+async def db_info(cred: JWTcredentials = Depends(security)) -> GetInfoResponse:
+    return await handler.get_info(cred)
+
+
+@router.delete("/{userid}", response_model=BaseResponse, summary="Delete a user")
 async def delete_user(
     userid: str, cred: JWTcredentials = Depends(security)
 ) -> BaseResponse:

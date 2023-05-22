@@ -63,7 +63,7 @@ nav ul {
 }
 
 nav span {
-    color: yellow;
+    color: white;
     font-size: 1.2em;
     position: relative;
     bottom: 12px;
@@ -98,6 +98,8 @@ nav .fa {
     color: white;
     padding: 3px;
 }
+
+/** End of Navigation **/
 
 /* Search  */
 #search {
@@ -270,7 +272,7 @@ h4 {
     text-shadow: 2px 2px 2px #aaa;
 }
 
-
+/* External Login */
 img.google {
     border-top: 5px solid #3299BB;
     border-bottom: 5px solid #3299BB;
@@ -293,6 +295,8 @@ img.microsoft {
     left: 100px;
     padding: 30px;
 }
+
+/* Login end */
 
 /* .contact {
     border-width: 1px 5px 1px 5px;
@@ -321,12 +325,22 @@ img.microsoft {
     font-size: 0.9em;
 } */
 
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+#add_to_cart:hover {
+    background-color: lightgoldenrodyellow;
+}
+
 #add_p:hover {
     background-color: lightgoldenrodyellow;
 }
 
 #update_p:hover {
-    background-color: yellow;
+    background-color: greenyellow;
 }
 
 #delete_user:hover {
@@ -355,8 +369,10 @@ img.microsoft {
 }
 
 #add_p,
+#add_to_cart,
 #update_p,
-#delete_user {
+#delete_user,
+#checkout {
     width: 98%;
     border-width: 5px 1px 5px 1px;
     border-style: solid;

@@ -17,31 +17,9 @@ export const userAuthStore = defineStore({
         // initialize state from local storage to enable user to stay logged in
         user: JSON.parse(localStorage.getItem('user')),
         returnUrl: null,
-        cart: [], itemsInCart: 0
     }),
     actions: {
 
-        addToCart(product, volume) {
-
-            for (let i = 0; i < volume; i++) {
-                this.cart.unshift(product);
-            }
-            this.itemsInCart = this.cart.length;
-        
-
-        },
-        removeFromCart(product) {
-            const itemToBeRemoved = product
-            this.cart.splice(this.cart.findIndex(a => a.pid === itemToBeRemoved.pid), 1)
-            this.itemsInCart = this.cart.length;
-        },
-        clearCart() {
-            while (this.cart.length > 0) {
-                this.cart.pop();
-            }
-            this.itemsInCart = 0;
-            //return router.push(this.returnUrl || '/');
-        },
         async login(userData) {
             try {
 

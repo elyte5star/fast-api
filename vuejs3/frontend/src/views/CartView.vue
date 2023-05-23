@@ -160,7 +160,10 @@
 </template>
 
 <script>
+
+import { userCartStore } from '@/stores/cart'
 import { userAuthStore } from '@/stores/auth_store'
+
 import { storeToRefs } from 'pinia';
 export default {
     name: 'CartView',
@@ -171,13 +174,12 @@ export default {
     },
     methods: {
         removeFromCart(product) {
-            const authStore = userAuthStore();
-            authStore.removeFromCart(product)
+            const cartStore = userCartStore();
+            cartStore.removeFromCart(product)
         },
         emptyCart() {
-
-            const authStore = userAuthStore();
-            authStore.clearCart();
+            const cartStore = userCartStore();
+            cartStore.clearCart();
         },
         async checkOut() {
             console.log(this.cart);
@@ -186,12 +188,14 @@ export default {
 
     },
     mounted() {
+        const cartStore = userCartStore();
         const authStore = userAuthStore();
-        const { cart, user, itemsInCart } = storeToRefs(authStore);
+        const { user } = storeToRefs(authStore);
+        const { cart, itemsInCart } = storeToRefs(cartStore);
         this.itemsInCart = itemsInCart
         this.cart = cart;
         this.user = user;
-
+       
 
     },
     computed: {

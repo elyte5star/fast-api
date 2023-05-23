@@ -12,15 +12,15 @@
             }
           }">Logged in as {{ user.username }}</router-link></li>
           <li><router-link :to="{ name: 'logout' }"><i class="fa fa-sign-out"></i>Logout</router-link></li>
-          <li><router-link :to="{ name: 'cart' }"><i class="fa fa-shopping-cart"
-                style="font-size: 25px"></i><span id="items">{{
+          <li><router-link :to="{ name: 'cart' }"><i class="fa fa-shopping-cart" style="font-size: 25px"></i>Cart<span
+                id="items">{{
                   itemsInCart }}</span></router-link></li>
         </ul>
         <ul v-else>
           <li><router-link to="/"><i class="fa fa-fw fa-home"></i>Home</router-link></li>
           <li><router-link to="/login"><i class="fa fa-sign-in"></i>Login</router-link></li>
-          <li><router-link  :to="{ name: 'cart' }"><i class="fa fa-shopping-cart"
-                style="font-size: 25px;color: white;"></i><span id="items">{{ itemsInCart }}</span></router-link></li>
+          <li><router-link :to="{ name: 'cart' }"><i class="fa fa-shopping-cart"
+                style="font-size: 25px;color: white;"></i>Cart<span id="items">{{ itemsInCart }}</span></router-link></li>
         </ul>
       </nav>
     </header>
@@ -32,11 +32,16 @@
 
 import { storeToRefs } from 'pinia';
 
+import { userCartStore } from '@/stores/cart'
+
 import { userAuthStore } from './stores/auth_store';
 
 const authStore = userAuthStore();
+const cartStore = userCartStore();
 
-const { user, itemsInCart } = storeToRefs(authStore);
+const { user} = storeToRefs(authStore);
+
+const {itemsInCart} = storeToRefs(cartStore);
 
 
 

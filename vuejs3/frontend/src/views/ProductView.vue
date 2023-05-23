@@ -30,7 +30,7 @@
 <script>
 
 import { productStore } from '@/stores/products'
-import { userAuthStore } from "@/stores/auth_store.js";
+import { userCartStore } from '@/stores/cart'
 
 import { storeToRefs } from 'pinia';
 
@@ -52,9 +52,9 @@ export default {
     },
     methods: {
         addToCart() {
-            const authStore = userAuthStore();
+            const cartStore = userCartStore();
             const volume = document.getElementById("num_items").value;
-            authStore.addToCart(this.product, volume)
+            cartStore.addToCart(this.product, volume)
         },
 
     },

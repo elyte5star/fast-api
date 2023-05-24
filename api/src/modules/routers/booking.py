@@ -24,6 +24,7 @@ async def create_booking(
     return await handler._create_booking(
         BookingRequest(
             cart=data.cart,
+            total_price=data.total_price,
             cred=cred,
         )
     )

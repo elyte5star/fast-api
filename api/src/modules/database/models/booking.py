@@ -2,14 +2,7 @@ from modules.database.base import Base
 from typing import TYPE_CHECKING
 from sqlalchemy.ext.mutable import MutableList
 
-from sqlalchemy import (
-    Column,
-    String,
-    DateTime,
-    PickleType,
-    ForeignKey,
-    Float
-)
+from sqlalchemy import Column, String, DateTime, PickleType, ForeignKey, Float
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 

@@ -43,7 +43,7 @@ class Discount(Utilities):
 
 class Bookings(Discount):
     async def _create_booking(self, data: BookingRequest) -> CreateBookingResponse:
-        total_price = sum([x.price for x in data.cart])
+        total_price = float(data.total_price)
         if data.cred.discount is not None:
             total_price = self.calculate_discount(total_price, data.cred.discount)
         async with self.get_session() as session:

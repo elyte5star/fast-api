@@ -183,7 +183,7 @@ export default {
         },
         async checkOut() {
             const cartStore = userCartStore();
-            cartStore.checkOut({ "cart": this.cart })
+            cartStore.checkOut({ "cart": this.cart,"total_price":this.totalPrice})
 
         }
 

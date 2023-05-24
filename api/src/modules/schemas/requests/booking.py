@@ -5,6 +5,7 @@ from modules.schemas.requests.product import ProductItem
 
 class CreateBooking(BaseModel):
     cart: list[ProductItem]
+    total_price: str
 
 
 class BookingRequest(RequestBase):
@@ -13,4 +14,3 @@ class BookingRequest(RequestBase):
 
 class BookingsRequest(RequestBase):
     pass
-

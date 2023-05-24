@@ -1,18 +1,16 @@
 from pydantic import BaseModel
 from .base_request import RequestBase
-from typing import Optional
-from .auth import JWTcredentials
+from modules.schemas.requests.product import ProductItem
 
 
 class CreateBooking(BaseModel):
-    pid: str
-    volume: int 
-    unit_price: float
+    cart: list[ProductItem]
 
 
-class BookingRequest(CreateBooking):
-    cred: Optional[JWTcredentials] = None
+class BookingRequest(RequestBase):
+    pass
 
 
 class BookingsRequest(RequestBase):
     pass
+

@@ -48,7 +48,7 @@
                                                 </td>
 
                                                 <td v-if="product.discount.length > 0">
-                                                    {{ product.price }} Kr.
+                                                    {{ product.price }} £.
                                                     <s class="small text-muted">$230,00</s>
                                                 </td>
                                                 <td :style="{ width: '65px' }">
@@ -57,7 +57,7 @@
                                                 </td>
                                                 <td>
                                                     <h4 :style="{ width: '130px' }">
-                                                        {{ product.price }} Kr.
+                                                        {{ product.price }} £.
                                                     </h4>
                                                 </td>
                                             </tr>
@@ -67,7 +67,7 @@
                             </div>
 
                             <div class="ibox-content">
-                                <button :disabled="!itemsInCart" class="btn btn-primary pull-right"><i
+                                <button :disabled="!itemsInCart" @click="checkOut()" class="btn btn-primary pull-right"><i
                                         class="fa fa fa-shopping-cart"></i>
                                     Checkout</button>
                                 <router-link id="cont_shopping" :to="{ name: 'home' }"><i
@@ -88,7 +88,7 @@
                                     Total
                                 </span>
                                 <h2 class="font-bold">
-                                    {{ totalPrice }} Kr.
+                                    {{ totalPrice }} £.
                                 </h2>
 
                                 <hr>
@@ -182,9 +182,10 @@ export default {
             cartStore.clearCart();
         },
         async checkOut() {
-            console.log(this.cart);
-        }
+            const cartStore = userCartStore();
+            cartStore.checkOut({ "cart": this.cart })
 
+        }
 
     },
     mounted() {
@@ -195,7 +196,7 @@ export default {
         this.itemsInCart = itemsInCart
         this.cart = cart;
         this.user = user;
-       
+
 
     },
     computed: {
@@ -205,7 +206,7 @@ export default {
 
                 amount += item.price;
             }
-            return Math.round(amount * 10) / 10;
+            return amount.toFixed(2);
         }
     }
 

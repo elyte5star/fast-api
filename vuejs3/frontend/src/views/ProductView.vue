@@ -1,6 +1,8 @@
 <template>
     <div v-if="product">
         <div id="product">
+            <router-link id="cont_shopping_product" :to="{ name: 'home' }"><i class="fa fa-arrow-left"></i>Continue
+                shopping</router-link>
             <div class="framed">
                 <div class="prod_left">
                     <img :src="'../images/products/' + product.image" v-bind:alt="product.name">
@@ -9,7 +11,7 @@
                 <div class="prod_right">
                     <h3>{{ product.name }}</h3>
                     <p>{{ product.description }}</p>
-                    <h3>Unit Price: {{ product.price }} Kr.</h3>
+                    <h3>Unit Price: {{ product.price }} £.</h3>
                 </div>
                 <div class="prod_order">
                     <label :id="lb4">Quantity(multiples of 1):
@@ -18,12 +20,13 @@
                     <button class="form-btn" @click="addToCart()" :disabled="!inStock" type="button" id="add_to_cart">
                         Add to Cart.
                     </button>
+
                 </div>
             </div>
             <h1>Product Details</h1>
             <div class="framed">{{ product.details }}</div>
         </div>
-
+        <router-view />
     </div>
 </template>
 
@@ -47,12 +50,19 @@ export default {
     data() {
         return {
             product: {},
-            productQuantity: 0
+            productQuantity: 0,
+            products: [],
+            cart: []
         }
     },
     methods: {
         addToCart() {
             const cartStore = userCartStore();
+            const { cart } = storeToRefs(cartStore);
+            this.cart = cart;
+            const found = this.cart.products(product => product.pid = this.product.pid)
+
+
             const volume = document.getElementById("num_items").value;
             cartStore.addToCart(this.product, volume)
         },
@@ -67,8 +77,9 @@ export default {
         if (this.pid) {
             const pStore = productStore();
             await pStore.getProductById(this.pid);
-            const { product } = storeToRefs(pStore);
+            const { product, products } = storeToRefs(pStore);
             this.product = product;
+            this.products = products;
             this.productQuantity = this.product.stock_quantity;
             const elem = document.getElementById("add_to_cart");
             if (!this.productQuantity) elem.innerHTML = "Out of Stock";

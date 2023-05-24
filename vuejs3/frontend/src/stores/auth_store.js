@@ -42,19 +42,18 @@ export const userAuthStore = defineStore({
         },
         async logout() {
 
-            const response = await fetchMethodWrapper.get(baseURL + '/logout');
-
-            if (response.success) {
+            try {
+                await fetchMethodWrapper.get(baseURL + '/logout');
                 this.user = null;
                 localStorage.removeItem('user');
                 router.push('/');
 
-            } else {
+            } catch (error) {
 
                 this.user = null;
                 localStorage.removeItem('user');
                 const alertStore = userAlertStore();
-                alertStore.error(response.message);
+                alertStore.error(error);
 
             }
 

@@ -1,13 +1,14 @@
 from modules.database.base import Base
 from typing import TYPE_CHECKING
+from sqlalchemy.ext.mutable import MutableList
+
 from sqlalchemy import (
     Column,
     String,
     DateTime,
-    Float,
+    PickleType,
     ForeignKey,
-    Boolean,
-    Integer,
+    Float
 )
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -18,10 +19,8 @@ if TYPE_CHECKING:
 
 class _Booking(Base):
     oid = Column(String(60), primary_key=True, index=True)
-    volume = Column(Integer, nullable=False, index=True)
-    sale_price = Column(Float, nullable=False, index=True)
-    confirmed = Column(Boolean, default=False)
+    cart = Column(MutableList.as_mutable(PickleType), default=[])
+    total_price = Column(Float, nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    pid = Column(String(60), ForeignKey("product.pid",ondelete='CASCADE'))
     owner = relationship("_User", back_populates="bookings")
-    owner_id = Column(String(60), ForeignKey("_user.userid"))
+    owner_id = Column(String(60), ForeignKey("_user.userid", ondelete="CASCADE"))

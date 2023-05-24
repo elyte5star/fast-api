@@ -385,7 +385,11 @@ img.microsoft {
     font-weight: bold;
 }
 
+#cont_shopping_product {
+    color:  #BCBCBC;
+    text-decoration: none;
 
+}
 
 #login_access,
 #add_entry,

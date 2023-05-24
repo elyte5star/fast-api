@@ -1,13 +1,11 @@
 from modules.utils.base_functions import Utilities
 from modules.database.models.booking import _Booking
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, defer
 from modules.schemas.requests.booking import BookingsRequest, BookingRequest
 from modules.schemas.responses.booking import (
-    ConfirmBookingResponse,
+    GetBookingResponse,
     CreateBookingResponse,
     GetBookingsResponse,
-    BaseResponse,
 )
 
 # ======================================#
@@ -44,42 +42,22 @@ class Discount(Utilities):
 
 
 class Bookings(Discount):
-    async def _create_booking(self, form_data: BookingRequest) -> CreateBookingResponse:
-        sale_price = form_data.unit_price * form_data.volume
-        if form_data.cred.discount is not None:
-            sale_price = self.calculate_discount(sale_price, form_data.cred.discount)
-        booking = _Booking(
-            oid=self.get_indent(),
-            sale_price=sale_price,
-            pid=form_data.pid,
-            volume=form_data.volume,
-            owner_id=form_data.cred.userid,
-        )
-
+    async def _create_booking(self, data: BookingRequest) -> CreateBookingResponse:
+        total_price = sum([x.price for x in data.cart])
+        if data.cred.discount is not None:
+            total_price = self.calculate_discount(total_price, data.cred.discount)
         async with self.get_session() as session:
+            booking = _Booking(
+                oid=self.get_indent(),
+                total_price=total_price,
+                cart=data.cart,
+                owner_id=data.cred.userid,
+            )
             session.add(booking)
             await session.commit()
-            return CreateBookingResponse(
-                oid=booking.oid,
-                volume=form_data.volume,
-                sale_price=sale_price,
-                message=f"Booking for {form_data.volume} item(s) created!",
-            )
-
-    async def _confirm_booking(self, oid: str) -> ConfirmBookingResponse:
-        if await self.oid_exist(oid) is not None:
-            query = (
-                self.update(_Booking)
-                .where(_Booking.oid == oid)
-                .values(dict(confirmed=True))
-                .execution_options(synchronize_session="fetch")
-            )
-            async with self.get_session() as session:
-                await session.execute(query)
-                await session.commit()
-                return ConfirmBookingResponse(oid=oid, message="Booking confirmed!")
-        return ConfirmBookingResponse(
-            success=False, message="Booking not confirmed, order not found!"
+        return CreateBookingResponse(
+            oid=booking.oid,
+            message=f"Booking with id : {booking.oid} created!",
         )
 
     async def _get_bookings(self, data: BookingsRequest) -> GetBookingsResponse:
@@ -101,4 +79,23 @@ class Bookings(Discount):
         return GetBookingsResponse(
             success=False,
             message="Admin rights needed!",
+        )
+
+    async def _get_booking(self, data: BookingRequest) -> GetBookingResponse:
+        if await self.oid_exist(data.oid) is not None:
+            async with self.get_session() as session:
+                result = await session.execute(
+                    self.select(_Booking)
+                    .where(_Booking.oid == data.oid)
+                    .options(selectinload(_Booking.owner))
+                )
+
+                (booking,) = result.first()
+                return GetBookingResponse(
+                    booking=booking,
+                    message=f"Booking with id :{data.oid} found!",
+                )
+        return GetBookingResponse(
+            success=False,
+            message=f"Booking with id:{data.oid} not found!!",
         )

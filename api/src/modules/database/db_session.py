@@ -43,7 +43,7 @@ class AsyncDatabaseSession:
             self._session = sessionmaker(
                 self._engine, expire_on_commit=False, class_=AsyncSession
             )()
-            self.log.info("[+] MYSQL/MARIADB Connection created successfully.")
+            
             return self._session
         except Exception as ex:
             self.log.warning(
@@ -60,7 +60,6 @@ class AsyncDatabaseSession:
             await session.rollback()
             self.log.warning(e)
         finally:
-            self.log.warning("[+] Closing connection to MYSQL/MARIA database!")
             await session.close()
             # await self._engine.dispose()
 

@@ -50,19 +50,12 @@ export default {
     data() {
         return {
             product: {},
-            productQuantity: 0,
-            products: [],
-            cart: []
+            productQuantity: 0
         }
     },
     methods: {
         addToCart() {
             const cartStore = userCartStore();
-            const { cart } = storeToRefs(cartStore);
-            this.cart = cart;
-            const found = this.cart.products(product => product.pid = this.product.pid)
-
-
             const volume = document.getElementById("num_items").value;
             cartStore.addToCart(this.product, volume)
         },
@@ -77,9 +70,8 @@ export default {
         if (this.pid) {
             const pStore = productStore();
             await pStore.getProductById(this.pid);
-            const { product, products } = storeToRefs(pStore);
+            const { product } = storeToRefs(pStore);
             this.product = product;
-            this.products = products;
             this.productQuantity = this.product.stock_quantity;
             const elem = document.getElementById("add_to_cart");
             if (!this.productQuantity) elem.innerHTML = "Out of Stock";

@@ -48,7 +48,7 @@
                                                 </td>
 
                                                 <td v-if="product.discount.length > 0">
-                                                    {{ product.price }} £.
+                                                    £{{ product.price }} .
                                                     <s class="small text-muted">$230,00</s>
                                                 </td>
                                                 <td :style="{ width: '65px' }">
@@ -57,7 +57,7 @@
                                                 </td>
                                                 <td>
                                                     <h4 :style="{ width: '130px' }">
-                                                        {{ product.price }} £.
+                                                        £{{ product.price }}.
                                                     </h4>
                                                 </td>
                                             </tr>
@@ -88,12 +88,12 @@
                                     Total
                                 </span>
                                 <h2 class="font-bold">
-                                    {{ totalPrice }} £.
+                                    £{{ totalPrice }}.
                                 </h2>
 
                                 <hr>
                                 <span class="text-muted small">
-                                    *For United States, France and Germany applicable sales tax will be applied
+                                    *For Norway, Denmark and Sweden applicable sales tax will be applied
                                 </span>
                                 <div class="m-t-sm">
                                     <div class="btn-group">
@@ -114,6 +114,8 @@
                             </div>
                             <div class="ibox-content text-center">
                                 <h3><i class="fa fa-phone"></i> +47 409 78 057</h3>
+                                <h3><i class="fa fa-envelope-o"></i> checkuti@gmail.com</h3>
+                                <h3><i class="fa fa-github"></i> elyte5star</h3>
                                 <span class="small">
                                     Please contact with us if you have any questions. We are avalible 24h.
                                 </span>
@@ -307,11 +309,5 @@ table.shoping-cart-table tr td:last-child {
     border-width: 1px 0;
 }
 
-.ibox-footer {
-    color: inherit;
-    border-top: 1px solid #e7eaec;
-    font-size: 90%;
-    background: #ffffff;
-    padding: 10px 15px;
-}
+
 </style>

@@ -21,14 +21,17 @@ services:
   api:
     container_name: fast-api
     image: fast-api
+    platform: linux/amd64 # <- Only one working for Apple M1
     build:
       context: ./api/src
-      dockerfile: ./backend.dockerfile
+      dockerfile: ./backend.dev.dockerfile
+
     networks:
       - elyte_net
     ports:
       # <Port exposed> : < Port running inside container>
       - "8000:8000"
+    restart: on-failure
     depends_on:
       - db
       #- rabbitQ
@@ -38,7 +41,7 @@ services:
     env_file:
       - api.env
     volumes:
-      - ./api/src:/home
+      - ./api/src:/code/app
 
   frontend:
     container_name: vue-app
@@ -52,7 +55,9 @@ services:
       - ./vuejs3/frontend/.env
     ports:
       - 9000:8000
-
+    depends_on:
+      - api
+    
   # rabbitQ:
   #   hostname: rabbitQ
   #   image: rabbitmq:3-management

@@ -27,10 +27,11 @@ body {
     color: #424242;
 }
 
-/* input[type="text"]:focus {
-    outline: 0.1rem ridge greenyellow;
-    outline-offset: 0.1rem;
-}  */
+input[type="text"]:focus {
+    background-color: ridge greenyellow;
+   
+}
+
 /** Header **/
 header {
     height: 40px;
@@ -335,6 +336,10 @@ img.microsoft {
     background-color: lightgoldenrodyellow;
 }
 
+#submit_review:hover {
+    background-color: lightgoldenrodyellow;
+}
+
 #add_p:hover {
     background-color: lightgoldenrodyellow;
 }
@@ -372,7 +377,8 @@ img.microsoft {
 #add_to_cart,
 #update_p,
 #delete_user,
-#checkout {
+#checkout,
+#submit_review {
     width: 98%;
     border-width: 5px 1px 5px 1px;
     border-style: solid;
@@ -385,8 +391,13 @@ img.microsoft {
     font-weight: bold;
 }
 
+#submit_review {
+    margin: 5px;
+
+}
+
 #cont_shopping_product {
-    color:  #BCBCBC;
+    color: black;
     text-decoration: none;
 
 }

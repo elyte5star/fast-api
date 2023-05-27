@@ -5,7 +5,7 @@
             <article class="framed column" :id="'' + product.pid" v-for="product in products" v-bind:key="product">
                 <div class="prod_left">
                     <img :src="'../images/products/' + product.image" v-bind:alt="product.name">
-                    <div class="place">{{ product['category'] }}</div>
+                    <div class="category">{{ product['category'] }}</div>
                 </div>
 
                 <div class="prod_right">

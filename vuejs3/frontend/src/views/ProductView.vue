@@ -1,14 +1,15 @@
 <template>
-    <div v-if="product">
+    <div v-if="product" class="product">
         <div id="product">
             <router-link id="cont_shopping_product" :to="{ name: 'home' }"><i class="fa fa-arrow-left"></i>Continue
                 shopping</router-link>
+            <h1>Product number: {{ product.pid }}</h1>
             <div class="framed">
                 <div class="prod_left">
                     <img :src="'../images/products/' + product.image" v-bind:alt="product.name">
-                    <div class="place">{{ product.category }}</div>
+                    <div class="category1">{{ product.category }}</div>
                 </div>
-                <div class="prod_right">
+                <div class="prod_right1">
                     <h3>{{ product.name }}</h3>
                     <p>{{ product.description }}</p>
                     <h3>Unit Price: £{{ product.price }}.</h3>
@@ -32,16 +33,15 @@
                     </p>
                     <span id="evaluate">Evaluate this product : </span>
                     <div class="rate">
-                        
-                        <input type="radio" id="star5" name="rate" value="5" />
+                        <input type="radio" v-model.number="rating" id="star5" name="rating" value="5" />
                         <label for="star5" title="text">5 stars</label>
-                        <input type="radio" id="star4" name="rate" value="4" />
+                        <input type="radio" v-model.number="rating" id="star4" name="rating" value="4" />
                         <label for="star4" title="text">4 stars</label>
-                        <input type="radio" id="star3" name="rate" value="3" />
+                        <input type="radio" v-model.number="rating" id="star3" name="rating" value="3" />
                         <label for="star3" title="text">3 stars</label>
-                        <input type="radio" id="star2" name="rate" value="2" />
+                        <input type="radio" v-model.number="rating" id="star2" name="rating" value="2" />
                         <label for="star2" title="text">2 stars</label>
-                        <input type="radio" id="star1" name="rate" value="1" />
+                        <input type="radio" v-model.number="rating" id="star1" name="rating" value="1" />
                         <label for="star1" title="text">1 star</label>
                     </div>
 
@@ -106,9 +106,7 @@ export default {
         async productQuantity(newQuantity) {
             console.log(newQuantity);
         },
-        review(newReview) {
-            console.log(newReview);
-        }
+
     },
     async created() {
         if (this.pid) {
@@ -142,6 +140,37 @@ export default {
     padding: 0;
 }
 
+#product h1 {
+    background-color: #BCBCBC;
+    color: white;
+    padding: 5px;
+    font-size: 1.2em;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.prod_right1 {
+    float: none;
+    /* just to make it clear */
+    padding-left: 10px;
+    width: auto;
+    overflow: hidden;
+    position: relative;
+    left: 100px;
+    height: auto;
+}
+
+.prod_order {
+    position: absolute;
+    bottom: 0px;
+    left: 250px;
+}
+
+#product img {
+    height: 250px;
+    width: 250px;
+}
+
 form {
     background-color: white;
     float: right;
@@ -155,11 +184,20 @@ textarea {
     resize: none;
     margin: 5px;
 }
-#evaluate{
+
+#evaluate {
     position: absolute;
     right: 170px;
     margin-top: 15px;
-    
+
+}
+
+#add_to_cart:hover {
+    background-color: lightgoldenrodyellow;
+}
+
+#submit_review:hover {
+    background-color: lightgoldenrodyellow;
 }
 
 #reviewer_name {
@@ -167,6 +205,17 @@ textarea {
     margin: 5px;
     background-color: #f8f8f8;
     border: 2px solid #ccc;
+}
+
+#submit_review {
+    margin: 5px;
+
+}
+
+#cont_shopping_product {
+    color: black;
+    text-decoration: none;
+
 }
 
 .rate {

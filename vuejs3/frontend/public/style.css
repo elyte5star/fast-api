@@ -25,11 +25,12 @@ body {
 * {
     font-family: Raleway, sans-serif;
     color: #424242;
+
 }
 
 input[type="text"]:focus {
     background-color: ridge greenyellow;
-   
+
 }
 
 /** Header **/
@@ -332,40 +333,51 @@ img.microsoft {
     pointer-events: none;
 }
 
-#add_to_cart:hover {
-    background-color: lightgoldenrodyellow;
-}
-
-#submit_review:hover {
-    background-color: lightgoldenrodyellow;
-}
 
 #add_p:hover {
     background-color: lightgoldenrodyellow;
 }
 
-#update_p:hover {
+.fa-pencil-square-o:hover {
     background-color: greenyellow;
 }
 
-#delete_user:hover {
-    background-color: red;
+.fa-trash-o:hover {
+    background-color: orange;
 }
 
+#delete_user:hover {
+    background-color: orange;
+}
 
 .fa-sign-out:hover {
     background-color: lightgoldenrodyellow;
 }
+#reservations{
 
+    height: auto;
+}
 #b1,
 #b2,
 #update {
     font-weight: bold;
 }
 
+.edit {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
 .close {
     position: absolute;
     top: 5px;
+    right: 5px;
+}
+
+.delete_contact {
+    position: absolute;
+    top: 160px;
     right: 5px;
 }
 
@@ -391,16 +403,8 @@ img.microsoft {
     font-weight: bold;
 }
 
-#submit_review {
-    margin: 5px;
 
-}
 
-#cont_shopping_product {
-    color: black;
-    text-decoration: none;
-
-}
 
 #login_access,
 #add_entry,
@@ -445,14 +449,7 @@ main h1 {
     margin-top: 5px;
 }
 
-#product h1 {
-    background-color: #BCBCBC;
-    color: white;
-    padding: 5px;
-    font-size: 1.2em;
-    margin-top: 5px;
-    text-align: center;
-}
+
 
 
 main img {
@@ -462,10 +459,7 @@ main img {
 
 
 
-#product img {
-    height: 200px;
-    width: 200px;
-}
+
 
 .container {
     text-align: center;
@@ -508,6 +502,10 @@ a {
     height: auto;
 }
 
+
+
+
+/** End One product **/
 article .details {
     position: absolute;
     bottom: 5px;
@@ -526,9 +524,7 @@ article .details:hover {
     background-color: #FF9900;
 }
 
-article:hover {
-    background-color: lightgoldenrodyellow;
-}
+
 
 .framed {
     border: 3px solid #E9E9E9;
@@ -558,7 +554,20 @@ article h3 {
     margin: 0;
 }
 
-.place,
+.category1,
+.discount {
+    position: absolute;
+    left: 5px;
+    bottom: 8px;
+    width: 250px;
+    /* width of the image */
+    z-index: 1;
+    background-color: #E9E9E9;
+    opacity: 0.7;
+    text-align: center;
+}
+
+.category,
 .discount {
     position: absolute;
     left: 5px;
@@ -567,7 +576,7 @@ article h3 {
     /* width of the image */
     z-index: 1;
     background-color: #E9E9E9;
-    opacity: 1.7;
+    opacity: 0.7;
     text-align: center;
 }
 
@@ -582,15 +591,9 @@ label {
     background-color: #ececec;
 }
 
-.prod_order {
-    position: absolute;
-    bottom: 5px;
-    left: 215px;
-}
 
-form div {
-    padding-bottom: 2px;
-}
+
+
 
 form input[type="submit"] {
     font-weight: bold;

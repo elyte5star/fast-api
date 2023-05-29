@@ -16,7 +16,10 @@ from modules.schemas.responses.product import (
     BaseResponse,
     CreateDiscountResponse,
 )
+from modules.schemas.responses.review import CreateReviewResponse
 from modules.database.models.product import Product, SpecialDeals
+from modules.database.models.review import Review
+from modules.schemas.requests.review import ReviewRequest
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import selectinload
 
@@ -38,6 +41,21 @@ class Products(Discount):
         return BaseResponse(
             success=False,
             message=f"Product with name {data.name} already exists!!",
+        )
+
+    async def _create_review(self, data: ReviewRequest) -> CreateReviewResponse:
+        if await self.pid_exist(data.review.product_id) is not None:
+            review = Review(**data.review.dict(), rid=self.get_indent())
+            async with self.get_session() as session:
+                session.add(review)
+                await session.commit()
+                return CreateReviewResponse(
+                    rid=review.rid,
+                    message=f"Review with id {review.rid} created!",
+                )
+        return CreateReviewResponse(
+            success=False,
+            message="Cant create review! Product doesnt exist!",
         )
 
     async def _create_products(
@@ -67,6 +85,7 @@ class Products(Discount):
                     self.select(Product)
                     .where(Product.pid == prod_data.pid)
                     .options(selectinload(Product.discount))
+                    .options(selectinload(Product.reviews))
                 )
                 result = await session.execute(query)
 
@@ -107,7 +126,9 @@ class Products(Discount):
     async def _get_products(self) -> GetProductsResponse:
         async with self.get_session() as session:
             result = await session.execute(
-                self.select(Product).options(selectinload(Product.discount))
+                self.select(Product)
+                .options(selectinload(Product.discount))
+                .options(selectinload(Product.reviews))
             )
             products = result.scalars().all()
             if len(products) > 0:

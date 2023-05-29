@@ -57,17 +57,40 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
+
                                         </div>
+
                                     </div>
+
                                 </div>
                             </div>
 
-
                             <div class="col-md-5">
-                                <div class="container" id="items_order">
+                                <div class="ibox-title">
+                                    <h5>Products per order</h5>
+                                </div>
+                                <div class="table-responsive" id="items_order">
 
 
+                                </div>
+                                <div class="ibox-content">
+                                    <span>
+                                        Total amount spent on shopping
+                                    </span>
+                                    <h2 class="font-bold">
+                                        £{{ overallTotal }}
+                                    </h2>
 
+                                    <hr>
+
+                                    <div class="m-t-sm">
+                                        <div class="btn-group">
+                                            <router-link id="cont_shopping" :to="{ name: 'home' }"><i
+                                                    class="fa fa-arrow-left"></i> Continue
+                                                shopping</router-link>
+                                        </div>
+                                        <router-view />
+                                    </div>
                                 </div>
                                 <div class="ibox">
                                     <div class="ibox-title">
@@ -75,8 +98,10 @@
                                     </div>
                                     <div class="ibox-content text-center">
                                         <h3><i class="fa fa-phone"></i> +47 409 78 057</h3>
-                                        <h3><i class="fa fa-envelope-o"></i> checkuti@gmail.com</h3>
-                                        <h3><i class="fa fa-github"></i> elyte5star</h3>
+                                        <h3><a href="mailto:checkuti@gmail.com"><i class="fa fa-envelope-o"></i>
+                                                checkuti@gmail.com</a></h3>
+                                        <h3><a href="https://github.com/elyte5star"><i class="fa fa-github"></i>
+                                                elyte5star</a></h3>
                                         <span class="small">
                                             Please contact with us if you have any questions. We are avalible 24h.
                                         </span>
@@ -102,14 +127,7 @@ import { userStore } from "@/stores/userAccount";
 
 export default {
     name: "UserProfile",
-    props: {
-        user_info: {
-            type: Object,
-        },
-        user_image: {
-            type: String,
-        },
-    },
+    props: ["user_info", "user_image"],
 
     methods: {
         orderDetailsTable(itemsArray) {
@@ -121,7 +139,7 @@ export default {
                 htmltxt += "<td>" + (parseInt(i) + 1) + "</td>";
                 htmltxt += "<td>" + itemsArray[i].name + "</td>";
                 htmltxt += "<td>" + itemsArray[i].pid + "</td>";
-                htmltxt += "<td>" + itemsArray[i].price + "</td>";
+                htmltxt += "<td>" + "£" + itemsArray[i].price + "</td>";
                 htmltxt += "</tr>";
                 let tableRef = document.getElementById('order_table').getElementsByTagName('tbody')[0];
                 let newRow = tableRef.insertRow(tableRef.rows.length);
@@ -144,6 +162,15 @@ export default {
 
         }
     },
+    computed: {
+        overallTotal() {
+            let amount = 0;
+            for (let sum of this.user_info.bookings) {
+                amount += sum.total_price;
+            }
+            return amount.toFixed(2);
+        }
+    }
 
 };
 </script>
@@ -162,6 +189,10 @@ body {
     position: relative;
     float: left;
 
+}
+
+a {
+    text-decoration: none;
 }
 
 h3 {

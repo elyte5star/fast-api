@@ -7,6 +7,7 @@ from modules.schemas.requests.product import (
     DeleteProductRequest,
     CreateDiscountRequest,
 )
+from modules.schemas.requests.review import Review, ReviewRequest
 from modules.schemas.responses.product import (
     GetProductsResponse,
     GetProductDetailsResponse,
@@ -14,6 +15,7 @@ from modules.schemas.responses.product import (
     CreateProductsResponse,
     CreateDiscountResponse,
 )
+from modules.schemas.responses.review import CreateReviewResponse
 from modules.schemas.requests.auth import JWTcredentials
 from modules.auth.dependency import security
 
@@ -33,6 +35,17 @@ async def create_products(
     return await handler._create_products(
         CreateProductsRequest(products=product_data_list, token_load=cred)
     )
+
+
+@router.post(
+    "/create/review",
+    response_model=CreateReviewResponse,
+    summary="Review",
+)
+async def create_review(
+    review: Review,
+) -> CreateReviewResponse:
+    return await handler._create_review(ReviewRequest(review=review))
 
 
 @router.post(
@@ -69,9 +82,7 @@ async def get_product(pid: str) -> GetProductDetailsResponse:
 async def delete_product(
     pid: str, cred: JWTcredentials = Depends(security)
 ) -> BaseResponse:
-    return await handler._delete_product(
-        DeleteProductRequest(token_load=cred, pid=pid)
-    )
+    return await handler._delete_product(DeleteProductRequest(token_load=cred, pid=pid))
 
 
 @router.get(

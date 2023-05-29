@@ -1,4 +1,5 @@
 from modules.database.base import Base
+from typing import TYPE_CHECKING
 from sqlalchemy import (
     Column,
     String,
@@ -9,6 +10,9 @@ from sqlalchemy import (
 )
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+
+if TYPE_CHECKING:
+    from .review import Review
 
 
 class Product(Base):
@@ -23,6 +27,7 @@ class Product(Base):
     stock_quantity = Column(Integer, nullable=False, index=True)
     discount = relationship("SpecialDeals", back_populates="product",cascade='save-update, merge, delete',
         passive_deletes=True,)
+    reviews = relationship("Review", back_populates="product",cascade='save-update, merge, delete',passive_deletes=True)
 
 
 class SpecialDeals(Base):

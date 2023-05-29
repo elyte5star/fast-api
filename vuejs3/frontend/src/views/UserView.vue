@@ -26,7 +26,7 @@ export default {
     return {
       activeComponent: UserProfile,
       user_image: null,
-      user: new Object(null),
+      user: null,
     };
   },
   async created() {
@@ -45,8 +45,6 @@ export default {
 
       } else {
         this.activeComponent = UserProfile;
-
-
       }
 
     },

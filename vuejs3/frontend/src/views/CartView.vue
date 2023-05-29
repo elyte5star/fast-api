@@ -48,7 +48,7 @@
                                                 </td>
 
                                                 <td v-if="product.discount.length > 0">
-                                                    £{{ product.price }} 
+                                                    £{{ product.price }}
                                                     <s class="small text-muted">$230,00</s>
                                                 </td>
                                                 <td :style="{ width: '65px' }">
@@ -114,8 +114,9 @@
                             </div>
                             <div class="ibox-content text-center">
                                 <h3><i class="fa fa-phone"></i> +47 409 78 057</h3>
-                                <h3><i class="fa fa-envelope-o"></i> checkuti@gmail.com</h3>
-                                <h3><i class="fa fa-github"></i> elyte5star</h3>
+                                <h3><a href="mailto:checkuti@gmail.com"><i class="fa fa-envelope-o"></i>
+                                        checkuti@gmail.com</a></h3>
+                                <h3><a href="https://github.com/elyte5star"><i class="fa fa-github"></i> elyte5star</a></h3>
                                 <span class="small">
                                     Please contact with us if you have any questions. We are avalible 24h.
                                 </span>
@@ -185,7 +186,7 @@ export default {
         },
         async checkOut() {
             const cartStore = userCartStore();
-            cartStore.checkOut({ "cart": this.cart,"total_price":this.totalPrice})
+            cartStore.checkOut({ "cart": this.cart, "total_price": this.totalPrice })
 
         }
 
@@ -225,6 +226,10 @@ body {
     position: relative;
     float: left;
 
+}
+
+a {
+    text-decoration: none;
 }
 
 h3 {
@@ -308,6 +313,4 @@ table.shoping-cart-table tr td:last-child {
     border-style: solid solid none;
     border-width: 1px 0;
 }
-
-
 </style>

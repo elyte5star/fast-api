@@ -4,19 +4,19 @@ from modules.database.base import Base
 from fastapi.logger import logger
 from sqlalchemy.future import select
 from sqlalchemy import update, delete
-from sqlalchemy.exc import IntegrityError
 from typing import Optional
 import uuid
 from contextlib import asynccontextmanager
 
 # needed to create table automatically
 
-from .models.user import _User
-from .models.booking import _Booking
-from .models.blacklist import _BlackList
-from .models.job_task import _Job, _Task
-from .models.worker import _Worker
-from .models.product import Product, SpecialDeals
+from modules.database.models.user import _User
+from modules.database.models.booking import _Booking
+from modules.database.models.blacklist import _BlackList
+from modules.database.models.job_task import _Job, _Task
+from modules.database.models.worker import _Worker
+from modules.database.models.product import Product, SpecialDeals
+from modules.database.models.review import Review
 from sqlalchemy import or_
 from sqlalchemy.orm import selectinload, defer
 
@@ -43,7 +43,7 @@ class AsyncDatabaseSession:
             self._session = sessionmaker(
                 self._engine, expire_on_commit=False, class_=AsyncSession
             )()
-            
+
             return self._session
         except Exception as ex:
             self.log.warning(

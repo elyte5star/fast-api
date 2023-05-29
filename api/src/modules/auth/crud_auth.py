@@ -2,16 +2,15 @@ from modules.schemas.requests.auth import (
     LoginDataRequest,
     RefreshTokenRequest,
     GoogleLoginDataRequest,
-    JWTcredentials,
     LogOutRequest,
 )
 from modules.schemas.responses.auth import TokenResponse
 from modules.database.models.user import _User
 from modules.schemas.responses.base_response import BaseResponse
-from modules.auth.blacklist import BlackListHandler
+from modules.utils.base_functions import Utilities
 
 
-class Auth(BlackListHandler):
+class Auth(Utilities):
     async def authenticate_user(self, data: LoginDataRequest) -> TokenResponse:
         if await self.username_exist(data.username) is not None:
             async with self.get_session() as session:
@@ -40,31 +39,21 @@ class Auth(BlackListHandler):
                 )
                 refresh_token = self.create_token(
                     data=data,
-                    expires_delta=self.time_delta(
-                        self.cf.refresh_token_expire_minutes
-                    ),
+                    expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
                 )
-                blacklist_data = {
-                    "token_id": data["token_id"],
-                    "token": access_token,
-                }
-                if await self.create_blacklist(blacklist_data):
-                    return TokenResponse(
-                        token_data={
-                            "access_token": access_token,
-                            "refresh_token": refresh_token,
-                            "token_type": "bearer",
-                            "host_url": self.cf.host_url,
-                            "userid": user.userid,
-                            "username": user.username,
-                            "admin": admin,
-                        },
-                        message=f"User {user.username} is authorized!",
-                    )
                 return TokenResponse(
-                    success=False,
-                    message="Couldnt create blacklist!",
+                    token_data={
+                        "access_token": access_token,
+                        "refresh_token": refresh_token,
+                        "token_type": "bearer",
+                        "host_url": self.cf.host_url,
+                        "userid": user.userid,
+                        "username": user.username,
+                        "admin": admin,
+                    },
+                    message=f"User {user.username} is authorized!",
                 )
+
             return TokenResponse(
                 success=False,
                 message=f"User {data.username} is not authorized.Incorrect password",
@@ -77,20 +66,10 @@ class Auth(BlackListHandler):
     async def google_auth(self, data: GoogleLoginDataRequest) -> TokenResponse:
         pass
 
-    async def _logout(self, data: LogOutRequest):
-        if await self.blacklist_token(data.token_load.token_id):
-            return BaseResponse(
-                message=f" user token id: {data.token_load.token_id} added to blacklist"
-            )
-        return BaseResponse(
-            message="Bad Operation Couldnt blacklist token!", success=False
-        )
-
     async def refresh_token(self, payload: RefreshTokenRequest) -> TokenResponse:
         if (
             payload.token_load.username == self.cf.username
             and payload.data.type == self.cf.grant_type
-            and await self.blacklist_token(payload.data.old_token_id)
         ):
             payload.token_load.token_id = self.get_indent()
             data_dict = payload.token_load.dict()
@@ -103,25 +82,20 @@ class Auth(BlackListHandler):
                 data=data_dict,
                 expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
             )
-            blacklist_data = {
-                "token_id": payload.token_load.token_id,
-                "token": access_token,
-                "active": True,
-            }
-            if await self.create_blacklist(blacklist_data):
-                return TokenResponse(
-                    token_data={
-                        "access_token": access_token,
-                        "refresh_token": refresh_token,
-                        "token_id": blacklist_data.token_id,
-                        "token_type": "bearer",
-                        "host_url": self.cf.host_url,
-                        "userid": payload.token_load.userid,
-                        "username": payload.token_load.username,
-                        "admin": payload.token_load.admin,
-                    },
-                    message="Fresh token created : Blacklist created!",
-                )
+
+            return TokenResponse(
+                token_data={
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                    "token_id": payload.token_load.token_id,
+                    "token_type": "bearer",
+                    "host_url": self.cf.host_url,
+                    "userid": payload.token_load.userid,
+                    "username": payload.token_load.username,
+                    "admin": payload.token_load.admin,
+                },
+                message="Fresh token created : Blacklist created!",
+            )
 
         return TokenResponse(
             success=False,

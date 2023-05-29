@@ -11,7 +11,7 @@
               userid: user.userid
             }
           }">Logged in as {{ user.username }}</router-link></li>
-          <li><router-link :to="{ name: 'logout' }"><i class="fa fa-sign-out"></i>Logout</router-link></li>
+          <li><a href="javascript:void(0)" v-on:click="authStore.logout()"><i class="fa fa-sign-out"></i>Logout</a></li>
           <li><router-link :to="{ name: 'cart' }"><i class="fa fa-shopping-cart" style="font-size: 25px"></i>Cart<span
                 id="items">{{
                   itemsInCart }}</span></router-link></li>

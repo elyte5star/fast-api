@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends
-from starlette.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
 from modules.schemas.responses.auth import TokenResponse
 from starlette.requests import Request
-from modules.schemas.responses.base_response import BaseResponse
 from modules.schemas.requests.auth import (
     JWTcredentials,
     RefreshTokenRequest,
@@ -11,7 +9,7 @@ from modules.schemas.requests.auth import (
     GrantType,
     GoogleLoginDataRequest,
     GoogleLoginData,
-    LogOutRequest,
+    
 )
 from modules.auth.dependency import security
 
@@ -31,10 +29,6 @@ async def token(
         )
     )
 
-
-@router.get("/logout")
-async def logout(cred: JWTcredentials = Depends(security)):
-    return await handler._logout(LogOutRequest(token_load=cred))
 
 
 @router.post("/refresh_token", response_model=TokenResponse, summary="Refresh token")

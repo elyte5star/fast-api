@@ -23,7 +23,7 @@
                     <h6>Registered since {{ formatDate(user_info.created_at) }}.</h6>
                 </div>
             </article>
-            <div v-if="user_info.bookings" id="basket">
+            <div v-if="user_info.bookings">
                 <div class="container">
                     <div class="wrapper wrapper-content animated fadeInRight">
                         <div class="row">
@@ -36,7 +36,8 @@
                                     </div>
                                     <div v-for="booking in user_info.bookings " v-bind:key="booking" class="ibox-content">
                                         <div class="table-responsive">
-                                            <table class="table shoping-cart-table">
+                                            <table class="table shoping-cart-table" id="order_history"
+                                                @click="orderDetailsTable(booking.cart)">
                                                 <tbody>
                                                     <tr>
                                                         <td>
@@ -50,7 +51,7 @@
                                                         </td>
                                                         <td>
                                                             <h4 :style="{ width: '130px' }">
-                                                                £{{ booking.total_price }}.
+                                                                £{{ booking.total_price }}
                                                             </h4>
                                                         </td>
                                                     </tr>
@@ -63,48 +64,10 @@
 
 
                             <div class="col-md-5">
-                                <div class="ibox">
-                                    <div class="ibox-title">
-                                        <h5>Cart Summary</h5>
-                                    </div>
-                                    <div class="ibox-content">
-                                        <span>
-                                            Total Money Spent.
-                                        </span>
-                                        <h2 class="font-bold">
-                                            1000
-                                        </h2>
+                                <div class="container" id="items_order">
 
-                                        <hr>
-                                    </div>
-                                </div>
-                                <div class="container">
-                                    <table class="table table-bordered table-sm" id="reservations">
-                                        <thead>
-                                            <tr>
-                                                <th>Name of product</th>
-                                                <th>Product Number</th>
-                                                <th>Price</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>65e2c565-8f26-4aab-a882-81d43a862a07 </td>
-                                                <td>65e2c565-8f26-4aab-a882-81d43a862a07</td>
-                                                <td>65e2c565-8f26-4aab-a882-81d43a862a07</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Maryreqre qerqwr</td>
-                                                <td>Moew reqewrwe erqwrwreer</td>
-                                                <td>mary@example.com ewqrewrqewrewreew  rewqwrwree</td>
-                                            </tr>
-                                            <tr>
-                                                <td>July</td>
-                                                <td>Dooley</td>
-                                                <td>july@example.com</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+
+
                                 </div>
                                 <div class="ibox">
                                     <div class="ibox-title">
@@ -132,6 +95,8 @@
 
 
 <script>
+/* eslint-disable */
+
 import moment from "moment";
 import { userStore } from "@/stores/userAccount";
 
@@ -139,13 +104,32 @@ export default {
     name: "UserProfile",
     props: {
         user_info: {
-            type: new Object(null),
+            type: Object,
         },
         user_image: {
             type: String,
         },
     },
+
     methods: {
+        orderDetailsTable(itemsArray) {
+            let tableDiv = document.getElementById("items_order");
+            tableDiv.innerHTML = "";
+            tableDiv.innerHTML = '<table id=\"order_table\" class=\"table table-bordered table-sm\"><thead><tr><th>#</th><th>Name of product</th><th>Product number</th><th>Price</th></tr></thead><tfoot></tfoot><tbody></tbody></table>'
+            for (let i = 0; i < itemsArray.length; i++) {
+                let htmltxt = "<tr>";
+                htmltxt += "<td>" + (parseInt(i) + 1) + "</td>";
+                htmltxt += "<td>" + itemsArray[i].name + "</td>";
+                htmltxt += "<td>" + itemsArray[i].pid + "</td>";
+                htmltxt += "<td>" + itemsArray[i].price + "</td>";
+                htmltxt += "</tr>";
+                let tableRef = document.getElementById('order_table').getElementsByTagName('tbody')[0];
+                let newRow = tableRef.insertRow(tableRef.rows.length);
+                newRow.innerHTML = htmltxt;
+
+            }
+
+        },
         formatDate(value) {
             if (value) {
                 return moment(String(value)).format("DD-MM-YYYY hh:mm");
@@ -167,6 +151,11 @@ export default {
 body {
     margin-top: 20px;
     background: #eee;
+}
+
+#order_history:hover {
+    background-color: lightgoldenrodyellow;
+    cursor: pointer;
 }
 
 #cont_shopping {

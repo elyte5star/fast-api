@@ -56,7 +56,7 @@ class AsyncDatabaseSession:
         try:
             async with self.async_session_generator() as session:
                 yield session
-        except IntegrityError as e:
+        except Exception as e:
             await session.rollback()
             self.log.warning(e)
         finally:

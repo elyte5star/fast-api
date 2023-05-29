@@ -1,11 +1,10 @@
 import { defineStore } from 'pinia';
 
 
+
 import { userAlertStore } from './alert';
 
 import router from '@/router/index'
-
-import { fetchMethodWrapper } from '@/helpers/methodWrapper';
 
 import { postToTokenEndpoint } from "@/helpers/script.js";
 
@@ -40,23 +39,11 @@ export const userAuthStore = defineStore({
                 alertStore.error(error);
             }
         },
-        async logout() {
-
-            try {
-                await fetchMethodWrapper.get(baseURL + '/logout');
-                this.user = null;
-                localStorage.removeItem('user');
-                router.push('/');
-
-            } catch (error) {
-
-                this.user = null;
-                localStorage.removeItem('user');
-                const alertStore = userAlertStore();
-                alertStore.error(error);
-
-            }
-
+        logout() {
+            this.user = null;
+            localStorage.removeItem('user');
+            router.push('/login');
         }
+
     }
 });

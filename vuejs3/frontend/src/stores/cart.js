@@ -1,9 +1,10 @@
+
 import { defineStore } from 'pinia';
 
 import Swal from 'sweetalert2/dist/sweetalert2';
 
 import router from '@/router/index'
-import { userAlertStore } from './alert';
+
 
 import { storeToRefs } from 'pinia';
 
@@ -26,7 +27,7 @@ export const userCartStore = defineStore({
     }),
     actions: {
         addToCart(product, volume) {
-
+            
             for (let i = 0; i < volume; i++) {
                 this.cart.push(product);
             }
@@ -56,26 +57,15 @@ export const userCartStore = defineStore({
             localStorage.removeItem('cartCount');
 
         },
-        async checkOut(cart) {
-            if (cart) {
-                try {
-                    const response = await fetchMethodWrapper.post(baseURL + '/create', cart);
-
+        async checkOut(cartAndPrice) {
+            if (cartAndPrice) {
+               
+               
+                    const response = await fetchMethodWrapper.post(baseURL + '/create', cartAndPrice);
                     Swal.fire("<strong> Success! </strong> " + "Booking with id " + response.oid + " created!");
                     this.clearCart();
 
-                } catch (error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Operation not successful!!',
-                        confirmButtonText: 'Home',
-                        footer: '<a href="/">Continue Shopping.</a>'
-                    })
-                    const alertStore = userAlertStore();
-                    alertStore.error(error);
-                }
-
+               
             } else {
                 Swal.fire({
                     icon: 'error',

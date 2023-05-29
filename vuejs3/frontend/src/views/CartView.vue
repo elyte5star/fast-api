@@ -48,7 +48,7 @@
                                                 </td>
 
                                                 <td v-if="product.discount.length > 0">
-                                                    £{{ product.price }} .
+                                                    £{{ product.price }} 
                                                     <s class="small text-muted">$230,00</s>
                                                 </td>
                                                 <td :style="{ width: '65px' }">
@@ -57,7 +57,7 @@
                                                 </td>
                                                 <td>
                                                     <h4 :style="{ width: '130px' }">
-                                                        £{{ product.price }}.
+                                                        £{{ product.price }}
                                                     </h4>
                                                 </td>
                                             </tr>
@@ -88,7 +88,7 @@
                                     Total
                                 </span>
                                 <h2 class="font-bold">
-                                    £{{ totalPrice }}.
+                                    £{{ totalPrice }}
                                 </h2>
 
                                 <hr>
@@ -171,7 +171,7 @@ export default {
     name: 'CartView',
     data() {
         return {
-            cart: [], user: new Object(null), recommendationList: [], itemsInCart: 0, isDisabled: true
+            cart: [], user: Object, recommendationList: [], itemsInCart: 0, isDisabled: true
         }
     },
     methods: {

@@ -10,7 +10,6 @@ from .blacklist import BlackListHandler
 
 cf = Settings().from_toml_file()
 
-black_list = BlackListHandler(cf)
 
 
 class JWTBearer(HTTPBearer):
@@ -31,10 +30,7 @@ class JWTBearer(HTTPBearer):
                 raise HTTPException(
                     status_code=403, detail="Invalid token or expired token."
                 )
-            if await black_list.is_token_blacklisted(self.payload["token_id"]):
-                raise HTTPException(
-                    status_code=403, detail="Invalid token.Token in blacklist"
-                )
+            
             _credentials = JWTcredentials(
                 userid=self.payload["userid"],
                 email=self.payload["email"],

@@ -15,5 +15,9 @@ class _Booking(Base):
     cart = Column(MutableList.as_mutable(PickleType), default=[])
     total_price = Column(Float, nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    owner_id = Column(
+        String(60),
+        ForeignKey("_user.userid", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+    )
     owner = relationship("_User", back_populates="bookings")
-    owner_id = Column(String(60), ForeignKey("_user.userid", ondelete="CASCADE"))

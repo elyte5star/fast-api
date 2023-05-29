@@ -35,7 +35,7 @@ export default {
     const { user } = storeToRefs(user_store);
     this.user = user;
     this.user_image = this.user.admin ? "admin-icon.png" : "user-icon.png";
-   
+
   },
 
   methods: {
@@ -45,6 +45,7 @@ export default {
 
       } else {
         this.activeComponent = UserProfile;
+
 
       }
 

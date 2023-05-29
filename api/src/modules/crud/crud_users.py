@@ -83,6 +83,7 @@ class Users(Utilities):
                 )
 
                 (user,) = result.first()
+                
                 return GetUserResponse(
                     user=user,
                     message=f"User with id:{data.userid} found!",

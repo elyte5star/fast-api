@@ -8,6 +8,7 @@ import ProductView from '@/views/ProductView'
 import AdminView from '@/views/AdminView'
 import { userAuthStore } from '@/stores/auth_store'
 import { userAlertStore } from '@/stores/alert'
+import { userCartStore } from '@/stores/cart'
 
 
 
@@ -48,14 +49,15 @@ const routes = [
 
   },
   {
-    path: "/:catchAll(.*)",
-    component: NotFound
+    path: '/:pathMatch(.*)*',
+    component: NotFound,
+    name: 'NotFound'
   },
   {
-    path: "/logout",
-    name: "logout",
+    path: "/checkout",
+    name: "checkout",
     component: {
-      async beforeRouteEnter(to, from, next) {
+      beforeRouteEnter(to, from, next) {
         console.log({ from });
         const destination = {
           path: from.path || "/",
@@ -66,8 +68,8 @@ const routes = [
           console.log("no from");
         }
         console.log("running before hook");
-        const auth = userAuthStore();
-        await auth.logout();
+        const cartStore = userCartStore();
+        cartStore.checkOut(from.query)
         next(destination);
       }
 

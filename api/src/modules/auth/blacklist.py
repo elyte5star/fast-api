@@ -1,6 +1,5 @@
 from modules.database.models.blacklist import _BlackList
 from modules.utils.base_functions import Utilities
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import false
 from typing import Optional
 

@@ -12,12 +12,13 @@
                     <h3>{{ product.name }}</h3>
                     <p>{{ product.description }}</p>
 
-                    <h4>£{{ product.price }}.</h4>
+                    <h4>£{{ product.price }}</h4>
                     <p v-if="product.stock_quantity ">Available in stock {{ product.stock_quantity }}.</p>
                     <p v-else>Out of stock.</p>
                 </div>
                 <router-link :to="{
                     name: 'oneProduct',
+                    
                     params: {
                         pid: product.pid
                     }

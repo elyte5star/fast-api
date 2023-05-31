@@ -172,7 +172,7 @@ export default {
     name: 'CartView',
     data() {
         return {
-            cart: [], user: Object, recommendationList: [], itemsInCart: 0, isDisabled: true
+            cart: [], user: null, recommendationList: [], itemsInCart: 0, isDisabled: true
         }
     },
     methods: {

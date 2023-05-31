@@ -90,7 +90,7 @@ export default {
             let productReview = {
                 reviewer_name: this.reviewer_name,
                 reviewer_email: this.reviewer_email,
-                rating: this.rating,
+                rating: Number(this.rating),
                 comment: this.review,
                 product_id: this.product.pid
             }
@@ -128,7 +128,7 @@ export default {
     },
     computed: {
         inStock() {
-            return this.productQuantity;
+            return Number(this.productQuantity);
         }
     }
 

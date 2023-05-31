@@ -1,7 +1,7 @@
 <template>
     <div v-if="user_info">
         <main id="user" class="container">
-            <h1>Profile card for {{ user_info.username }}.</h1>
+            <h1>Profile card for {{ user_info.username }}</h1>
             <article class="framed columnx" id="{{ user.userid }}">
                 <div class="edit">
                     <a href="javascript:void(0)" @click="changeActiveComponent('update_details')"><i
@@ -165,8 +165,8 @@ export default {
     computed: {
         overallTotal() {
             let amount = 0;
-            for (let sum of this.user_info.bookings) {
-                amount += sum.total_price;
+            for (let price of this.user_info.bookings) {
+                amount += price.total_price;
             }
             return amount.toFixed(2);
         }

@@ -2,11 +2,17 @@
     <div id="slide_image">
         <transition-group name="fade" tag="div">
             <div v-for="i in [currentIndex]" :key="i">
-                <img :src="'../images/products/' + currentImg" alt="random" />
+                <router-link :to="{
+                    name: 'oneProduct',
+                    params: {
+                        pid: currentImg.key
+                    }
+                }"><img :src="'../images/products/' + currentImg.value" v-bind:alt="currentImg.value" /> </router-link>
             </div>
         </transition-group>
         <a class="prev" @click="prev" href="#">&#10094; Previous</a>
         <a class="next" @click="next" href="#">Next &#10095;</a>
+
     </div>
 </template>
 <script>
@@ -34,15 +40,14 @@ export default {
         currentImg: function () {
             return this.images[Math.abs(this.currentIndex) % this.images.length];
         },
-        images() {
+        images: function () {
             let imgList = Array()
             for (let product of this.products) {
-                imgList.push(product.image)
-
+                imgList.push({ key: product.pid, value: product.image })
             }
             return imgList
         },
-        
+
     },
     mounted() {
         this.startSlide();

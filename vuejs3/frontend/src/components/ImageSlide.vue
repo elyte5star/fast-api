@@ -46,7 +46,7 @@ export default {
             let index = Math.abs(this.currentIndex) % this.products.length
             let obj = {
                 "pid": this.products[index].pid,
-                "img": this.products[index].img
+                "img": this.products[index].image
             }
             return obj
         },

@@ -21,7 +21,17 @@ class Utilities(AsyncDatabaseSession):
 
     def get_user_string(self, stringLength: int = 10) -> str:
         letters = string.ascii_lowercase + "0123456789" + string.ascii_uppercase
-        return "".join(random.choice(letters) for i in range(stringLength))
+        return "".join(random.choice(letters) for _ in range(stringLength))
+
+    def _get_indent(self, size: int = 12):
+        chars = string.digits
+        return "".join(random.choice(chars) for _ in range(size))
+    
+    def _get_x_correlation_id(self):
+        size = 12
+        chars = string.digits
+        correlationId = "".join(random.choice(chars) for _ in range(size)) + "_SC"
+        return correlationId
 
     def get_indent(self):
         return str(uuid.uuid4())

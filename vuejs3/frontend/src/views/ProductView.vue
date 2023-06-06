@@ -22,7 +22,7 @@
                         Add to Cart.
                     </button>
                 </div>
-                <form @submit.prevent="onSubmit" class="reviewer-form">
+                <form @submit.prevent="onSubmit" class="reviewer-form" style="display:none">
                     <p>
                         <label for="reviewer_name">Name:</label>
                         <input id="reviewer_name" v-model="reviewer_name" required>
@@ -49,7 +49,6 @@
             <h1>Product Details</h1>
             <div class="product_details1">{{ product.details }}</div>
         </div>
-        <router-view />
     </div>
 </template>
 
@@ -86,15 +85,16 @@ export default {
             const volume = document.getElementById("num_items").value;
             cartStore.addToCart(this.product, volume)
         },
-        onSubmit() {
+        async onSubmit() {
             let productReview = {
                 reviewer_name: this.reviewer_name,
-                reviewer_email: this.reviewer_email,
+                email: this.reviewer_email,
                 rating: Number(this.rating),
                 comment: this.review,
                 product_id: this.product.pid
             }
-            console.log(productReview);
+            const pStore = productStore();
+            await pStore.submitReview(productReview)
             this.reviewer_name = null
             this.rating = null
             this.review = null

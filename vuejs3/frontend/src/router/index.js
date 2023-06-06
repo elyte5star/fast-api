@@ -6,9 +6,10 @@ import CartView from '@/views/CartView'
 import NotFound from '@/views/NotFound'
 import ProductView from '@/views/ProductView'
 import AdminView from '@/views/AdminView'
+
 import { userAuthStore } from '@/stores/auth_store'
 import { userAlertStore } from '@/stores/alert'
-import { userCartStore } from '@/stores/cart'
+
 
 
 
@@ -24,6 +25,7 @@ const routes = [
     name: 'admin',
     component: AdminView
   },
+  
   {
     path: '/user/:userid',
     name: 'oneUser',
@@ -68,8 +70,7 @@ const routes = [
           console.log("no from");
         }
         console.log("running before hook");
-        const cartStore = userCartStore();
-        cartStore.checkOut(from.query)
+       
         next(destination);
       }
 

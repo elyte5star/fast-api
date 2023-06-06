@@ -3,11 +3,6 @@ import { defineStore } from 'pinia';
 
 import Swal from 'sweetalert2/dist/sweetalert2';
 
-import router from '@/router/index'
-
-
-import { storeToRefs } from 'pinia';
-
 //Persisting the Cart and cart count
 let cart = localStorage.getItem('cart');
 let itemsInCart = window.localStorage.getItem('cartCount');
@@ -16,7 +11,8 @@ import { fetchMethodWrapper } from '@/helpers/methodWrapper';
 
 const baseURL = process.env.VUE_APP_API_URL + 'booking';
 
-import { userAuthStore } from '@/stores/auth_store'
+import { userAlertStore } from './alert';
+
 
 
 
@@ -27,7 +23,7 @@ export const userCartStore = defineStore({
     }),
     actions: {
         addToCart(product, volume) {
-            
+
             for (let i = 0; i < volume; i++) {
                 this.cart.push(product);
             }
@@ -58,29 +54,17 @@ export const userCartStore = defineStore({
 
         },
         async checkOut(cartAndPrice) {
-            if (cartAndPrice) {
-               
-               
-                    const response = await fetchMethodWrapper.post(baseURL + '/create', cartAndPrice);
-                    Swal.fire("<strong> Success! </strong> " + "Booking with id " + response.oid + " created!");
-                    this.clearCart();
+            const response = await fetchMethodWrapper.post(baseURL + '/create', cartAndPrice);
+            if (response.success) {
+                Swal.fire("<strong> Success! </strong> " + "Booking with id " + response.oid + " created!");
+                this.clearCart();
 
-               
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Cart is empty!!',
-                    confirmButtonText: 'Home',
-                    footer: '<a href="/">Continue Shopping.</a>'
-                }).then((result) => {
-                    if (result.value) {
-                        const auth = userAuthStore();
-                        const { returnUrl } = storeToRefs(auth);
-                        return router.push(returnUrl || '/');
-                    }
-                });
 
+                const alertStore = userAlertStore();
+                alertStore.error(response.message);
+
+                window.location.href = '/checkout'
             }
 
 

@@ -10,7 +10,6 @@ cf = Configuration.from_file(toml_path)
 
 class Settings:
     def __init__(self) -> None:
-
         # global variables for mysql
         self.sql_host: str = ""
         self.sql_port: int = 0
@@ -60,6 +59,8 @@ class Settings:
         self.is_admin: bool = True
         self.telephone: str = ""
 
+
+
     def from_toml_file(self):
         self.sql_host = cf.database.host
         self.sql_port = cf.database.port
@@ -96,9 +97,7 @@ class Settings:
         self.algorithm = cf.token.params.algorithm
         self.secret_key = cf.token.params.secret_key
         self.token_expire_min = cf.token.params.token_expire_min
-        self.refresh_token_expire_minutes = (
-            cf.token.params.refresh_token_expire_minutes
-        )
+        self.refresh_token_expire_minutes = cf.token.params.refresh_token_expire_minutes
         self.grant_type = cf.token.params.grant_type
         self.news_api_key = cf.api.news_api_key
 
@@ -106,10 +105,20 @@ class Settings:
         self.password = cf.admin.password
         self.username = cf.admin.username
         self.telephone = cf.admin.telephone
+
+        ##Visa Payment API
+        self.visa_userid = cf.VDP.userId
+        self.visa_password = cf.VDP.password
+        self.visa_cert = cf.VDP.cert
+        self.visa_key = cf.VDP.key
+        self.visa_url = cf.VDP.visaUrl
+        self.visa_shared_secret = cf.VDP.sharedSecret
+        
+
+
         return self
 
     def from_env_file(self):
-
         print("Overriding  variables for FastAPI, MySQL")
 
         self.sql_host = str(getenv("MYSQL_HOST"))

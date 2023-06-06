@@ -5,9 +5,9 @@
                 <router-link :to="{
                     name: 'oneProduct',
                     params: {
-                        pid: currentImg.key
+                        pid: currentObj.pid
                     }
-                }"><img :src="'../images/products/' + currentImg.value" v-bind:alt="currentImg.value" /> </router-link>
+                }"><img :src="'../images/products/' + currentObj.img" v-bind:alt="currentObj.img" /> </router-link>
             </div>
         </transition-group>
         <a class="prev" @click="prev" href="#">&#10094; Previous</a>
@@ -16,9 +16,14 @@
     </div>
 </template>
 <script>
+
 export default {
     name: 'ImageSlide',
-    props: ["products"],
+    props: {
+        products: {
+            type: Array,
+        }
+    },
     data() {
         return {
             timer: null, currentIndex: 0,
@@ -37,15 +42,13 @@ export default {
         }
     },
     computed: {
-        currentImg: function () {
-            return this.images[Math.abs(this.currentIndex) % this.images.length];
-        },
-        images: function () {
-            let imgList = Array()
-            for (let product of this.products) {
-                imgList.push({ key: product.pid, value: product.image })
+        currentObj: function () {
+            let index = Math.abs(this.currentIndex) % this.products.length
+            let obj = {
+                "pid": this.products[index].pid,
+                "img": this.products[index].img
             }
-            return imgList
+            return obj
         },
 
     },

@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 
-
+import { userAlertStore } from './alert';
 import { fetchMethodWrapper } from '@/helpers/methodWrapper';
-
+import Swal from 'sweetalert2/dist/sweetalert2';
 const baseURL = process.env.VUE_APP_API_URL + 'products';
 
 export const productStore = defineStore({
@@ -20,6 +20,16 @@ export const productStore = defineStore({
                 this.products = { error };
             }
 
+        },
+        async submitReview(review) {
+            const response = await fetchMethodWrapper.post(baseURL + '/create/review', review);
+            if (response["success"]) {
+                Swal.fire('Good job!', "Review with ID " + response.rid + " has been created!", 'success');
+            } else {
+                const alertStore = userAlertStore();
+                alertStore.error(response.message);
+
+            }
         },
         async getProductById(id) {
             try {

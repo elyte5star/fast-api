@@ -4,7 +4,7 @@
         <div class="container">
             <div class="wrapper wrapper-content animated fadeInRight">
                 <div class="row">
-                    <div class="col-md-9">
+                    <div class="col-md-8">
                         <div class="ibox">
                             <div class="ibox-title">
                                 <span class="pull-right">(<strong>{{ itemsInCart }}</strong>) items</span>
@@ -67,18 +67,15 @@
                             </div>
 
                             <div class="ibox-content">
-                                <button :disabled="!itemsInCart" @click="checkOut()" class="btn btn-primary pull-right"><i
-                                        class="fa fa fa-shopping-cart"></i>
-                                    Checkout</button>
-                                <router-link id="cont_shopping" :to="{ name: 'home' }"><i
-                                        class="fa fa-arrow-left"></i>Continue
+                                <router-link id="cont_shopping" :to="{ name: 'home' }"><i class="fa fa-arrow-left"></i>
+                                    Continue
                                     shopping</router-link>
                             </div>
-                            <router-view />
+
                         </div>
 
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="ibox">
                             <div class="ibox-title">
                                 <h5>Cart Summary</h5>
@@ -90,21 +87,75 @@
                                 <h2 class="font-bold">
                                     £{{ totalPrice }}
                                 </h2>
-
                                 <hr>
                                 <span class="text-muted small">
                                     *For Norway, Denmark and Sweden applicable sales tax will be applied
                                 </span>
-                                <div class="m-t-sm">
-                                    <div class="btn-group">
-                                        <button :disabled="!itemsInCart" @click="checkOut()"
-                                            class="btn btn-primary pull-right"><i class="fa fa fa-shopping-cart"></i>
-                                            Checkout</button> |
-                                        <button :disabled="!itemsInCart" @click="emptyCart()" id="empty_cart"
-                                            class="btn btn-warning pull-right"><i class="fa fa-cart-arrow-down"></i> Empty
-                                            cart</button>
-                                    </div>
+                                <hr>
+                                <div class="payment-info">
+                                    <form @submit.prevent="onSubmit" class="payment-form">
+                                        <div class="d-flex justify-content-between align-items-center"><span>Card
+                                                details</span><img v-if="user" class="rounded" :src="'../images/' + user_image" v-bind:alt="user.username"
+                                                width="30" ></div><span class="type d-block mt-3 mb-1">Card
+                                            type</span><label class="radio"> <input type="radio" name="card" value="payment"
+                                                checked> <span><img width="30"
+                                                    :src="'../images/credit_cards/mastercard.png'"
+                                                    alt="mastercard" /></span> </label>
+
+                                        <label class="radio"> <input type="radio" name="card" value="payment"> <span><img
+                                                    width="30" :src="'../images/credit_cards/visa.png'"
+                                                    alt="visarcard" /></span> </label>
+
+                                        <label class="radio"> <input type="radio" name="card" value="payment"> <span><img
+                                                    width="30" :src="'../images/credit_cards/amex.png'" alt="amex" /></span>
+                                        </label>
+
+
+                                        <label class="radio"> <input type="radio" name="card" value="payment"> <span><img
+                                                    width="30" :src="'../images/credit_cards/paypal.png'"
+                                                    alt="paypal" /></span>
+                                        </label>
+                                        <div><label class="credit-card-label">Name on card</label><input type="text"
+                                                class="form-control credit-inputs" placeholder="Name" required></div>
+                                        <div><label class="credit-card-label">Card number</label><input type="tel"
+                                                class="form-control credit-inputs" pattern="[0-9]*" maxlength="16"
+                                                placeholder="0000 0000 0000 0000" minlength="16" required></div>
+                                        <div class="row">
+                                            <div class="col-md-6"><label class="credit-card-label">Card Expiry:
+                                                </label><input type="month" class="form-control credit-inputs"
+                                                    placeholder="12/24" required></div>
+                                            <div class="col-md-6"><label class="credit-card-label">CVV</label><input
+                                                    type="tel" class="form-control credit-inputs" placeholder="342"
+                                                    pattern="[0-9]*" maxlength="3" required></div>
+                                        </div>
+                                        <hr class="line">
+                                        <div class="d-flex justify-content-between information">
+                                            <span>Subtotal</span><span>£{{
+                                                totalPrice
+                                            }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between information">
+                                            <span>Shipping</span><span>£0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between information"><span>Total(Incl.
+                                                taxes)</span><span>£{{ totalPrice }}</span>
+                                        </div>
+                                        <hr>
+                                        <div class="m-t-sm">
+                                            <div class="btn-group">
+                                                <button :disabled="!itemsInCart" class="btn btn-primary pull-right"
+                                                    type="submit" id="submit_payment"><i class="fa fa fa-shopping-cart"></i>
+                                                    Checkout</button> |
+                                                <button :disabled="!itemsInCart" @click="emptyCart()" id="empty_cart"
+                                                    class="btn btn-warning pull-right"><i class="fa fa-cart-arrow-down"></i>
+                                                    Empty
+                                                    cart</button>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
+
+
                             </div>
                         </div>
 
@@ -172,7 +223,7 @@ export default {
     name: 'CartView',
     data() {
         return {
-            cart: [], user: null, recommendationList: [], itemsInCart: 0, isDisabled: true
+            cart: [], user: null, recommendationList: [], itemsInCart: 0, isDisabled: true,user_image: null
         }
     },
     methods: {
@@ -184,9 +235,10 @@ export default {
             const cartStore = userCartStore();
             cartStore.clearCart();
         },
-        async checkOut() {
-            const cartStore = userCartStore();
-            cartStore.checkOut({ "cart": this.cart, "total_price": this.totalPrice })
+        async onSubmit() {
+            console.log("payment");
+            //const cartStore = userCartStore();
+            //cartStore.checkOut({ "cart": this.cart, "total_price": this.totalPrice })
 
         }
 
@@ -199,6 +251,7 @@ export default {
         this.itemsInCart = itemsInCart
         this.cart = cart;
         this.user = user;
+        this.user_image = this.user.admin ? "admin-icon.png" : "user-icon.png";
 
 
     },
@@ -221,6 +274,87 @@ body {
     margin-top: 20px;
     background: #eee;
 }
+.payment-info {
+    background:lightgoldenrodyellow;
+    padding: 10px;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.type {
+    font-weight: 400;
+    font-size: 10px;
+}
+label.radio input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+label.radio span {
+    padding: 1px 12px;
+    border: 2px solid #ada9a9;
+    display: inline-block;
+    color: #8f37aa;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 300;
+}
+
+label.radio input:checked+span {
+    border-color: #fff;
+    background-color: blue;
+    color: #fff;
+}
+
+.credit-inputs {
+    background: rgb(102, 102, 221);
+    color: #fff !important;
+    border-color: rgb(102, 102, 221);
+}
+
+.credit-inputs::placeholder {
+    color: #fff;
+    font-size: 13px;
+}
+
+.credit-card-label {
+    font-size: 9px;
+    font-weight: 300;
+}
+
+.form-control.credit-inputs:focus {
+    background: rgb(102, 102, 221);
+    border: rgb(102, 102, 221);
+}
+
+.line {
+    border-bottom: 1px solid rgb(102, 102, 221);
+}
+
+.information span {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+.information {
+    margin-bottom: 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 #cont_shopping {
     position: relative;

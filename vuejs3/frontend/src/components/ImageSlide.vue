@@ -2,12 +2,13 @@
     <div id="slide_image">
         <transition-group name="fade" tag="div">
             <div v-for="i in [currentIndex]" :key="i">
-                <router-link :to="{
+                <router-link v-if="currentPid" :to="{
                     name: 'oneProduct',
                     params: {
-                        pid: currentObj.pid
+                        pid: currentPid
                     }
-                }"><img :src="'../images/products/' + currentObj.img" v-bind:alt="currentObj.img" /> </router-link>
+                }"><img v-if="currentImg !== null" :src="'../images/products/' + currentImg" v-bind:alt="currentImg" />
+                </router-link>
             </div>
         </transition-group>
         <a class="prev" @click="prev" href="#">&#10094; Previous</a>
@@ -24,9 +25,10 @@ export default {
             type: Array,
         }
     },
+
     data() {
         return {
-            timer: null, currentIndex: 0,
+            timer: null, currentIndex: 0
         }
     },
     methods: {
@@ -42,15 +44,29 @@ export default {
         }
     },
     computed: {
-        currentObj: function () {
-            let index = Math.abs(this.currentIndex) % this.products.length
-            let obj = {
-                "pid": this.products[index].pid,
-                "img": this.products[index].image
-            }
-            return obj
+        currentImg: function () {
+            return this.images[Math.abs(this.currentIndex) % this.images.length];
         },
+        currentPid: function () {
+            return this.pids[Math.abs(this.currentIndex) % this.pids.length];
+        },
+        images: function () {
+            let imgList = [];
+            for (let product of this.products) {
+                imgList.push(product.image)
+            }
+            return imgList
 
+        },
+        pids: function () {
+            let pidList = [];
+            for (let product of this.products) {
+                pidList.push(product.pid)
+            }
+            return pidList
+
+        },
+        
     },
     mounted() {
         this.startSlide();

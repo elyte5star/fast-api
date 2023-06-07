@@ -22,7 +22,7 @@
                         Add to Cart.
                     </button>
                 </div>
-                <form @submit.prevent="onSubmit" class="reviewer-form" style="display:none">
+                <form @submit.prevent="onSubmit" class="reviewer-form" >
                     <p>
                         <label for="reviewer_name">Name:</label>
                         <input id="reviewer_name" v-model="reviewer_name" required>

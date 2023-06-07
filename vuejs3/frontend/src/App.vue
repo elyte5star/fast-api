@@ -24,6 +24,7 @@
                 style="font-size: 25px;color: white;"></i>Cart<span id="items">{{ itemsInCart }}</span></router-link></li>
         </ul>
       </nav>
+     
     </header>
     <div>
       <AlertVue />

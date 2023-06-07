@@ -94,39 +94,54 @@
                                 <hr>
                                 <div class="payment-info">
                                     <form @submit.prevent="onSubmit" class="payment-form">
-                                        <div class="d-flex justify-content-between align-items-center"><span>Card
-                                                details</span><img v-if="user" class="rounded" :src="'../images/' + user_image" v-bind:alt="user.username"
-                                                width="30" ></div><span class="type d-block mt-3 mb-1">Card
-                                            type</span><label class="radio"> <input type="radio" name="card" value="payment"
-                                                checked> <span><img width="30"
-                                                    :src="'../images/credit_cards/mastercard.png'"
-                                                    alt="mastercard" /></span> </label>
+                                        <div class="d-flex justify-content-between"><span>Card
+                                                details</span><img v-if="user" class="rounded"
+                                                :src="'../images/' + user_image" v-bind:alt="user.username" width="30">
+                                        </div>
+                                        <span class="type d-block mt-3 mb-1">Card type</span>
+                                        <div id="card_type" class="card_type">
+                                            <label class="radio"><input v-model="card" type="radio" name="card"
+                                                    value="mastercard" checked>
+                                                <span><img width="30" :src="'../images/credit_cards/mastercard.png'"
+                                                        alt="mastercard" /></span>
+                                            </label>
 
-                                        <label class="radio"> <input type="radio" name="card" value="payment"> <span><img
-                                                    width="30" :src="'../images/credit_cards/visa.png'"
-                                                    alt="visarcard" /></span> </label>
+                                            <label class="radio"> <input v-model="card" type="radio" name="card"
+                                                    value="visa">
+                                                <span><img width="30" :src="'../images/credit_cards/visa.png'"
+                                                        alt="visarcard" /></span> </label>
 
-                                        <label class="radio"> <input type="radio" name="card" value="payment"> <span><img
-                                                    width="30" :src="'../images/credit_cards/amex.png'" alt="amex" /></span>
-                                        </label>
+                                            <label class="radio"> <input v-model="card" type="radio" name="card"
+                                                    value="amex">
+                                                <span><img width="30" :src="'../images/credit_cards/amex.png'"
+                                                        alt="amex" /></span>
+                                            </label>
 
 
-                                        <label class="radio"> <input type="radio" name="card" value="payment"> <span><img
-                                                    width="30" :src="'../images/credit_cards/paypal.png'"
-                                                    alt="paypal" /></span>
-                                        </label>
-                                        <div><label class="credit-card-label">Name on card</label><input type="text"
-                                                class="form-control credit-inputs" placeholder="Name" required></div>
-                                        <div><label class="credit-card-label">Card number</label><input type="tel"
-                                                class="form-control credit-inputs" pattern="[0-9]*" maxlength="16"
-                                                placeholder="0000 0000 0000 0000" minlength="16" required></div>
+                                            <label class="radio"><input v-model="card" type="radio" name="card"
+                                                    value="paypal"><span><img width="30"
+                                                        :src="'../images/credit_cards/paypal.png'" alt="paypal" /></span>
+                                            </label>
+                                        </div>
+
+                                        <div>
+                                            <label class="credit-card-label">Name on card:</label><input type="text"
+                                                class="form-control credit-inputs" v-model="nameOnCard" placeholder="Name"
+                                                required>
+                                        </div>
+                                        <div>
+                                            <label class="credit-card-label">Card number:</label>
+                                            <input type="tel" class="form-control credit-inputs" v-model.number="cardNumber"
+                                                pattern="[0-9]*" maxlength="16" placeholder="0000 0000 0000 0000"
+                                                minlength="16" required>
+                                        </div>
                                         <div class="row">
                                             <div class="col-md-6"><label class="credit-card-label">Card Expiry:
-                                                </label><input type="month" class="form-control credit-inputs"
-                                                    placeholder="12/24" required></div>
+                                                </label><input type="month" v-model="expiryDate"
+                                                    class="form-control credit-inputs" placeholder="12/24" required></div>
                                             <div class="col-md-6"><label class="credit-card-label">CVV</label><input
-                                                    type="tel" class="form-control credit-inputs" placeholder="342"
-                                                    pattern="[0-9]*" maxlength="3" required></div>
+                                                    type="tel" v-model.number="cardCvv" class="form-control credit-inputs"
+                                                    placeholder="342" pattern="[0-9]*" maxlength="3" required></div>
                                         </div>
                                         <hr class="line">
                                         <div class="d-flex justify-content-between information">
@@ -154,7 +169,6 @@
                                         </div>
                                     </form>
                                 </div>
-
 
                             </div>
                         </div>
@@ -217,13 +231,18 @@
 
 import { userCartStore } from '@/stores/cart'
 import { userAuthStore } from '@/stores/auth_store'
+import { userAlertStore } from '@/stores/alert'
+
 
 import { storeToRefs } from 'pinia';
 export default {
     name: 'CartView',
     data() {
         return {
-            cart: [], user: null, recommendationList: [], itemsInCart: 0, isDisabled: true,user_image: null
+            cart: [], user: null, recommendationList: [], itemsInCart: 0,
+            isDisabled: true, user_image: null, card: null, expiryDate: null, cardCvv: null,
+            cardNumber: null, nameOnCard: null
+
         }
     },
     methods: {
@@ -236,9 +255,32 @@ export default {
             cartStore.clearCart();
         },
         async onSubmit() {
-            console.log("payment");
-            //const cartStore = userCartStore();
-            //cartStore.checkOut({ "cart": this.cart, "total_price": this.totalPrice })
+            if (this.cardNumber && this.expiryDate && this.card && this.cardCvv && this.nameOnCard) {
+                let paymentDetails = {
+                    cardNumber: Number(this.cardNumber),
+                    expiryDate: this.expiryDate,
+                    cardCvv: Number(this.cardCvv),
+                    cardType: this.card,
+                    nameOnCard: this.nameOnCard
+                }
+                console.log(paymentDetails);
+
+                this.cardNumber = null
+                this.expiryDate = null
+                this.cardCvv = null
+                this.card = null
+                this.nameOnCard = null
+            } else {
+                const alertStore = userAlertStore();
+                if (!this.cardNumber) alertStore.error("Card number required");
+                if (!this.card) alertStore.error("Card type required");
+                if (!this.nameOnCard) alertStore.error("Card Holder name required");
+                if (!this.expiryDate) alertStore.error("Expiry Date required");
+                if (!this.cardCvv ) alertStore.error("CVV number required");
+                
+
+            }
+
 
         }
 
@@ -269,182 +311,3 @@ export default {
 }
 </script>
 
-<style scoped>
-body {
-    margin-top: 20px;
-    background: #eee;
-}
-.payment-info {
-    background:lightgoldenrodyellow;
-    padding: 10px;
-    border-radius: 6px;
-    color: #fff;
-    font-weight: bold;
-}
-
-.type {
-    font-weight: 400;
-    font-size: 10px;
-}
-label.radio input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-label.radio span {
-    padding: 1px 12px;
-    border: 2px solid #ada9a9;
-    display: inline-block;
-    color: #8f37aa;
-    border-radius: 3px;
-    text-transform: uppercase;
-    font-size: 11px;
-    font-weight: 300;
-}
-
-label.radio input:checked+span {
-    border-color: #fff;
-    background-color: blue;
-    color: #fff;
-}
-
-.credit-inputs {
-    background: rgb(102, 102, 221);
-    color: #fff !important;
-    border-color: rgb(102, 102, 221);
-}
-
-.credit-inputs::placeholder {
-    color: #fff;
-    font-size: 13px;
-}
-
-.credit-card-label {
-    font-size: 9px;
-    font-weight: 300;
-}
-
-.form-control.credit-inputs:focus {
-    background: rgb(102, 102, 221);
-    border: rgb(102, 102, 221);
-}
-
-.line {
-    border-bottom: 1px solid rgb(102, 102, 221);
-}
-
-.information span {
-    font-size: 12px;
-    font-weight: 500;
-}
-
-
-.information {
-    margin-bottom: 5px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-#cont_shopping {
-    position: relative;
-    float: left;
-
-}
-
-a {
-    text-decoration: none;
-}
-
-h3 {
-    font-size: 16px;
-}
-
-#basket img {
-    width: 50px;
-    height: 50px;
-}
-
-.text-navy {
-    color: #3299BB;
-}
-
-.cart-product-imitation {
-    text-align: center;
-    padding-top: 30px;
-    height: 80px;
-    width: 80px;
-    background-color: #f8f8f9;
-}
-
-
-table.shoping-cart-table {
-    margin-bottom: 0;
-}
-
-table.shoping-cart-table tr td {
-    border: none;
-    text-align: right;
-}
-
-table.shoping-cart-table tr td.desc,
-table.shoping-cart-table tr td:first-child {
-    text-align: left;
-}
-
-table.shoping-cart-table tr td:last-child {
-    width: 80px;
-}
-
-.ibox {
-    clear: both;
-    margin-bottom: 25px;
-    margin-top: 0;
-    padding: 0;
-}
-
-.ibox.collapsed .ibox-content {
-    display: none;
-}
-
-.ibox:after,
-.ibox:before {
-    display: table;
-}
-
-.ibox-title {
-    -moz-border-bottom-colors: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
-    background-color: #ffffff;
-    border-color: #e7eaec;
-    border-image: none;
-    border-style: solid solid none;
-    border-width: 3px 0 0;
-    color: inherit;
-    margin-bottom: 0;
-    padding: 14px 15px 7px;
-    min-height: 48px;
-}
-
-.ibox-content {
-    background-color: #ffffff;
-    color: inherit;
-    padding: 15px 20px 20px 20px;
-    border-color: #e7eaec;
-    border-image: none;
-    border-style: solid solid none;
-    border-width: 1px 0;
-}
-</style>

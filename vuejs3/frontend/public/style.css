@@ -620,6 +620,194 @@ a {
 }
 
 /** End One product **/
+
+/** CART **/
+#cont_shopping {
+    position: relative;
+    float: left;
+
+}
+
+#basket a {
+    text-decoration: none;
+}
+
+#basket h3 {
+    font-size: 16px;
+}
+
+#basket img {
+    width: 50px;
+    height: 50px;
+}
+
+.text-navy {
+    color: #3299BB;
+}
+
+.cart-product-imitation {
+    text-align: center;
+    padding-top: 30px;
+    height: 80px;
+    width: 80px;
+    background-color: #f8f8f9;
+}
+
+
+table.shoping-cart-table {
+    margin-bottom: 0;
+}
+
+table.shoping-cart-table tr td {
+    border: none;
+    text-align: right;
+}
+
+table.shoping-cart-table tr td.desc,
+table.shoping-cart-table tr td:first-child {
+    text-align: left;
+}
+
+table.shoping-cart-table tr td:last-child {
+    width: 80px;
+}
+
+.ibox {
+    clear: both;
+    margin-bottom: 25px;
+    margin-top: 0;
+    padding: 0;
+}
+
+.ibox.collapsed .ibox-content {
+    display: none;
+}
+
+.ibox:after,
+.ibox:before {
+    display: table;
+}
+
+.ibox-title {
+
+    background-color: #ffffff;
+    border-color: #e7eaec;
+    border-image: none;
+    border-style: solid solid none;
+    border-width: 3px 0 0;
+    color: inherit;
+    margin-bottom: 0;
+    padding: 14px 15px 7px;
+    min-height: 48px;
+}
+
+.ibox-content {
+    background-color: #ffffff;
+    color: inherit;
+    padding: 15px 20px 20px 20px;
+    border-color: #e7eaec;
+    border-image: none;
+    border-style: solid solid none;
+    border-width: 1px 0;
+}
+
+
+.form-control.credit-inputs{
+    background: rgb(102, 102, 221);
+    color: #fff !important;
+    border-color: rgb(102, 102, 221);
+}
+
+
+
+.card_type {
+    display: flex;
+}
+
+.type {
+    font-size: 10px;
+    font-weight: bold;
+    position: relative;
+    right: 150px;
+}
+
+.information span {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+.information {
+    margin-bottom: 2px;
+}
+
+
+.line {
+    border-bottom: 2px solid rgb(102, 102, 221);
+}
+
+
+
+
+.form-control.credit-inputs:focus {
+    background: rgb(102, 102, 221);
+    border: rgb(102, 102, 221);
+}
+
+.credit-card-label {
+    font-size: 10px;
+    font-weight: bold;
+    position: relative;
+    right: 120px;
+
+}
+
+
+
+.credit-inputs::placeholder {
+    color: #fff !important;
+    font-size: 15px;
+}
+
+.payment-info {
+    background: lightgoldenrodyellow;
+    padding: 10px;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+}
+
+
+label.radio input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+label.radio span {
+    padding: 1px 12px;
+    border: 2px solid #ada9a9;
+    display: inline-block;
+    color: #8f37aa;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 300;
+}
+
+label.radio input:checked+span {
+    border-color: #fff;
+    background-color: blue;
+    color: #fff;
+}
+
+
+
+/** End of CART**/
+
+
 article .details {
     position: absolute;
     bottom: 5px;

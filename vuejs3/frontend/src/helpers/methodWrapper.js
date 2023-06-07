@@ -1,6 +1,5 @@
 import { userAuthStore } from "@/stores/auth_store";
-import Swal from 'sweetalert2/dist/sweetalert2';
-
+import { userAlertStore } from '@/stores/alert'
 export const fetchMethodWrapper = {
     get: request('GET'),
     post: request('POST'),
@@ -49,14 +48,8 @@ async function handleResponse(response) {
         const { user, logout } = userAuthStore();
         if ([401, 403].includes(response.status) && user) {
             // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: "Session Expired",
-                confirmButtonText: 'Home',
-                footer: '<a href="/login">Please, log in again!.</a>'
-            })
-           
+            const alertStore = userAlertStore();
+            alertStore.error("Session Expired! Please, log in again!");
             logout();
 
         }

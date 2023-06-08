@@ -371,11 +371,7 @@ img.microsoft {
     right: 5px;
 }
 
-.close {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-}
+
 
 .delete_contact {
     position: absolute;
@@ -430,8 +426,8 @@ img.microsoft {
 }
 
 /** Main content **/
-main,
-#product {
+main
+ {
     overflow: auto;
     position: relative;
     padding-top: 100px;
@@ -514,6 +510,16 @@ a {
 
 }
 
+#product{
+    overflow: auto;
+    position: relative;
+    padding-top: 100px;
+    margin: 0 auto;
+    min-width: auto;
+    max-width: 80%;
+   
+  
+}
 #rating,
 #num_items {
     border-radius: 4px;
@@ -530,32 +536,37 @@ a {
 }
 
 .prod_right1 {
-    float: none;
+    float: right;
     /* just to make it clear */
-    padding-left: 10px;
     width: auto;
     overflow: hidden;
     position: relative;
-    left: 100px;
+    left: 0px;
     height: auto;
+    
 }
 
 .prod_order {
     position: absolute;
     bottom: 0px;
     left: 250px;
+    justify-content: center;
 }
 
 #product img {
     height: 230px;
     width: 230px;
 }
+.product-review-table img{
+    width: 50px;
+    height: 50px;
 
+}
 .product form {
-    background-color: white;
+    background-color:whitesmoke;
     float: right;
     position: relative;
-    bottom: 100px;
+   
 }
 
 .product textarea {
@@ -617,6 +628,10 @@ a {
     height: 250px;
     overflow: hidden;
     font-size: 0.8em;
+}
+
+h6 a{
+    text-decoration: none;
 }
 
 /** End One product **/

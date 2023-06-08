@@ -241,30 +241,29 @@ export default {
         return {
             cart: [], user: null, recommendationList: [], itemsInCart: 0,
             isDisabled: true, user_image: null, card: null, expiryDate: null, cardCvv: null,
-            cardNumber: null, nameOnCard: null
+            cardNumber: null, nameOnCard: null, cartStore: userCartStore(), authStore: userAuthStore()
 
         }
     },
     methods: {
         removeFromCart(product) {
-            const cartStore = userCartStore();
-            cartStore.removeFromCart(product)
+            this.cartStore.removeFromCart(product)
         },
         emptyCart() {
-            const cartStore = userCartStore();
-            cartStore.clearCart();
+            this.cartStore.clearCart();
         },
         async onSubmit() {
             if (this.cardNumber && this.expiryDate && this.card && this.cardCvv && this.nameOnCard) {
-                let paymentDetails = {
-                    cardNumber: Number(this.cardNumber),
-                    expiryDate: this.expiryDate,
-                    cardCvv: Number(this.cardCvv),
-                    cardType: this.card,
-                    nameOnCard: this.nameOnCard
+                let bookingDetails = {
+                    "cardNumber": Number(this.cardNumber),
+                    "expiryDate": this.expiryDate,
+                    "cardCvv": Number(this.cardCvv),
+                    "cardType": this.card,
+                    "nameOnCard": this.nameOnCard,
+                    "cart": this.cart,
+                    "total_price": this.totalPrice
                 }
-                console.log(paymentDetails);
-
+                await this.cartStore.checkOut(bookingDetails)
                 this.cardNumber = null
                 this.expiryDate = null
                 this.cardCvv = null
@@ -276,8 +275,8 @@ export default {
                 if (!this.card) alertStore.error("Card type required");
                 if (!this.nameOnCard) alertStore.error("Card Holder name required");
                 if (!this.expiryDate) alertStore.error("Expiry Date required");
-                if (!this.cardCvv ) alertStore.error("CVV number required");
-                
+                if (!this.cardCvv) alertStore.error("CVV number required");
+
 
             }
 
@@ -286,10 +285,8 @@ export default {
 
     },
     mounted() {
-        const cartStore = userCartStore();
-        const authStore = userAuthStore();
-        const { user } = storeToRefs(authStore);
-        const { cart, itemsInCart } = storeToRefs(cartStore);
+        const { user } = storeToRefs(this.authStore);
+        const { cart, itemsInCart } = storeToRefs(this.cartStore);
         this.itemsInCart = itemsInCart
         this.cart = cart;
         this.user = user;

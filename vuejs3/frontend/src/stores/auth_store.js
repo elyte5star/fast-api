@@ -20,23 +20,21 @@ export const userAuthStore = defineStore({
     actions: {
 
         async login(userData) {
-            try {
 
-                const response = await postToTokenEndpoint(baseURL + '/token', userData)
 
-                if (response["success"]) {
+            const response = await postToTokenEndpoint(baseURL + '/token', userData)
 
-                    this.user = response.token_data;
+            if (response["success"]) {
 
-                    localStorage.setItem('user', JSON.stringify(response.token_data));
+                this.user = response.token_data;
 
-                    return router.push(this.returnUrl || '/');
+                localStorage.setItem('user', JSON.stringify(response.token_data));
 
-                }
+                return router.push(this.returnUrl || '/');
 
-            } catch (error) {
+            } else {
                 const alertStore = userAlertStore();
-                alertStore.error(error);
+                alertStore.error(response.message);
             }
         },
         logout() {

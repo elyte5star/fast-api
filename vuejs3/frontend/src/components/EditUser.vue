@@ -68,7 +68,7 @@ export default {
     name: 'EditUser',
     props: {
         user_info: {
-            type: new Object(null),
+            type: Object,
         }
     },
     methods: {

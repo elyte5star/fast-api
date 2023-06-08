@@ -1,7 +1,6 @@
 
 import { defineStore } from 'pinia';
 
-import Swal from 'sweetalert2/dist/sweetalert2';
 
 //Persisting the Cart and cart count
 let cart = localStorage.getItem('cart');
@@ -12,8 +11,6 @@ import { fetchMethodWrapper } from '@/helpers/methodWrapper';
 const baseURL = process.env.VUE_APP_API_URL + 'booking';
 
 import { userAlertStore } from './alert';
-
-
 
 
 export const userCartStore = defineStore({
@@ -53,20 +50,17 @@ export const userCartStore = defineStore({
             localStorage.removeItem('cartCount');
 
         },
-        async checkOut(cartAndPrice) {
-            const response = await fetchMethodWrapper.post(baseURL + '/create', cartAndPrice);
+        async checkOut(bookingDetails) {
+            const alertStore = userAlertStore();
+            const response = await fetchMethodWrapper.post(baseURL + '/create', bookingDetails);
             if (response.success) {
-                Swal.fire("<strong> Success! </strong> " + "Booking with id " + response.oid + " created!");
+                alertStore.success("<strong> Success! </strong> " + "Booking with id " + response.oid + " created!")
                 this.clearCart();
 
             } else {
-
-                const alertStore = userAlertStore();
                 alertStore.error(response.message);
 
-                window.location.href = '/checkout'
             }
-
 
         }
     }

@@ -19,7 +19,7 @@ class Review(Base):
     product_id = Column(
         String(60),
         ForeignKey("product.pid", onupdate="CASCADE", ondelete="CASCADE"),
-        unique=True,
+        
         nullable=False,
     )
     product = relationship("Product", back_populates="reviews")

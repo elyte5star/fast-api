@@ -48,8 +48,8 @@
                                                     </div>
 
                                                 </td>
-                                                <td class="desc">
-                                                    <h5>Name :
+                                                <td class="desc"  :style="{ width: '500px' }">
+                                                    <h5>Nickname :
                                                         {{ review.reviewer_name }}
                                                     </h5>
                                                     <dl class="small m-b-none">
@@ -59,7 +59,9 @@
 
                                                     <dl class="small m-b-none">
                                                         <dt>Rating</dt>
-                                                        <dd id="stars">{{ starRating(1) }}</dd>
+                                                        <span id="old_rating" v-for="star in review.rating" :key="star">
+                                                            <i class="fa fa-star"></i>
+                                                        </span>
                                                     </dl>
                                                 </td>
                                                 <td colspan="2">
@@ -94,7 +96,7 @@
                                 <div class="review">
                                     <form @submit.prevent="onSubmit" class="reviewer-form" id="review_form">
                                         <p>
-                                            <label for="reviewer_name">Name:</label>
+                                            <label for="reviewer_name">Nickname:</label>
                                             <input id="reviewer_name" v-model="reviewer_name" required>
                                         </p>
                                         <p>
@@ -212,6 +214,7 @@ export default {
             reviews: []
         }
     },
+    
     methods: {
         addToCart() {
             const volume = document.getElementById("num_items").value;
@@ -221,15 +224,6 @@ export default {
             if (value) {
                 return moment(String(value)).format("DD-MM-YYYY hh:mm");
             }
-        },
-        starRating(starsCount) {
-            let star = ''
-            for (let i = 0; i < starsCount; i++) {
-                star += '<i class="fa fa-pencil-square-o"></i>'
-            }
-           return star
-
-
         },
         async onSubmit() {
             let productReview = {
@@ -249,7 +243,6 @@ export default {
         }
 
     },
-
     async created() {
         if (this.pid) {
             await this.pStore.getProductById(this.pid);
@@ -257,14 +250,14 @@ export default {
             this.product = product;
             this.productQuantity = quantity;
             this.reviews = reviews;
-            console.log(this.reviews);
             const elem = document.getElementById("add_to_cart");
             if (!this.productQuantity) elem.innerHTML = "Out of Stock";
             else elem.innerHTML = "Add to Cart";
             document.getElementById('product').scrollIntoView();
 
+
         } else {
-            this.$swal("<strong>Wrong!</strong> " + " Product not found!");
+            this.$swal("<strong>Wrong!</strong> " + " Supply a Product ID!");
         }
 
     },

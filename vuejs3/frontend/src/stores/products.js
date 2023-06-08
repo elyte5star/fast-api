@@ -26,7 +26,7 @@ export const productStore = defineStore({
             const alertStore = userAlertStore();
             const response = await fetchMethodWrapper.post(baseURL + '/create/review', review);
             if (response["success"]) {
-                alertStore.success('Good job!', "Review with ID " + response.rid + " has been created!", 'success');
+                alertStore.success('Good job!'+ " Review with ID " + response.rid + " has been created!");
             } else {
                 alertStore.error(response.message);
 

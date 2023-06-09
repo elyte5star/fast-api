@@ -502,7 +502,7 @@ a {
 }
 #submit_review {
     margin: 5px;
-    width: 98%;
+    width: 50%;
     border-width: 5px 1px 5px 1px;
     border-style: solid;
     border-color: #ececec;
@@ -511,6 +511,8 @@ a {
     font-family: Raleway, serif;
     font-size: 1.2em;
     font-weight: bold;
+    position: relative;
+    left: 110px;
 
 }
 

@@ -1,6 +1,5 @@
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 import logging
 from starlette.staticfiles import StaticFiles
@@ -8,7 +7,6 @@ from starlette.middleware.sessions import SessionMiddleware
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.logger import logger
 from modules.settings.config import Settings
-from modules.database.db_session import AsyncDatabaseSession
 from modules.utils.base_functions import Utilities
 from modules.crud.crud_users import Users
 from modules.auth.crud_auth import Auth
@@ -65,10 +63,11 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    max_age=3600,
 )
 
 # Include Session
-app.add_middleware(SessionMiddleware, secret_key=cfg.secret_key, max_age=1500)
+# app.add_middleware(SessionMiddleware, secret_key=cfg.secret_key, max_age=1500)
 app.mount("/static", StaticFiles(directory="./modules/static"), name="static")
 
 

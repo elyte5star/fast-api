@@ -496,8 +496,8 @@ a {
 
 /**  One product **/
 #old_rating .fa{ 
-    color: lightgoldenrodyellow;
     font-size: 35px;
+    padding-left: 15px;
 
 }
 #submit_review {
@@ -520,7 +520,7 @@ a {
     padding-top: 100px;
     margin: 0 auto;
     min-width: auto;
-    max-width: 80%;
+    max-width: 78%;
    
   
 }
@@ -540,12 +540,12 @@ a {
 }
 
 .prod_right1 {
-    float: right;
+   
     /* just to make it clear */
     width: auto;
     overflow: hidden;
     position: relative;
-    left: 0px;
+    left: 65px;
     height: auto;
     
 }
@@ -567,15 +567,18 @@ a {
 
 }
 .product-review-table tr{
-    background-color:#BCBCBC;
+    background-color:lightgoldenrodyellow;
+    border: 1px solid #E9E9E9;
+
 }
 
 
 
 .product form {
-    background-color:lightgoldenrodyellow;
+   
     float: right;
     position: relative;
+    
    
 }
 

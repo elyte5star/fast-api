@@ -94,7 +94,7 @@
                             <div class="ibox-content">
 
                                 <div class="review">
-                                    <form @submit.prevent="onSubmit" class="reviewer-form" id="review_form">
+                                    <form @submit.prevent="onSubmitReview" class="reviewer-form" id="review_form">
                                         <p>
                                             <label for="reviewer_name">Nickname:</label>
                                             <input id="reviewer_name" v-model="reviewer_name" required>
@@ -225,7 +225,7 @@ export default {
                 return moment(String(value)).format("DD-MM-YYYY hh:mm");
             }
         },
-        async onSubmit() {
+        async onSubmitReview() {
             let productReview = {
                 reviewer_name: this.reviewer_name,
                 email: this.reviewer_email,

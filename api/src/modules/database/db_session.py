@@ -37,8 +37,7 @@ class AsyncDatabaseSession:
                 self.cf.db_url,
                 future=True,
                 echo=False,
-                pool_size=200,
-                max_overflow=20,
+                pool_recycle=3600,
             )
             self._session = sessionmaker(
                 self._engine, expire_on_commit=False, class_=AsyncSession

@@ -26,24 +26,23 @@ export const productStore = defineStore({
             const alertStore = userAlertStore();
             const response = await fetchMethodWrapper.post(baseURL + '/create/review', review);
             if (response["success"]) {
-                alertStore.success('Good job!'+ " Review with ID " + response.rid + " has been created!");
+                alertStore.success('Good job!' + " Yor review has been saved!");
             } else {
                 alertStore.error(response.message);
 
             }
         },
-        async getProductById(id) {
-            try {
-                const response = await fetchMethodWrapper.get(baseURL + '/' + id);
+        async getProductById(pid) {
+            const response = await fetchMethodWrapper.get(baseURL + '/' + pid);
+            if (response["success"]) {
                 this.product = response.product;
                 this.quantity = response.product.stock_quantity;
                 this.reviews = response.product.reviews
 
-
-            } catch (error) {
-                this.product = { error };
+            } else {
+                const alertStore = userAlertStore();
+                alertStore.error(response.message);
             }
-
 
         },
         async deleteProductById(id) {

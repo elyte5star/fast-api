@@ -48,7 +48,7 @@
                                                     </div>
 
                                                 </td>
-                                                <td class="desc"  :style="{ width: '500px' }">
+                                                <td class="desc" :style="{ width: '500px' }">
                                                     <h5>Nickname :
                                                         {{ review.reviewer_name }}
                                                     </h5>
@@ -107,14 +107,27 @@
                                             <label for="review">Review:</label>
                                             <textarea id="review" v-model="review" required></textarea>
                                         </p>
-                                        <label for="rating">Rating:</label>
-                                        <select v-model.number="rating" id="rating" required>
-                                            <option>5</option>
-                                            <option>4</option>
-                                            <option>3</option>
-                                            <option>2</option>
-                                            <option>1</option>
-                                        </select>
+
+                                        <span id="evaluate">Evaluate this product : </span>
+                                        <div class="rate">
+                                            <input type="radio" v-model.number="rating" id="star5" name="rating"
+                                                value="5" />
+                                            <label for="star5" title="text">5 stars</label>
+                                            <input type="radio" v-model.number="rating" id="star4" name="rating"
+                                                value="4" />
+                                            <label for="star4" title="text">4 stars</label>
+                                            <input type="radio" v-model.number="rating" id="star3" name="rating"
+                                                value="3" />
+                                            <label for="star3" title="text">3 stars</label>
+                                            <input type="radio" v-model.number="rating" id="star2" name="rating"
+                                                value="2" />
+                                            <label for="star2" title="text">2 stars</label>
+                                            <input type="radio" v-model.number="rating" id="star1" name="rating"
+                                                value="1" />
+                                            <label for="star1" title="text">1 star</label>
+                                        </div>
+
+
                                         <button class="form-btn" type="submit" id="submit_review">Submit review</button>
                                     </form>
 
@@ -186,6 +199,7 @@
 
 import { productStore } from '@/stores/products'
 import { userCartStore } from '@/stores/cart'
+import { userAlertStore } from '@/stores/alert'
 
 import { storeToRefs } from 'pinia';
 
@@ -212,7 +226,7 @@ export default {
             reviews: []
         }
     },
-    
+
     methods: {
         addToCart() {
             const volume = document.getElementById("num_items").value;
@@ -224,19 +238,26 @@ export default {
             }
         },
         async onSubmitReview() {
-            let productReview = {
-                reviewer_name: this.reviewer_name,
-                email: this.reviewer_email,
-                rating: Number(this.rating),
-                comment: this.review,
-                product_id: this.product.pid
-            }
+            if (this.rating) {
+                let productReview = {
+                    reviewer_name: this.reviewer_name,
+                    email: this.reviewer_email,
+                    rating: Number(this.rating),
+                    comment: this.review,
+                    product_id: this.product.pid
+                }
+                console.log(productReview)
 
-            await this.pStore.submitReview(productReview)
-            this.reviewer_name = null
-            this.rating = null
-            this.review = null
-            this.reviewer_email = null
+                await this.pStore.submitReview(productReview)
+                this.reviewer_name = null
+                this.rating = null
+                this.review = null
+                this.reviewer_email = null
+            }else{
+                const alertStore = userAlertStore();
+                if (!this.rating) alertStore.error("Product evaluation required!");
+
+            }
 
         }
 
@@ -272,6 +293,4 @@ export default {
 }
 
 </script>
-
-
 

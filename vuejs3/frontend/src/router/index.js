@@ -25,7 +25,7 @@ const routes = [
     name: 'admin',
     component: AdminView
   },
-  
+
   {
     path: '/user/:userid',
     name: 'oneUser',
@@ -70,7 +70,7 @@ const routes = [
           console.log("no from");
         }
         console.log("running before hook");
-       
+
         next(destination);
       }
 
@@ -93,7 +93,7 @@ router.beforeEach(async (to) => {
   alertStore.clear();
 
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login', '/', '/cart'];
+  const publicPages = ['/login', '/', '/product/:pathMatch(.*)*', '/cart'];
 
   const authRequired = !publicPages.includes(to.path);
 

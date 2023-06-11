@@ -96,7 +96,7 @@
                                     <form @submit.prevent="onSubmit" class="payment-form">
                                         <div class="d-flex justify-content-between"><span>Card
                                                 details</span><img v-if="user" class="rounded"
-                                                :src="'../images/' + user_image" v-bind:alt="user.username" width="30">
+                                                :src="'../images/' + userImage" v-bind:alt="user.username" width="30">
                                         </div>
                                         <span class="type d-block mt-3 mb-1">Card type</span>
                                         <div id="card_type" class="card_type">
@@ -240,7 +240,7 @@ export default {
     data() {
         return {
             cart: [], user: null, recommendationList: [], itemsInCart: 0,
-            isDisabled: true, user_image: null, card: null, expiryDate: null, cardCvv: null,
+            isDisabled: true, card: null, expiryDate: null, cardCvv: null,
             cardNumber: null, nameOnCard: null, cartStore: userCartStore(), authStore: userAuthStore()
 
         }
@@ -290,7 +290,7 @@ export default {
         this.itemsInCart = itemsInCart
         this.cart = cart;
         this.user = user;
-        this.user_image = this.user.admin ? "admin-icon.png" : "user-icon.png";
+      
 
 
     },
@@ -302,6 +302,9 @@ export default {
                 amount += item.price;
             }
             return amount.toFixed(2);
+        },
+        userImage(){
+            return  this.user.admin ? "admin-icon.png" : "user-icon.png";
         }
     }
 

@@ -495,6 +495,56 @@ a {
 }
 
 /**  One product **/
+#evaluate {
+    position: absolute;
+    right: 217px;
+    margin-top: 8px;
+
+}
+.rate {
+  padding: 0px;
+}
+
+.rate:not(:checked)>input {
+    position: absolute;
+    top: -9999px;
+}
+
+.rate:not(:checked)>label {
+    float: right;
+    width: 1em;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 24px;
+    color: #ccc;
+    position: relative;
+    left: 32px;
+}
+
+.rate:not(:checked)>label:before {
+    content: '★ ';
+    
+}
+
+.rate>input:checked~label {
+    color: #ffc700;
+}
+
+.rate:not(:checked)>label:hover,
+.rate:not(:checked)>label:hover~label {
+    color: #deb217;
+}
+
+.rate>input:checked+label:hover,
+.rate>input:checked+label:hover~label,
+.rate>input:checked~label:hover,
+.rate>input:checked~label:hover~label,
+.rate>label:hover~input:checked~label {
+    color: #c59b08;
+}
+
+
 #old_rating .fa{ 
     font-size: 35px;
     padding-left: 15px;
@@ -502,7 +552,7 @@ a {
 }
 #submit_review {
     margin: 5px;
-    width: 50%;
+    width: 100%;
     border-width: 5px 1px 5px 1px;
     border-style: solid;
     border-color: #ececec;
@@ -512,14 +562,14 @@ a {
     font-size: 1.2em;
     font-weight: bold;
     position: relative;
-    left: 110px;
+   
 
 }
 
 #product{
     overflow: auto;
     position: relative;
-    padding-top: 100px;
+    padding-top: 0px;
     margin: 0 auto;
     min-width: auto;
     max-width: 78%;
@@ -569,7 +619,7 @@ a {
 
 }
 .product-review-table tr{
-    background-color:lightgoldenrodyellow;
+    background-color:lightcyan;
     border: 1px solid #E9E9E9;
 
 }
@@ -577,9 +627,10 @@ a {
 
 
 .product form {
-   
     float: right;
     position: relative;
+    background-color: lightcyan;
+    
     
    
 }

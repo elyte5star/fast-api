@@ -32,7 +32,18 @@ export const isUserNameValid = (username) => {
     const valid = !!res;
     return valid;
 }
+export const greet = () => {
+    let curHr = new Date().getHours();
+    const conds = [
+        { cond: curHr < 12, icon: "sun-o", time: "Morning" },
+        { cond: curHr < 18, icon: "coffee", time: "Afternoon" },
+        { cond: true, icon: "moon-o", time: "Evening" }
+    ]
+    let { time, icon } = conds.find(x => x.cond);
 
+    return `Good ${time} <i class="fa fa-${icon}"></i>`
+
+}
 
 export const postToTokenEndpoint = async (url = "", data = {}) => {
     let options = {

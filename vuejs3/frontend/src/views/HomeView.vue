@@ -16,7 +16,6 @@ import FooterContact from '@/components/FooterContact.vue'
 import { storeToRefs } from 'pinia';
 import { productStore } from '@/stores/products'
 
-
 export default {
   name: 'HomeView',
   components: {
@@ -28,11 +27,13 @@ export default {
 
     }
   },
+
   async created() {
     const pStore = productStore();
     await pStore.getProducts();
     const { products } = storeToRefs(pStore);
     this.products = products;
+  
   },
 
 }

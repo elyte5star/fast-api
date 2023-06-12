@@ -272,7 +272,7 @@ export default {
             const elem = document.getElementById("add_to_cart");
             if (!this.productQuantity) elem.innerHTML = "Out of Stock";
             else elem.innerHTML = "Add to Cart";
-            document.getElementById('product').scrollIntoView();
+            //document.getElementById('product').scrollIntoView();
 
 
         } else {

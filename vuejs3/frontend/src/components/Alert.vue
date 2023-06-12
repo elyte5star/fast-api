@@ -1,9 +1,11 @@
 <template>
     <div v-if="alert" class="container">
         <div class="m-3">
-            <div class="alert alert-dismissable" :class="alert.type">
-                <button @click="alertstore.clear()" class="btn btn-link close">×</button>
-                {{ alert.message }}
+            <div :class="'alert alert-dismissable  fade show ' + alert.type" role=alert >
+                <strong>Error !</strong> {{ alert.message }}
+                <button @click="alertstore.clear()" class="btn btn-link close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
         </div>
     </div>
@@ -24,7 +26,7 @@ export default {
     },
     mounted() {
         const alertStore = userAlertStore();
-        this.alertstore =  alertStore 
+        this.alertstore = alertStore
         const { alert } = storeToRefs(alertStore);
         this.alert = alert;
 

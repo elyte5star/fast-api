@@ -85,7 +85,7 @@
 
                                     <div class="m-t-sm">
                                         <div class="btn-group">
-                                            <router-link id="cont_shopping" :to="{ name: 'home' }"><i
+                                            <router-link id="cont_shopping" :to="{ name: 'Home' }"><i
                                                     class="fa fa-arrow-left"></i> Continue
                                                 shopping</router-link>
                                         </div>

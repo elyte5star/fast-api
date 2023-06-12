@@ -1,7 +1,7 @@
 <template>
     <div v-if="product" class="product">
         <div id="product">
-            <router-link id="cont_shopping_product" :to="{ name: 'home' }"><i class="fa fa-arrow-left"></i> Continue
+            <router-link id="cont_shopping_product" :to="{ name: 'Home' }"><i class="fa fa-arrow-left"></i> Continue
                 shopping</router-link>
             <h1>Product number: {{ product.pid }}</h1>
             <div class="framed1">
@@ -78,7 +78,7 @@
                             </div>
 
                             <div class="ibox-content">
-                                <router-link id="cont_shopping" :to="{ name: 'home' }"><i class="fa fa-arrow-left"></i>
+                                <router-link id="cont_shopping" :to="{ name: 'Home' }"><i class="fa fa-arrow-left"></i>
                                     Continue
                                     shopping</router-link>
                             </div>

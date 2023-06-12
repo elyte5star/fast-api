@@ -17,12 +17,12 @@ import { userAlertStore } from '@/stores/alert'
 const routes = [
   {
     path: '/',
-    name: 'home',
+    name: 'Home',
     component: HomeView
   },
   {
     path: '/admin',
-    name: 'admin',
+    name: 'Admin',
     component: AdminView
   },
 
@@ -35,7 +35,7 @@ const routes = [
   },
   {
     path: '/cart',
-    name: 'cart',
+    name: 'Cart',
     component: CartView
   },
   {
@@ -46,7 +46,7 @@ const routes = [
   },
   {
     path: '/login',
-    name: 'login',
+    name: 'Login',
     component: LoginView
 
   },
@@ -57,7 +57,7 @@ const routes = [
   },
   {
     path: "/checkout",
-    name: "checkout",
+    name: "Checkout",
     component: {
       beforeRouteEnter(to, from, next) {
         console.log({ from });
@@ -90,18 +90,19 @@ router.beforeEach(async (to) => {
   // clear alert on route change
   const alertStore = userAlertStore();
 
+  
   alertStore.clear();
 
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login', '/', '/product/:pathMatch(.*)*', '/cart'];
+  const publicPages = ['Login', 'Home', 'oneProduct', 'Cart'];
 
-  const authRequired = !publicPages.includes(to.path);
+  const authRequired = !publicPages.includes(to.name);
 
   const auth = userAuthStore();
 
   if (authRequired && !auth.user) {
     auth.returnUrl = to.fullPath;
-    return { name: 'login' }
+    return { name: 'Login' }
   }
 
 

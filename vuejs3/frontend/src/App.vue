@@ -3,7 +3,6 @@
     <div>
       <NavBar />
     </div>
-    
     <div>
       <AlertVue />
     </div>

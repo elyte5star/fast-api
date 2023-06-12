@@ -67,7 +67,7 @@
                             </div>
 
                             <div class="ibox-content">
-                                <router-link id="cont_shopping" :to="{ name: 'home' }"><i class="fa fa-arrow-left"></i>
+                                <router-link id="cont_shopping" :to="{ name: 'Home' }"><i class="fa fa-arrow-left"></i>
                                     Continue
                                     shopping</router-link>
                             </div>

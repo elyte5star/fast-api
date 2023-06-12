@@ -35,8 +35,8 @@ export const isUserNameValid = (username) => {
 export const greet = () => {
     let curHr = new Date().getHours();
     const conds = [
-        { cond: curHr < 12, icon: "sun-o", time: "Morning" },
-        { cond: curHr < 18, icon: "coffee", time: "Afternoon" },
+        { cond: curHr < 12, icon:"coffee", time: "Morning" },
+        { cond: curHr < 18, icon:  "sun-o", time: "Afternoon" },
         { cond: true, icon: "moon-o", time: "Evening" }
     ]
     let { time, icon } = conds.find(x => x.cond);

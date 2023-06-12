@@ -42,7 +42,6 @@ function authHeader(url) {
 async function handleResponse(response) {
     const isJson = response.headers?.get('content-type')?.includes('application/json');
     const data = isJson ? await response.json() : null;
-
     // check for error response
     if (!response.ok) {
         const { user, logout } = userAuthStore();
@@ -56,7 +55,6 @@ async function handleResponse(response) {
                 footer: '<a href="/login">Please, log in again!.</a>'
             })
             logout();
-
         }
         // get error message from body or default to response status
         const error = (data && data.message) || response.status;

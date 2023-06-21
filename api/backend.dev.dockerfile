@@ -4,7 +4,7 @@ FROM python:3.10
 WORKDIR /code/app
 
 # Usage: COPY [from, from, from, to]
-COPY ["./", "./"]
+COPY ["./src", "./"]
 
 # Set the python path:
 ENV PYTHONPATH="$PYTHONPATH:${PWD}"

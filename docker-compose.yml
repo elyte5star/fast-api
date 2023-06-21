@@ -23,7 +23,7 @@ services:
     image: fast-api
     platform: linux/amd64 # <- Only one working for Apple M1
     build:
-      context: ./api/src
+      context: ./api
       dockerfile: ./backend.dev.dockerfile
 
     networks:
@@ -47,12 +47,12 @@ services:
     container_name: vue-app
     image: vue-app
     build:
-      context: /Users/elyte/Documents/e-commerce
+      context: /home/elyte/Documents/e-commerce
       dockerfile: ./frontend.dockerfile
     networks:
       - elyte_net
     env_file:
-      -  /Users/elyte/Documents/e-commerce/.env
+      -  /home/elyte/Documents/e-commerce/frontend/.env
     ports:
       - 9000:8000
     depends_on:

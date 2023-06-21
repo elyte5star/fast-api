@@ -50,7 +50,7 @@ class Users(Utilities):
         )
 
     async def _create_enquiry(self, data: Enquiry) -> ClientEnquiryResponse:
-        client_equiry = _Enquiry(**data.dict(), created_at=self.get_indent())
+        client_equiry = _Enquiry(**data.dict(), eid=self._get_indent())
         async with self.get_session() as session:
             session.add(client_equiry)
             await session.commit()

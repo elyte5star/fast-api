@@ -1,11 +1,12 @@
 from modules.utils.base_functions import Utilities
+from modules.schemas.requests.enquiry import Enquiry
 from modules.schemas.requests.users import (
     CreateUserRequest,
     GetUserRequest,
     DeleteUserRequest,
 )
+from modules.schemas.responses.equiry import ClientEnquiryResponse
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.exc import IntegrityError
 from modules.schemas.responses.users import (
     CreateUserResponse,
     GetUsersResponse,
@@ -15,6 +16,7 @@ from modules.schemas.responses.users import (
 )
 from sqlalchemy.sql.expression import false
 from modules.database.models.user import _User
+from modules.database.models.enquiry import _Enquiry
 from sqlalchemy.orm import selectinload, defer
 from typing import Optional
 from modules.schemas.requests.auth import JWTcredentials
@@ -46,6 +48,16 @@ class Users(Utilities):
             success=False,
             message="User already exist!",
         )
+
+    async def _create_enquiry(self, data: Enquiry) -> ClientEnquiryResponse:
+        client_equiry = _Enquiry(**data.dict(), created_at=self.get_indent())
+        async with self.get_session() as session:
+            session.add(client_equiry)
+            await session.commit()
+            return ClientEnquiryResponse(
+                eid=client_equiry.eid,
+                message=f" Enquiry with {client_equiry.eid } created!",
+            )
 
     async def _get_users(
         self,
@@ -83,7 +95,7 @@ class Users(Utilities):
                 )
 
                 (user,) = result.first()
-                
+
                 return GetUserResponse(
                     user=user,
                     message=f"User with id:{data.userid} found!",

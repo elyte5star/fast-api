@@ -5,6 +5,7 @@ from modules.schemas.requests.users import (
     DeleteUserRequest,
     User,
 )
+from modules.schemas.requests.enquiry import Enquiry
 from modules.schemas.responses.base_response import BaseResponse
 from modules.schemas.responses.users import (
     CreateUserResponse,
@@ -12,6 +13,7 @@ from modules.schemas.responses.users import (
     GetUserResponse,
     GetInfoResponse,
 )
+from modules.schemas.responses.equiry import ClientEnquiryResponse
 from modules.schemas.requests.auth import JWTcredentials
 from modules.auth.dependency import security
 
@@ -22,6 +24,15 @@ router = APIRouter(prefix="/users", tags=["Users"])
 @router.post("/signup", response_model=CreateUserResponse, summary="Create User")
 async def create_user(user_data: User) -> CreateUserResponse:
     return await handler._create_user(CreateUserRequest(user=user_data))
+
+
+@router.post(
+    "/customer/service",
+    response_model=ClientEnquiryResponse,
+    summary="Customer Service",
+)
+async def create_enquiry(enquiry: Enquiry) -> ClientEnquiryResponse:
+    return await handler._create_enquiry(enquiry)
 
 
 @router.get("/all", response_model=GetUsersResponse, summary="Get all Users")

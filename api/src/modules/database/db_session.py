@@ -17,6 +17,7 @@ from modules.database.models.job_task import _Job, _Task
 from modules.database.models.worker import _Worker
 from modules.database.models.product import Product, SpecialDeals
 from modules.database.models.review import Review
+from modules.database.models.enquiry import _Enquiry    
 from sqlalchemy import or_
 from sqlalchemy.orm import selectinload, defer
 

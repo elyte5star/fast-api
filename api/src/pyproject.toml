@@ -7,7 +7,7 @@ name = "Elyte FastAPI Application."
 packages = [{include = "fastapi_docker"}]
 readme = "README.md"
 repository = "https://github.com/elyte5star/fastapi_docker"
-version = "0.1.0"
+version = "1.1.0"
 
 classifiers = [
   "Development Status :: 4 - Beta",

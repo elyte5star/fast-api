@@ -261,3 +261,5 @@ persistence/*
 
 nodemodules
 dist
+
+docker-compose.yml

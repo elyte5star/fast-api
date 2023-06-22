@@ -34,10 +34,10 @@ services:
     restart: on-failure
     depends_on:
       - db
-      #- rabbitQ
+      - rabbitQ
     links:
       - db
-      #- rabbitQ
+      - rabbitQ
     env_file:
       - api.env
     volumes:
@@ -47,40 +47,40 @@ services:
     container_name: vue-app
     image: vue-app
     build:
-      context: /home/elyte/Documents/e-commerce
+      context: /Users/elyte/Documents/e-commerce
       dockerfile: ./frontend.dockerfile
     networks:
       - elyte_net
     env_file:
-      -  /home/elyte/Documents/e-commerce/frontend/.env
+      -  /Users/elyte/Documents/e-commerce/frontend/.env
     ports:
       - 9000:8000
     depends_on:
       - api
     
-  # rabbitQ:
-  #   hostname: rabbitQ
-  #   image: rabbitmq:3-management
-  #   container_name: rabbit
-  #   ports:
-  #     - 5672:5672
-  #     - 15672:15672
-  #   networks:
-  #     - elyte_net
+  rabbitQ:
+    hostname: rabbitQ
+    image: rabbitmq:3-management
+    container_name: rabbit
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - elyte_net
 
-  # worker:
-  #   image: worker
-  #   container_name: main-worker
-  #   build:
-  #     context: ./api/src
-  #     dockerfile: ./rabbitworker.dockerfile
-  #   restart: always
-  #   env_file:
-  #     - api.env
-  #   networks:
-  #     - elyte_net
-  #   volumes:
-  #     - ./api/src:/usr/src
-  #   links:
-  #     - db
-  #     - rabbitQ
+  worker:
+    image: worker
+    container_name: main-worker
+    build:
+      context: ./api/src
+      dockerfile: ./rabbitworker.dockerfile
+    restart: always
+    env_file:
+      - api.env
+    networks:
+      - elyte_net
+    volumes:
+      - ./api/src:/usr/src
+    links:
+      - db
+      - rabbitQ

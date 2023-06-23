@@ -34,7 +34,7 @@ services:
     restart: on-failure
     depends_on:
       - db
-      - rabbitQ
+      #- rabbitQ
     links:
       - db
       - rabbitQ
@@ -47,12 +47,12 @@ services:
     container_name: vue-app
     image: vue-app
     build:
-      context: /Users/elyte/Documents/e-commerce
+      context: /home/elyte/Documents/e-commerce/frontend
       dockerfile: ./frontend.dockerfile
     networks:
       - elyte_net
     env_file:
-      -  /Users/elyte/Documents/e-commerce/frontend/.env
+      -  /home/elyte/Documents/e-commerce/frontend/.env
     ports:
       - 9000:8000
     depends_on:

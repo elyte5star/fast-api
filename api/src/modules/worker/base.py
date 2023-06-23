@@ -27,8 +27,8 @@ class WorkerBase:
             username=self.cf.sql_username,
             password=self.cf.sql_password,
             host=self.cf.sql_host,
-            database=self.cf.sql_db,
-            charset="utf8mb4",
+            database=self.cf.sql_db
+        
         )
 
     def create_worker(self):

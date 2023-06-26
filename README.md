@@ -8,7 +8,7 @@ Starting the project
   git clone git@github.com:elyte5star/fast-api-queue.git
   ```
 
-  - Create file app.env and set values for the environment variables below:
+  - Create file api.env and set values for the environment variables below:
 
   ```
   PYTHONUNBUFFERED=x

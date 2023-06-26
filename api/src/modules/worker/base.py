@@ -23,7 +23,7 @@ class WorkerBase:
         self.worker_type = worker_type
         self.queue_name = queue_name
         self.url_object = URL.create(
-            "mariadb+mysqldb",
+            "mariadb+mariadbconnector",
             username=self.cf.sql_username,
             password=self.cf.sql_password,
             host=self.cf.sql_host,

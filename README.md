@@ -35,15 +35,15 @@ Starting the project
 
   docker-compose up rabbitQ
   
-  docker-compose build app
+  docker-compose build api
 
-  ocker-compose build worker
+  docker-compose build worker
   ```
 
   - start server with
 
   ```
-  docker-compose up app
+  docker-compose up api
 
   docker-compose up worker
 

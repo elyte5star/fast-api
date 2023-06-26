@@ -35,7 +35,7 @@ async def create_enquiry(enquiry: Enquiry) -> ClientEnquiryResponse:
     return await handler._create_enquiry(enquiry)
 
 
-@router.get("/all", response_model=GetUsersResponse, summary="Get all Users")
+@router.get("", response_model=GetUsersResponse, summary="Get all Users")
 async def get_users(
     cred: JWTcredentials = Depends(security),
 ) -> GetUsersResponse:

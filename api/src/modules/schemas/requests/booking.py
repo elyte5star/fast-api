@@ -1,9 +1,16 @@
 from pydantic import BaseModel
 from .base_request import RequestBase
-from typing import NewType
+from modules.schemas.requests.product import ProductItem
+from modules.schemas.requests.review import Review
+
+
+class CartItem(ProductItem):
+    discount: list[float]
+    reviews: list[Review]
+
 
 class CreateBooking(BaseModel):
-    cart: list
+    cart: list[CartItem]
     total_price: str
 
 

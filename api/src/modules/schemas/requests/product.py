@@ -1,5 +1,6 @@
 from .base_request import RequestBase
 from pydantic import BaseModel
+from typing import Any
 
 
 class GetProductDetailsRequest(BaseModel):
@@ -16,6 +17,7 @@ class CreateDiscountRequest(RequestBase):
 
 
 class ProductItem(BaseModel):
+    pid: str = ""
     name: str
     description: str
     details: str

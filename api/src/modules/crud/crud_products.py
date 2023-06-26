@@ -29,7 +29,8 @@ admin_msg = "Admin rights needed!"
 class Products(Discount):
     async def _create_product(self, data: ProductItem) -> CreateProductResponse:
         if await self.product_name_exist(data.name) is None:
-            product = Product(**data.dict(), pid=self._get_indent())
+            data.pid = self._get_indent()
+            product = Product(**data.dict())
             async with self.get_session() as session:
                 session.add(product)
                 await session.commit()
@@ -45,7 +46,8 @@ class Products(Discount):
 
     async def _create_review(self, data: ReviewRequest) -> CreateReviewResponse:
         if await self.pid_exist(data.review.product_id) is not None:
-            review = Review(**data.review.dict(), rid=self.get_indent())
+            data.review.rid = self._get_indent()
+            review = Review(**data.review.dict())
             async with self.get_session() as session:
                 session.add(review)
                 await session.commit()

@@ -3,6 +3,7 @@ from pydantic import BaseModel, EmailStr
 
 
 class Review(BaseModel):
+    rid: str = ""
     reviewer_name: str
     email: EmailStr
     rating: int

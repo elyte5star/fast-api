@@ -48,7 +48,7 @@ class Bookings(Discount):
             total_price = self.calculate_discount(total_price, data.cred.discount)
         async with self.get_session() as session:
             booking = _Booking(
-                oid=self.get_indent(),
+                oid=self._get_indent(),
                 total_price=total_price,
                 cart=data.cart,
                 owner_id=data.cred.userid,

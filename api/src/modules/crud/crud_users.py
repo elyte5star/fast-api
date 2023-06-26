@@ -31,8 +31,9 @@ class Users(Utilities):
             hashed_password = self.hash_password(
                 data.user.password, self.cf.rounds, self.cf.coding
             )
+            
             user_data_dict = data.user.dict()
-            user_data_dict["userid"] = self.get_indent()
+            user_data_dict["userid"] = self._get_indent()
             user_data_dict["discount"] = None
             user_data_dict["password"] = hashed_password
             db_user = _User(**user_data_dict)

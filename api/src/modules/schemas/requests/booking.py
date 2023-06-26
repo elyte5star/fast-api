@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from .base_request import RequestBase
-
+from typing import NewType
 
 class CreateBooking(BaseModel):
     cart: list

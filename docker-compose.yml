@@ -37,7 +37,7 @@ services:
       #- rabbitQ
     links:
       - db
-      - rabbitQ
+      #- rabbitQ
     env_file:
       - api.env
     volumes:
@@ -47,17 +47,17 @@ services:
     container_name: vue-app
     image: vue-app
     build:
-      context: /home/elyte/Documents/e-commerce/frontend
+      context: ./e-commerce/frontend
       dockerfile: ./frontend.dockerfile
     networks:
       - elyte_net
     env_file:
-      -  /home/elyte/Documents/e-commerce/frontend/.env
+      - ./e-commerce/frontend/.env
     ports:
       - 9000:8000
     depends_on:
       - api
-    
+
   rabbitQ:
     hostname: rabbitQ
     image: rabbitmq:3-management

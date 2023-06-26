@@ -29,7 +29,7 @@ admin_msg = "Admin rights needed!"
 class Products(Discount):
     async def _create_product(self, data: ProductItem) -> CreateProductResponse:
         if await self.product_name_exist(data.name) is None:
-            product = Product(**data.dict(), pid=self.get_indent())
+            product = Product(**data.dict(), pid=self._get_indent())
             async with self.get_session() as session:
                 session.add(product)
                 await session.commit()

@@ -16,6 +16,10 @@
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 
+
+
+
+
 ### macOS ###
 # General
 .DS_Store
@@ -250,6 +254,12 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/python,linux,windows,macos,vim,visualstudiocode
 
 # Changes made manually by Anzyz development team
+
+
+#fORNTEND
+
+e-commerce/*
+
 
 # API:
 

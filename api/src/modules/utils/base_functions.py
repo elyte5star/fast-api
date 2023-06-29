@@ -44,6 +44,8 @@ class Utilities(AsyncDatabaseSession):
             password.encode(coding), bcrypt.gensalt(rounds=rounds)
         ).decode(coding)
         return hashed_password
+    
+
 
     def verify_password(
         self, plain_password: str, hashed_password: str, coding: str

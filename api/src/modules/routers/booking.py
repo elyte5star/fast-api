@@ -31,7 +31,7 @@ async def create_booking(
 
 
 # Get Bookings
-@router.get("/all", response_model=GetBookingsResponse)
+@router.get("", response_model=GetBookingsResponse)
 async def get_bookings(
     cred: JWTcredentials = Depends(security),
 ) -> GetBookingsResponse:

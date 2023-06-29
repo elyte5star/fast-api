@@ -4,6 +4,8 @@ from modules.schemas.requests.users import (
     GetUserRequest,
     DeleteUserRequest,
     User,
+    EditUser,
+    UpdateUserRequest,
 )
 from modules.schemas.requests.enquiry import Enquiry
 from modules.schemas.responses.base_response import BaseResponse
@@ -39,7 +41,12 @@ async def create_enquiry(enquiry: Enquiry) -> ClientEnquiryResponse:
 async def get_users(
     cred: JWTcredentials = Depends(security),
 ) -> GetUsersResponse:
-    return await handler._get_users()
+    return await handler._get_users(cred)
+
+
+@router.put("/{userid}", response_model=CreateUserResponse, summary="Update User")
+async def update_user(userid: str, user_data: EditUser) -> CreateUserResponse:
+    return await handler._update_user(UpdateUserRequest(user=user_data, userid=userid))
 
 
 @router.get("/{userid}", response_model=GetUserResponse, summary="Get one user")

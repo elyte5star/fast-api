@@ -32,7 +32,7 @@ class JWTcredentials(BaseModel):
     exp: timedelta
     token_id: str
     discount: Optional[float] = None
-    telephone: int
+    telephone: str
 
 
 class RefreshTokenRequest(RequestBase):

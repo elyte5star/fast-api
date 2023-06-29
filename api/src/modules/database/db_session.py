@@ -85,6 +85,13 @@ class AsyncDatabaseSession:
             )
             return result.first()
 
+    async def useremail_exist(self, email: str) -> Optional[_User]:
+        async with self.get_session() as session:
+            result = await session.execute(
+                self.select(_User.email).where(_User.email == email)
+            )
+            return result.first()
+
     async def username_exist(self, username: str) -> Optional[_User]:
         async with self.get_session() as session:
             result = await session.execute(

@@ -35,14 +35,10 @@ class Auth(Utilities):
                     data=data,
                     expires_delta=self.time_delta(self.cf.token_expire_min),
                 )
-                refresh_token = self.create_token(
-                    data=data,
-                    expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
-                )
+
                 return TokenResponse(
                     token_data={
                         "access_token": access_token,
-                        "refresh_token": refresh_token,
                         "token_type": "bearer",
                         "host_url": self.cf.host_url,
                         "userid": user.userid,
@@ -80,12 +76,9 @@ class Auth(Utilities):
 
         access_token = self.create_token(
             data=_data,
-            expires_delta=self.time_delta(self.cf.token_expire_min),
-        )
-        refresh_token = self.create_token(
-            data=_data,
             expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
         )
+
         if await self.userid_exist(data.userid) is None:
             _data.pop("token_id")
             _data["username"] = _data.pop("sub")
@@ -101,7 +94,6 @@ class Auth(Utilities):
         return TokenResponse(
             token_data={
                 "access_token": access_token,
-                "refresh_token": refresh_token,
                 "token_type": "bearer",
                 "host_url": self.cf.host_url,
                 "userid": data.userid,

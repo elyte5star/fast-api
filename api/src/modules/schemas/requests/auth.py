@@ -9,18 +9,15 @@ class GrantType(BaseModel):
     old_token_id: str = ""
 
 
-class LoginDataRequest(RequestBase):
+class LoginData(BaseModel):
     username: str
     password: str
 
 
-class GoogleLoginData(BaseModel):
+class CloudLoginData(BaseModel):
     username: str
     email: str
-
-
-class GoogleLoginDataRequest(RequestBase):
-    google_data = GoogleLoginData
+    userid: str
 
 
 class JWTcredentials(BaseModel):
@@ -32,11 +29,11 @@ class JWTcredentials(BaseModel):
     exp: timedelta
     token_id: str
     discount: Optional[float] = None
-    telephone: str
+    telephone: Optional[str] = None
 
 
 class RefreshTokenRequest(RequestBase):
-    data: GrantType = None
+    data: GrantType
 
 
 class LogOutRequest(BaseModel):
@@ -44,5 +41,5 @@ class LogOutRequest(BaseModel):
 
 
 class BlackListRequest(BaseModel):
-    token_id:str
-    token:str
+    token_id: str
+    token: str

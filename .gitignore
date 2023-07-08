@@ -267,9 +267,8 @@ e-commerce/*
 persistence/*
 !persistence/*.file
 
-*.env
-
+.env
+*.local
 nodemodules
 dist
 
-docker-compose.yml

@@ -1,17 +1,15 @@
 from modules.schemas.requests.auth import (
-    LoginDataRequest,
-    RefreshTokenRequest,
-    GoogleLoginDataRequest,
+    LoginData,
+    CloudLoginData,
     LogOutRequest,
 )
 from modules.schemas.responses.auth import TokenResponse
 from modules.database.models.user import _User
-from modules.schemas.responses.base_response import BaseResponse
 from modules.utils.base_functions import Utilities
 
 
 class Auth(Utilities):
-    async def authenticate_user(self, data: LoginDataRequest) -> TokenResponse:
+    async def authenticate_user(self, data: LoginData) -> TokenResponse:
         if await self.username_exist(data.username) is not None:
             async with self.get_session() as session:
                 result = await session.execute(
@@ -63,41 +61,52 @@ class Auth(Utilities):
             message=f"User {data.username} is not authorized.Incorrect username",
         )
 
-    async def google_auth(self, data: GoogleLoginDataRequest) -> TokenResponse:
-        pass
+    async def _get_token(self, data: CloudLoginData) -> TokenResponse:
+        active = True
+        admin = False
+        discount = None
+        if data.username == self.cf.username:
+            admin = True
+        _data = {
+            "userid": data.userid,
+            "sub": data.username,
+            "email": data.email,
+            "admin": admin,
+            "active": active,
+            "discount": discount,
+            "telephone": "",
+            "token_id": self._get_indent(),
+        }
 
-    async def refresh_token(self, payload: RefreshTokenRequest) -> TokenResponse:
-        if (
-            payload.token_load.username == self.cf.username
-            and payload.data.type == self.cf.grant_type
-        ):
-            payload.token_load.token_id = self.get_indent()
-            data_dict = payload.token_load.dict()
-            data_dict["sub"] = data_dict.pop("username")
-            access_token = self.create_token(
-                data=data_dict,
-                expires_delta=self.time_delta(self.cf.token_expire_min),
-            )
-            refresh_token = self.create_token(
-                data=data_dict,
-                expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
-            )
+        access_token = self.create_token(
+            data=_data,
+            expires_delta=self.time_delta(self.cf.token_expire_min),
+        )
+        refresh_token = self.create_token(
+            data=_data,
+            expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
+        )
+        if await self.userid_exist(data.userid) is None:
+            _data.pop("token_id")
+            _data["username"] = _data.pop("sub")
 
-            return TokenResponse(
-                token_data={
-                    "access_token": access_token,
-                    "refresh_token": refresh_token,
-                    "token_id": payload.token_load.token_id,
-                    "token_type": "bearer",
-                    "host_url": self.cf.host_url,
-                    "userid": payload.token_load.userid,
-                    "username": payload.token_load.username,
-                    "admin": payload.token_load.admin,
-                },
-                message="Fresh token created : Blacklist created!",
+            _data["password"] = self.hash_password(
+                "valid_cloud_user", self.cf.rounds, self.cf.coding
             )
-
+            db_user = _User(**_data)
+            async with self.get_session() as session:
+                session.add(db_user)
+                await session.commit()
+            self.log.info("A new user account created!")
         return TokenResponse(
-            success=False,
-            message="Couldnt refresh token.",
+            token_data={
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+                "token_type": "bearer",
+                "host_url": self.cf.host_url,
+                "userid": data.userid,
+                "username": data.username,
+                "admin": admin,
+            },
+            message=f"User {data.username} is authorized!",
         )

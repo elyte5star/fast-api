@@ -61,11 +61,12 @@ class Auth(Utilities):
         active = True
         admin = False
         discount = None
-        if data.username == self.cf.username:
+        username = "_".join(data.username.split())
+        if username == self.cf.username:
             admin = True
         _data = {
             "userid": data.userid,
-            "sub": data.username,
+            "sub": username,
             "email": data.email,
             "admin": admin,
             "active": active,
@@ -82,7 +83,6 @@ class Auth(Utilities):
         if await self.userid_exist(data.userid) is None:
             _data.pop("token_id")
             _data["username"] = _data.pop("sub")
-
             _data["password"] = self.hash_password(
                 "valid_cloud_user", self.cf.rounds, self.cf.coding
             )
@@ -90,7 +90,7 @@ class Auth(Utilities):
             async with self.get_session() as session:
                 session.add(db_user)
                 await session.commit()
-            self.log.info("A new user account created!")
+                self.log.info("A new user account created!")
         return TokenResponse(
             token_data={
                 "access_token": access_token,

@@ -24,7 +24,7 @@ async def token(
 
 
 @router.post(
-    "/cloud/get_token",
+    "/get_token",
     response_model=TokenResponse,
     summary="Get token for Cloud users",
 )

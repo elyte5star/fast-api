@@ -61,7 +61,7 @@ class Auth(Utilities):
         active = True
         admin = False
         discount = None
-        username = "_".join(data.username.split())
+        username = "_".join(data.username.split()).lower()
         if username == self.cf.username:
             admin = True
         _data = {

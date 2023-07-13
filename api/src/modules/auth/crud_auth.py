@@ -97,8 +97,8 @@ class Auth(Utilities):
                 "token_type": "bearer",
                 "host_url": self.cf.host_url,
                 "userid": data.userid,
-                "username": data.username,
+                "username": username,
                 "admin": admin,
             },
-            message=f"User {data.username} is authorized!",
+            message=f"User {username} is authorized!",
         )

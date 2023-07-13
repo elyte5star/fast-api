@@ -47,12 +47,12 @@ services:
     container_name: vue-app
     image: vue-app
     build:
-      context: ./e-commerce/frontend
+      context: ./e-commerce
       dockerfile: ./frontend.dockerfile
     networks:
       - elyte_net
     env_file:
-      - ./e-commerce/frontend/.env
+      - ./e-commerce/.env
     ports:
       - 9000:8000
     depends_on:

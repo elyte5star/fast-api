@@ -1,6 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from .base_request import RequestBase
-from typing import Optional
+from modules.schemas.requests.base_request import RequestBase
 
 
 class User(BaseModel):
@@ -13,7 +12,7 @@ class User(BaseModel):
 class EditUser(BaseModel):
     username: str
     email: EmailStr
-    password: Optional[str] = None  # or Union[str, None]
+    password: str
     telephone: str
 
 

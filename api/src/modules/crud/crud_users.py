@@ -81,7 +81,7 @@ class Users(Utilities):
             edit_user_dict = data.user.dict()
 
             # only update password if entered or changed
-            if edit_user_dict["password"] is None or self.verify_password(
+            if edit_user_dict["password"] =='default' or self.verify_password(
                 edit_user_dict["password"], stored_user.password, self.cf.coding
             ):
                 del edit_user_dict["password"]

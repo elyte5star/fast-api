@@ -100,5 +100,5 @@ class Auth(Utilities):
                 "username": username,
                 "admin": admin,
             },
-            message=f"User {username} is authorized!",
+            message=f"User {data.username} is authorized!",
         )

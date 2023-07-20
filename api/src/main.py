@@ -1,18 +1,19 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.encoders import jsonable_encoder
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
 import logging
 from starlette.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, PlainTextResponse
-from starlette.middleware.sessions import SessionMiddleware
-from fastapi.exception_handlers import http_exception_handler
+
+# from starlette.middleware.sessions import SessionMiddleware
 from fastapi.logger import logger
 from modules.settings.config import Settings
 from modules.utils.base_functions import Utilities
 from modules.crud.crud_users import Users
 from modules.auth.crud_auth import Auth
-from modules.crud.crud_products import Products, BaseResponse
+from modules.crud.crud_products import Products
 from modules.crud.crud_bookings import Bookings
 
 from modules.queue.booking_queue import QBookingHandler
@@ -76,7 +77,14 @@ app.mount("/static", StaticFiles(directory="./modules/static"), name="static")
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
     logger.warning(f"{repr(exc.detail)}!!")
-    return await http_exception_handler(request, exc)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=jsonable_encoder(
+            {"data": {"message": str(exc.detail), "success": False}}
+        ),
+    )
+
+    # return await http_exception_handler(request, exc)
 
 
 # Add Routes

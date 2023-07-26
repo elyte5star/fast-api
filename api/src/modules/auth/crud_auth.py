@@ -33,7 +33,7 @@ class Auth(Utilities):
                 }
                 access_token = self.create_token(
                     data=data,
-                    expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
+                    expires_delta=self.time_delta(self.cf.token_expire_min),
                 )
 
                 return TokenResponse(

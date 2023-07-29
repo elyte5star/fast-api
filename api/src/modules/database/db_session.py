@@ -7,6 +7,7 @@ from sqlalchemy import update, delete
 from typing import Optional
 import uuid
 from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 # needed to create table automatically
 
@@ -52,7 +53,7 @@ class AsyncDatabaseSession:
             )
 
     @asynccontextmanager
-    async def get_session(self) -> AsyncSession:
+    async def get_session(self) -> AsyncGenerator:
         try:
             async with self.async_session_generator() as session:
                 yield session

@@ -7,6 +7,8 @@ from modules.schemas.requests.review import Review
 class CartItem(ProductItem):
     discount: list[float]
     reviews: list[Review]
+    quantity: int
+    calculated_price: float
 
 
 class CreateBooking(BaseModel):

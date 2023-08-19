@@ -1,5 +1,5 @@
 from modules.schemas.responses.base_response import BaseResponse
-from pydantic.types import Any
+from typing import Any
 
 
 class GetProductDetailsResponse(BaseResponse):

@@ -7,6 +7,7 @@ class User(BaseModel):
     email: EmailStr
     password: str
     telephone: str
+    active: bool = False
 
 
 class EditUser(BaseModel):

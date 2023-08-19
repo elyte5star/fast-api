@@ -6,6 +6,7 @@ from modules.schemas.requests.auth import (
 from modules.schemas.responses.auth import TokenResponse
 from modules.database.models.user import _User
 from modules.utils.base_functions import Utilities
+from sqlalchemy.sql.expression import false
 
 
 class Auth(Utilities):
@@ -16,7 +17,13 @@ class Auth(Utilities):
                     self.select(_User).where(_User.username == data.username)
                 )
                 (user,) = result.first()
-            if self.verify_password(data.password, user.password, self.cf.coding):
+            if user.active == false():
+                return TokenResponse(
+                    success=False,
+                    message="Account Not Verified",
+                )
+
+            if self.verify_password(data.password.get_secret_value(), user.password, self.cf.coding):
                 active = True
                 admin = False
                 if user.username == self.cf.username:
@@ -54,7 +61,7 @@ class Auth(Utilities):
             )
         return TokenResponse(
             success=False,
-            message=f"User {data.username} is not authorized.Incorrect username",
+            message=f"User {data.username} is not authorized. Incorrect username/User not found!",
         )
 
     async def _get_token(self, data: CloudLoginData) -> TokenResponse:

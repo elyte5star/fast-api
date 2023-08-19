@@ -132,6 +132,7 @@ class AsyncDatabaseSession:
         if await self.username_email_exists(self.cf.email, self.cf.username) is None:
             admin_user = _User(
                 userid=str(uuid.uuid4()),
+                active=True,
                 email=self.cf.email,
                 password=self.cf.password,
                 username=self.cf.username,

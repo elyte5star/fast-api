@@ -1,5 +1,5 @@
 from pydantic import BaseModel, SecretStr, EmailStr
-from pydantic.types import Any
+from typing import Any
 from .base_response import BaseResponse
 from datetime import datetime
 

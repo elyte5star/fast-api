@@ -1,6 +1,6 @@
 from .base_response import BaseResponse,BaseModel
 from .job import JobResponse
-from pydantic.types import Any
+from typing import Any
 
 class CreateBookingResponse(BaseResponse):
     oid: str = ""

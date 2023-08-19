@@ -12,8 +12,8 @@ class GetProductsRequest(RequestBase):
 
 
 class CreateDiscountRequest(RequestBase):
-    pid = str
-    discount = float
+    pid: str
+    discount: float
 
 
 class ProductItem(BaseModel):

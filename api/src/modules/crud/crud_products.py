@@ -70,7 +70,7 @@ class Products(Discount):
                 model = await self._create_product(product_data)
                 product_ids.append(model.pid)
             return CreateProductsResponse(
-                pids=product_ids,
+                pids=jsonable_encoder(product_ids),
                 message=f"{len(product_ids)} products created!",
             )
         return CreateProductsResponse(
@@ -93,7 +93,8 @@ class Products(Discount):
 
                 (product,) = result.first()
                 return GetProductDetailsResponse(
-                    product=product, message=f"Product with id:{product.pid} found!"
+                    product=jsonable_encoder(product),
+                    message=f"Product with id:{product.pid} found!",
                 )
         return GetProductDetailsResponse(
             success=False, message=f"Product with id:{prod_data.pid} not found!"
@@ -135,7 +136,7 @@ class Products(Discount):
             products = result.scalars().all()
             if len(products) > 0:
                 return GetProductsResponse(
-                    products=products,
+                    products=jsonable_encoder(products),
                     message=f"Total number of products: {len(products)}",
                 )
             return GetProductsResponse(

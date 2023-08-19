@@ -7,6 +7,7 @@ from modules.schemas.responses.booking import (
     CreateBookingResponse,
     GetBookingsResponse,
 )
+from fastapi.encoders import jsonable_encoder
 
 # ======================================#
 # Discount by volume and by sales-amount#
@@ -69,7 +70,7 @@ class Bookings(Discount):
                 bookings = result.scalars().all()
                 if bookings:
                     return GetBookingsResponse(
-                        bookings=bookings,
+                        bookings=jsonable_encoder(bookings),
                         message=f"Total number of bookings: {len(bookings)}",
                     )
                 return GetBookingsResponse(
@@ -92,7 +93,7 @@ class Bookings(Discount):
 
                 (booking,) = result.first()
                 return GetBookingResponse(
-                    booking=booking,
+                    booking=jsonable_encoder(booking),
                     message=f"Booking with id :{data.oid} found!",
                 )
         return GetBookingResponse(

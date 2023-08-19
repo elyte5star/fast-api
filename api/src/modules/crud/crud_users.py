@@ -15,11 +15,12 @@ from modules.schemas.responses.users import (
     GetInfoResponse,
     BaseResponse,
 )
-from sqlalchemy.sql.expression import false
 from modules.database.models.user import _User
 from modules.database.models.enquiry import _Enquiry
 from sqlalchemy.orm import selectinload, defer
 from modules.schemas.requests.auth import JWTcredentials
+from starlette.templating import Jinja2Templates
+
 
 
 class Users(Utilities):
@@ -131,7 +132,7 @@ class Users(Utilities):
                 users = result.scalars().all()
                 if len(users) > 0:
                     return GetUsersResponse(
-                        users=users, message=f"Total number of users: {len(users)}"
+                        users=jsonable_encoder(users), message=f"Total number of users: {len(users)}"
                     )
                 return CreateUserResponse(
                     success=False,
@@ -159,9 +160,9 @@ class Users(Utilities):
                 )
 
                 (user,) = result.first()
-
+                jsonable_encoder(user)
                 return GetUserResponse(
-                    user=user,
+                    user=jsonable_encoder(user),
                     message=f"User with id:{data.userid} found!",
                 )
         return CreateUserResponse(

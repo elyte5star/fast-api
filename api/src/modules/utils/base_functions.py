@@ -7,11 +7,29 @@ from jose import jwt
 from typing import Optional
 import uuid
 from modules.database.db_session import AsyncDatabaseSession
+from itsdangerous import URLSafeTimedSerializer, BadTimeSignature, SignatureExpired
+from pydantic import EmailStr
 
 
 class Utilities(AsyncDatabaseSession):
     def return_config_object(self):
         return self.cf
+
+    def email_token(self, email: EmailStr):
+        self.token_algo = URLSafeTimedSerializer(
+            self.cf.secret_key, salt="Email_Verification_&_Forgot_password"
+        )
+        _token = self.token_algo.dumps(email)
+        return _token
+
+    def verify_email_token(self, token: str):
+        try:
+            email = self.token_algo.loads(token, max_age=1800)
+            return {"email": email, "check": True}
+        except SignatureExpired:
+            return None
+        except BadTimeSignature:
+            return None
 
     def time_now(self) -> datetime:
         return datetime.utcnow()
@@ -26,7 +44,7 @@ class Utilities(AsyncDatabaseSession):
     def _get_indent(self, size: int = 12):
         chars = string.digits
         return "".join(random.choice(chars) for _ in range(size))
-    
+
     def _get_x_correlation_id(self):
         size = 12
         chars = string.digits
@@ -44,8 +62,6 @@ class Utilities(AsyncDatabaseSession):
             password.encode(coding), bcrypt.gensalt(rounds=rounds)
         ).decode(coding)
         return hashed_password
-    
-
 
     def verify_password(
         self, plain_password: str, hashed_password: str, coding: str

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 from datetime import timedelta
 from typing import Optional
 from .base_request import RequestBase
@@ -11,7 +11,7 @@ class GrantType(BaseModel):
 
 class LoginData(BaseModel):
     username: str
-    password: str
+    password: SecretStr
 
 
 class CloudLoginData(BaseModel):

@@ -5,9 +5,9 @@ from modules.schemas.requests.users import (
     GetUserRequest,
     DeleteUserRequest,
     UpdateUserRequest,
+    EmailSchema,
 )
 from modules.schemas.responses.equiry import ClientEnquiryResponse
-from fastapi.encoders import jsonable_encoder
 from modules.schemas.responses.users import (
     CreateUserResponse,
     GetUsersResponse,
@@ -19,8 +19,8 @@ from modules.database.models.user import _User
 from modules.database.models.enquiry import _Enquiry
 from sqlalchemy.orm import selectinload, defer
 from modules.schemas.requests.auth import JWTcredentials
-from starlette.templating import Jinja2Templates
-
+from fastapi_mail import FastMail, MessageSchema, MessageType
+from fastapi_mail.errors import ConnectionErrors
 
 
 class Users(Utilities):
@@ -41,9 +41,25 @@ class Users(Utilities):
             async with self.get_session() as session:
                 session.add(db_user)
                 await session.commit()
+            token = self.generate_confirmation_token(data.user.email)
+            email_verification_endpoint = (
+                f"{self.cf.host_url}auth/confirm_email/{token}"
+            )
+            mail_body = {
+                "email": data.user.email,
+                "userid": db_user.userid,
+                "username": db_user.username,
+                "url": email_verification_endpoint,
+                "home": self.cf.client_url,
+            }
+            data_model = EmailSchema(email=[data.user.email], body=mail_body)
+            mail_status = await self.send_with_template(
+                data_model, "Confirm Your Email", "verify_email.html"
+            )
+            if mail_status:
                 return CreateUserResponse(
                     userid=db_user.userid,
-                    message=f"User with username {db_user.username} created!",
+                    message=f"User with username {db_user.username} created! Email confirmation sent!",
                 )
 
         return CreateUserResponse(
@@ -82,7 +98,7 @@ class Users(Utilities):
             edit_user_dict = data.user.dict()
 
             # only update password if entered or changed
-            if edit_user_dict["password"] =='default' or self.verify_password(
+            if edit_user_dict["password"] == "default" or self.verify_password(
                 edit_user_dict["password"], stored_user.password, self.cf.coding
             ):
                 del edit_user_dict["password"]
@@ -132,7 +148,8 @@ class Users(Utilities):
                 users = result.scalars().all()
                 if len(users) > 0:
                     return GetUsersResponse(
-                        users=jsonable_encoder(users), message=f"Total number of users: {len(users)}"
+                        users=self.obj_as_json(users),
+                        message=f"Total number of users: {len(users)}",
                     )
                 return CreateUserResponse(
                     success=False,
@@ -158,11 +175,9 @@ class Users(Utilities):
                     .where(_User.userid == data.userid)
                     .options(defer(_User.password), selectinload(_User.bookings))
                 )
-
                 (user,) = result.first()
-                jsonable_encoder(user)
                 return GetUserResponse(
-                    user=jsonable_encoder(user),
+                    user=self.obj_as_json(user),
                     message=f"User with id:{data.userid} found!",
                 )
         return CreateUserResponse(

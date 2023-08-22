@@ -20,7 +20,6 @@ from modules.schemas.responses.review import CreateReviewResponse
 from modules.database.models.product import Product, SpecialDeals
 from modules.database.models.review import Review
 from modules.schemas.requests.review import ReviewRequest
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import selectinload
 
 admin_msg = "Admin rights needed!"
@@ -70,7 +69,7 @@ class Products(Discount):
                 model = await self._create_product(product_data)
                 product_ids.append(model.pid)
             return CreateProductsResponse(
-                pids=jsonable_encoder(product_ids),
+                pids=product_ids,
                 message=f"{len(product_ids)} products created!",
             )
         return CreateProductsResponse(
@@ -93,7 +92,7 @@ class Products(Discount):
 
                 (product,) = result.first()
                 return GetProductDetailsResponse(
-                    product=jsonable_encoder(product),
+                    product=self.obj_as_json(product),
                     message=f"Product with id:{product.pid} found!",
                 )
         return GetProductDetailsResponse(
@@ -136,7 +135,7 @@ class Products(Discount):
             products = result.scalars().all()
             if len(products) > 0:
                 return GetProductsResponse(
-                    products=jsonable_encoder(products),
+                    products=self.obj_as_json(products),
                     message=f"Total number of products: {len(products)}",
                 )
             return GetProductsResponse(
@@ -171,7 +170,7 @@ class Products(Discount):
             deals = result.scalars().all()
             if len(deals) > 0:
                 return GetProductsResponse(
-                    products=deals,
+                    products=self.obj_as_json(deals),
                     message=f"Total number of special deals : {len(deals)}",
                 )
             return GetProductsResponse(
@@ -182,7 +181,7 @@ class Products(Discount):
     async def _sort_items(self, data: GetSortRequest) -> GetProductsResponse:
         model_res = await self._get_products()
         res_orm_list = model_res.products
-        res_list = jsonable_encoder(res_orm_list)
+        res_list = self.obj_as_json(res_orm_list)
         response_list, message = (None for x in range(2))
         if data.key == "deals":
             response_list = [x for x in res_list if x["discount"]]

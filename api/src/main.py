@@ -27,7 +27,7 @@ from modules.routers import (
 import time
 
 
-cfg = Settings().from_toml_file()
+cfg = Settings().from_toml_file().from_env_file()
 
 
 logging.basicConfig(encoding=cfg.coding, level=cfg.log_type)
@@ -83,8 +83,6 @@ async def custom_http_exception_handler(request: Request, exc: StarletteHTTPExce
             {"data": {"message": str(exc.detail), "success": False}}
         ),
     )
-
-    # return await http_exception_handler(request, exc)
 
 
 # Add Routes

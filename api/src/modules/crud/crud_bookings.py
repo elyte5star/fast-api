@@ -1,13 +1,12 @@
 from modules.utils.base_functions import Utilities
 from modules.database.models.booking import _Booking
-from sqlalchemy.orm import selectinload, defer
+from sqlalchemy.orm import selectinload
 from modules.schemas.requests.booking import BookingsRequest, BookingRequest
 from modules.schemas.responses.booking import (
     GetBookingResponse,
     CreateBookingResponse,
     GetBookingsResponse,
 )
-from fastapi.encoders import jsonable_encoder
 
 # ======================================#
 # Discount by volume and by sales-amount#
@@ -70,7 +69,7 @@ class Bookings(Discount):
                 bookings = result.scalars().all()
                 if bookings:
                     return GetBookingsResponse(
-                        bookings=jsonable_encoder(bookings),
+                        bookings=self.obj_as_json(bookings),
                         message=f"Total number of bookings: {len(bookings)}",
                     )
                 return GetBookingsResponse(
@@ -93,7 +92,7 @@ class Bookings(Discount):
 
                 (booking,) = result.first()
                 return GetBookingResponse(
-                    booking=jsonable_encoder(booking),
+                    booking=self.obj_as_json(booking),
                     message=f"Booking with id :{data.oid} found!",
                 )
         return GetBookingResponse(

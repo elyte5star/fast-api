@@ -9,22 +9,48 @@ import uuid
 from modules.database.db_session import AsyncDatabaseSession
 from itsdangerous import URLSafeTimedSerializer, BadTimeSignature, SignatureExpired
 from pydantic import EmailStr
+from fastapi.encoders import jsonable_encoder
+from fastapi_mail import FastMail, MessageSchema, MessageType
+from fastapi_mail.errors import ConnectionErrors
+from modules.schemas.requests.users import EmailSchema
 
 
 class Utilities(AsyncDatabaseSession):
     def return_config_object(self):
         return self.cf
 
-    def email_token(self, email: EmailStr):
-        self.token_algo = URLSafeTimedSerializer(
-            self.cf.secret_key, salt="Email_Verification_&_Forgot_password"
-        )
-        _token = self.token_algo.dumps(email)
-        return _token
+    def obj_as_json(self, obj):
+        return jsonable_encoder(obj)
 
-    def verify_email_token(self, token: str):
+    def generate_confirmation_token(self, email: EmailStr):
+        serializer = URLSafeTimedSerializer(
+            self.cf.secret_key, salt=self.cf.security_salt
+        )
+        return serializer.dumps(email)
+
+    async def send_with_template(
+        self, data: EmailSchema, subject: str, template_file: str
+    ) -> bool:
+        message = MessageSchema(
+            subject=subject,
+            recipients=data.dict().get("email"),
+            template_body=data.dict().get("body"),
+            subtype=MessageType.html,
+        )
+        fm = FastMail(self.cf.email_config)
         try:
-            email = self.token_algo.loads(token, max_age=1800)
+            await fm.send_message(message, template_name=template_file)
+            return True
+        except ConnectionErrors as e:
+            self.log.error(e)
+            return False
+
+    def verify_email_token(self, token: str, expiration: int = 3600):
+        serializer = URLSafeTimedSerializer(self.cf.secret_key)
+        try:
+            email = serializer.loads(
+                token, salt=self.cf.security_salt, max_age=expiration
+            )
             return {"email": email, "check": True}
         except SignatureExpired:
             return None
@@ -37,9 +63,9 @@ class Utilities(AsyncDatabaseSession):
     def time_then(self) -> datetime:
         return datetime(1980, 1, 1)
 
-    def get_user_string(self, stringLength: int = 10) -> str:
+    def get_user_string(self, string_length: int = 10) -> str:
         letters = string.ascii_lowercase + "0123456789" + string.ascii_uppercase
-        return "".join(random.choice(letters) for _ in range(stringLength))
+        return "".join(random.choice(letters) for _ in range(string_length))
 
     def _get_indent(self, size: int = 12):
         chars = string.digits
@@ -48,8 +74,8 @@ class Utilities(AsyncDatabaseSession):
     def _get_x_correlation_id(self):
         size = 12
         chars = string.digits
-        correlationId = "".join(random.choice(chars) for _ in range(size)) + "_SC"
-        return correlationId
+        correlation_id = "".join(random.choice(chars) for _ in range(size)) + "_SC"
+        return correlation_id
 
     def get_indent(self):
         return str(uuid.uuid4())

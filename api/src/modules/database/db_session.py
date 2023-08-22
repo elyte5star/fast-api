@@ -32,6 +32,7 @@ class AsyncDatabaseSession:
         self.delete = delete
         self.log = logger
         self.cf = cf
+        
 
     def async_session_generator(self) -> AsyncSession:
         try:

@@ -6,6 +6,7 @@ from modules.schemas.requests.users import (
     User,
     EditUser,
     UpdateUserRequest,
+    
 )
 from modules.schemas.requests.enquiry import Enquiry
 from modules.schemas.responses.base_response import BaseResponse
@@ -26,6 +27,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
 @router.post("/signup", response_model=CreateUserResponse, summary="Create User")
 async def create_user(user_data: User) -> CreateUserResponse:
     return await handler._create_user(CreateUserRequest(user=user_data))
+
 
 
 @router.post(

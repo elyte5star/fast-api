@@ -3,10 +3,11 @@ from modules.schemas.requests.auth import (
     CloudLoginData,
     LogOutRequest,
 )
-from modules.schemas.responses.auth import TokenResponse
+from modules.schemas.responses.auth import TokenResponse, BaseResponse
 from modules.database.models.user import _User
 from modules.utils.base_functions import Utilities
 from sqlalchemy.sql.expression import false
+from sqlalchemy.orm import selectinload, defer
 
 
 class Auth(Utilities):
@@ -23,7 +24,9 @@ class Auth(Utilities):
                     message="Account Not Verified",
                 )
 
-            if self.verify_password(data.password.get_secret_value(), user.password, self.cf.coding):
+            if self.verify_password(
+                data.password.get_secret_value(), user.password, self.cf.coding
+            ):
                 active = True
                 admin = False
                 if user.username == self.cf.username:
@@ -108,4 +111,35 @@ class Auth(Utilities):
                 "admin": admin,
             },
             message=f"User {data.username} is authorized!",
+        )
+
+    async def confirm_email(self, token: str):
+        token_data = self.verify_email_token(token)
+        if token_data is None:
+            return BaseResponse(
+                message="The confirmation link is invalid or has expired.",
+                success=False,
+            )
+        if await self.useremail_exist(token_data["email"]) is not None:
+            async with self.get_session() as session:
+                result = await session.execute(
+                    self.select(_User).where(_User.email == token_data["email"])
+                )
+                (user,) = result.first()
+
+            if user.active:
+                return BaseResponse(message="Account already confirmed. Please login.")
+            else:
+                async with self.get_session() as session:
+                    await session.execute(
+                        self.update(_User)
+                        .where(_User.email == token_data["email"])
+                        .values(dict(active=True))
+                        .execution_options(synchronize_session="fetch")
+                    )
+                    await session.commit()
+                    return BaseResponse(message="Email Verification Successful")
+        return BaseResponse(
+            message=f"User with email {token_data['email']} does not exist",
+            success=False,
         )

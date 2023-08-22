@@ -13,7 +13,7 @@ Starting the project
   ```
   DEBUG=1
   ALGORITHM=HS256
-  SECRET_KEY=0c2214c33cc65769166ec5248bb0ec6a15e892ba649e36fefc5732d9c1ba469
+  SECRET_KEY=***********************************************************
   TOKEN_EXPIRE_MINUTES=50
   REFRESH_TOKEN_EXPIRE_MINUTES=43200
   HOST_URL=http://localhost:8000/
@@ -27,7 +27,7 @@ Starting the project
   MYSQL_USER=userExample
   MYSQL_PORT=3306
   MYSQL_DATABASE=elyte
-  MYSQL_ROOT_PASSWORD=54321
+  MYSQL_ROOT_PASSWORD=**************
   MYSQL_PASSWORD=*******
   RABBIT_HOST=****
   RABBIT_PORT_NUMBER=5672

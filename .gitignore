@@ -267,6 +267,7 @@ e-commerce/*
 persistence/*
 !persistence/*.file
 
+api.env
 .env
 *.local
 nodemodules

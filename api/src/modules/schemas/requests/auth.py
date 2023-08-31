@@ -20,6 +20,7 @@ class CloudLoginData(BaseModel):
     userid: str
 
 
+
 class JWTcredentials(BaseModel):
     userid: str
     email: str

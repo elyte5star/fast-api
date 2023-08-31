@@ -9,7 +9,7 @@ from modules.schemas.requests.booking import (
 from modules.schemas.responses.booking import GetQBookingRequestResult
 from modules.schemas.responses.job import GetJobRequestResponse
 
-router = APIRouter(prefix="/q_booking", tags=["QBookings"])
+router = APIRouter(prefix="/qbooking", tags=["QBookings"])
 
 
 # Create booking

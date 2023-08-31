@@ -5,7 +5,7 @@ from modules.schemas.requests.users import (
     GetUserRequest,
     DeleteUserRequest,
     UpdateUserRequest,
-    EmailSchema,
+   
 )
 from modules.schemas.responses.equiry import ClientEnquiryResponse
 from modules.schemas.responses.users import (
@@ -19,8 +19,7 @@ from modules.database.models.user import _User
 from modules.database.models.enquiry import _Enquiry
 from sqlalchemy.orm import selectinload, defer
 from modules.schemas.requests.auth import JWTcredentials
-from fastapi_mail import FastMail, MessageSchema, MessageType
-from fastapi_mail.errors import ConnectionErrors
+
 
 
 class Users(Utilities):
@@ -41,26 +40,10 @@ class Users(Utilities):
             async with self.get_session() as session:
                 session.add(db_user)
                 await session.commit()
-            token = self.generate_confirmation_token(data.user.email)
-            email_verification_endpoint = (
-                f"{self.cf.host_url}auth/confirm_email/{token}"
+            return CreateUserResponse(
+                userid=db_user.userid,
+                message=f"User with username {db_user.username} created!Login to activate your account!",
             )
-            mail_body = {
-                "email": data.user.email,
-                "userid": db_user.userid,
-                "username": db_user.username,
-                "url": email_verification_endpoint,
-                "home": self.cf.client_url,
-            }
-            data_model = EmailSchema(email=[data.user.email], body=mail_body)
-            mail_status = await self.send_with_template(
-                data_model, "Confirm Your Email", "verify_email.html"
-            )
-            if mail_status:
-                return CreateUserResponse(
-                    userid=db_user.userid,
-                    message=f"User with username {db_user.username} created! Email confirmation sent!",
-                )
 
         return CreateUserResponse(
             success=False,

@@ -3,11 +3,15 @@ from modules.schemas.requests.auth import (
     CloudLoginData,
     LogOutRequest,
 )
-from modules.schemas.responses.auth import TokenResponse, BaseResponse
+from modules.schemas.responses.auth import (
+    TokenResponse,
+    BaseResponse,
+)
 from modules.database.models.user import _User
 from modules.utils.base_functions import Utilities
 from sqlalchemy.sql.expression import false
 from sqlalchemy.orm import selectinload, defer
+from modules.schemas.requests.users import EmailSchema
 
 
 class Auth(Utilities):
@@ -20,6 +24,12 @@ class Auth(Utilities):
                 (user,) = result.first()
             if user.active == false():
                 return TokenResponse(
+                    token_data={
+                        "active": user.active,
+                        "userid": user.userid,
+                        "username": user.username,
+                        "email": user.email,
+                    },
                     success=False,
                     message="Account Not Verified",
                 )
@@ -27,7 +37,6 @@ class Auth(Utilities):
             if self.verify_password(
                 data.password.get_secret_value(), user.password, self.cf.coding
             ):
-                active = True
                 admin = False
                 if user.username == self.cf.username:
                     admin = True
@@ -36,7 +45,7 @@ class Auth(Utilities):
                     "sub": user.username,
                     "email": user.email,
                     "admin": admin,
-                    "active": active,
+                    "active": user.active,
                     "discount": user.discount,
                     "telephone": user.telephone,
                     "token_id": self.get_indent(),
@@ -52,6 +61,7 @@ class Auth(Utilities):
                         "token_type": "bearer",
                         "host_url": self.cf.host_url,
                         "userid": user.userid,
+                        "active": user.active,
                         "username": user.username,
                         "admin": admin,
                     },
@@ -113,7 +123,7 @@ class Auth(Utilities):
             message=f"User {data.username} is authorized!",
         )
 
-    async def confirm_email(self, token: str):
+    async def confirm_email_token(self, token: str):
         token_data = self.verify_email_token(token)
         if token_data is None:
             return BaseResponse(
@@ -141,5 +151,21 @@ class Auth(Utilities):
                     return BaseResponse(message="Email Verification Successful")
         return BaseResponse(
             message=f"User with email {token_data['email']} does not exist",
+            success=False,
+        )
+
+    async def send_email_confirmation(self, data: EmailSchema):
+        if await self.useremail_exist(data.email[0]) is not None:
+            token = self.generate_confirmation_token(data.email[0])
+            data.body["token"] = token
+            mail_status = await self.send_with_template(
+                data, "Confirm Your Email", "verify_email.html"
+            )
+            if mail_status:
+                return BaseResponse(
+                    message=f"Email confirmation sent for userid : {data.body['username']} !",
+                )
+        return BaseResponse(
+            message=f"User with email {data.email[0]} does not exist",
             success=False,
         )

@@ -33,14 +33,14 @@ class Result(BaseModel):
     )
     task_id: str = ""
     data: dict = {}  # Instead of result in Task
-    data_checksum: str = None
+    data_checksum: Optional[str] = None
 
 
 class ResultLog(BaseModel):
     result_id: str = ""
     created_at: datetime = datetime.utcnow
     handled: bool = False
-    handled_dt: datetime = None
+    handled_dt: Optional[datetime] = None
 
 
 def result_available(job: Job) -> bool:

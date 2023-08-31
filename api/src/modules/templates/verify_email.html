@@ -6,10 +6,8 @@
         <table border="0" style="max-width: 600px;">
           <tr>
             <td style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
-              <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Welcome! Thanks for signing up.</h1>
-              <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Your username is : {{username }}.</h1>
-              <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Your ID is : {{ userid }}.</h1>
-              <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Confirm Your Email Address.</h1>
+              <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Welcome {{username }} !</h1>
+              <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Confirm Your Identity.</h1>
             </td>
           </tr>
         </table>
@@ -20,7 +18,9 @@
         <table border="0" style="max-width: 600px;">
           <tr>
             <td style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-              <p style="margin: 0;">Tap the button below to confirm your email address. If you didn't create an account with <a href="{{ home }}" style="color: #1a82e2;">E-COMMERCE</a>, you can safely delete this email.</p>
+              <p>This code will expire in 10 minutes.</p>
+              <p style="color: #1a82e2;width: 38em;"><code>{{ token }}</code></p>
+              <p style="margin: 0;width: auto;">If you didn't create an account with <a href="{{ home }}" style="color: #1a82e2;">E-COMMERCE</a>, you can safely delete this email.</p>
             </td>
           </tr>
           <!-- end copy -->
@@ -33,9 +33,8 @@
                   <td style="padding: 12px;">
                     <table border="0">
                       <tr>
-                        <td style="border-radius: 6px;">
-                          <a href="{{ url }}" target="_blank" class="button" style="color: white;">Confirm</a>
-                        </td>
+                        <td><input  type="hidden" type="text" value="{{ token }}" id="myInput"></td>
+                
                       </tr>
                     </table>
                   </td>
@@ -43,15 +42,6 @@
               </table>
             </td>
           </tr>
-          <!-- end button -->
-
-          <tr>
-            <td style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-              <p style="margin: 0;">If that doesn't work, copy and paste the following link in your browser:</p>
-              <p style="margin: 0;"><a href="{{ url }}" target="_blank" style="color: #1a82e2;">{{ url }}</a></p>
-            </td>
-          </tr>
-      
           <tr>
             <td style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-bottom: 3px solid #d4dadf">
               <p style="margin: 0;">Cheers,<br> The Team</p>
@@ -62,4 +52,6 @@
       </td>
     </tr>
   </table>
+ 
+    
   {% endblock %}

@@ -26,6 +26,9 @@ async def create_booking(
             cart=data.cart,
             total_price=data.total_price,
             cred=cred,
+            billing_address=data.billing_address,
+            shipping_details=data.shipping_details,
+            payment_details=data.payment_details,
         )
     )
 

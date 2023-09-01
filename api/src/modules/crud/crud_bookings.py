@@ -43,7 +43,12 @@ class Discount(Utilities):
 
 class Bookings(Discount):
     async def _create_booking(self, data: BookingRequest) -> CreateBookingResponse:
-        total_price = float(data.total_price)
+        total_price = data.total_price
+        shipping_details = (
+            data.billing_address
+            if data.shipping_details is None
+            else data.shipping_details
+        )
         if data.cred.discount is not None:
             total_price = self.calculate_discount(total_price, data.cred.discount)
         async with self.get_session() as session:
@@ -51,10 +56,12 @@ class Bookings(Discount):
                 oid=self._get_indent(),
                 total_price=total_price,
                 cart=data.cart,
+                shipping_details=shipping_details,
                 owner_id=data.cred.userid,
             )
             session.add(booking)
             await session.commit()
+
         return CreateBookingResponse(
             oid=booking.oid,
             message=f"Booking with id : {booking.oid} created!",

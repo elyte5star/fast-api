@@ -29,7 +29,7 @@ class Users(Utilities):
             is None
         ):
             hashed_password = self.hash_password(
-                data.user.password, self.cf.rounds, self.cf.coding
+                data.user.password, self.cf.rounds, self.cf.encoding
             )
 
             user_data_dict = data.user.dict()
@@ -82,13 +82,13 @@ class Users(Utilities):
 
             # only update password if entered or changed
             if edit_user_dict["password"] == "default" or self.verify_password(
-                edit_user_dict["password"], stored_user.password, self.cf.coding
+                edit_user_dict["password"], stored_user.password, self.cf.encoding
             ):
                 del edit_user_dict["password"]
                 self.log.info("Password not supplied or didnt change")
             else:
                 edit_user_dict["password"] = self.hash_password(
-                    data.user.password, self.cf.rounds, self.cf.coding
+                    data.user.password, self.cf.rounds, self.cf.encoding
                 )
                 self.log.warning("A password was supplied and will be modified")
 

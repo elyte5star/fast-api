@@ -35,7 +35,7 @@ class Auth(Utilities):
                 )
 
             if self.verify_password(
-                data.password.get_secret_value(), user.password, self.cf.coding
+                data.password.get_secret_value(), user.password, self.cf.encoding
             ):
                 admin = False
                 if user.username == self.cf.username:
@@ -54,12 +54,17 @@ class Auth(Utilities):
                     data=data,
                     expires_delta=self.time_delta(self.cf.token_expire_min),
                 )
+                refresh_token = self.create_token(
+                    data=data,
+                    expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
+                )
 
                 return TokenResponse(
                     token_data={
                         "access_token": access_token,
                         "token_type": "bearer",
                         "host_url": self.cf.host_url,
+                        "refresh_token": refresh_token,
                         "userid": user.userid,
                         "active": user.active,
                         "username": user.username,
@@ -81,46 +86,70 @@ class Auth(Utilities):
         active = True
         admin = False
         discount = None
-        username = "_".join(data.username.split()).lower()
-        if username == self.cf.username:
-            admin = True
-        _data = {
-            "userid": data.userid,
-            "sub": username,
-            "email": data.email,
-            "admin": admin,
-            "active": active,
-            "discount": discount,
-            "telephone": "",
-            "token_id": self._get_indent(),
-        }
-
-        access_token = self.create_token(
-            data=_data,
-            expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
+        user_data = (
+            self.verify_msal_jwt(data.token)
+            if data.type == "MSOFT"
+            else self.verify_gmail_jwt(data.token)
         )
-
-        if await self.userid_exist(data.userid) is None:
-            _data.pop("token_id")
-            _data["username"] = _data.pop("sub")
-            _data["password"] = self.hash_password(
-                "valid_cloud_user", self.cf.rounds, self.cf.coding
+        if user_data is not None:
+            user = (
+                await self.useremail_exist(user_data["email"])
+                if await self.useremail_exist(user_data["email"]) is not None
+                else None
             )
-            db_user = _User(**_data)
-            async with self.get_session() as session:
-                session.add(db_user)
-                await session.commit()
-                self.log.info("A new user account created!")
-        return TokenResponse(
-            token_data={
-                "access_token": access_token,
-                "token_type": "bearer",
-                "host_url": self.cf.host_url,
-                "userid": data.userid,
-                "username": username,
+            userid = user.userid if user is not None else user_data["userid"]
+            username = (
+                user.username
+                if user is not None
+                else "_".join(user_data["sub"].split()).lower()
+            )
+            if username == self.cf.username:
+                admin = True
+            token_data = {
+                "userid": userid,
+                "sub": username,
+                "email": user_data["email"],
                 "admin": admin,
-            },
-            message=f"User {data.username} is authorized!",
+                "active": active,
+                "discount": discount,
+                "telephone": "",
+                "token_id": self._get_indent(),
+            }
+
+            access_token = self.create_token(
+                data=token_data,
+                expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
+            )
+            refresh_token = self.create_token(
+                data=token_data,
+                expires_delta=self.time_delta(self.cf.refresh_token_expire_minutes),
+            )
+            if user is None:
+                token_data.pop("token_id")
+                token_data["username"] = token_data.pop("sub")
+                token_data["password"] = self.hash_password(
+                    "valid_cloud_user", self.cf.rounds, self.cf.encoding
+                )
+                db_user = _User(**token_data)
+                async with self.get_session() as session:
+                    session.add(db_user)
+                    await session.commit()
+                    self.log.info("A new user account created!")
+            return TokenResponse(
+                token_data={
+                    "access_token": access_token,
+                    "token_type": "bearer",
+                    "host_url": self.cf.host_url,
+                    "userid": userid,
+                    "username": username,
+                    "refresh_token": refresh_token,
+                    "admin": admin,
+                },
+                message=f"User {username} is authorized!",
+            )
+        return TokenResponse(
+            success=False,
+            message=f"Invalid {data.type} token",
         )
 
     async def confirm_email_token(self, token: str):

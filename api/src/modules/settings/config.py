@@ -28,7 +28,7 @@ class Settings:
 
         self.pwd_len: int = 0
         self.round: int = 0
-        self.coding: str = ""
+        self.encoding: str = ""
 
         # global variables for RabbitMQ
         self.rabbit_host_name: str = ""
@@ -53,6 +53,12 @@ class Settings:
         # Google AUTH
         self.google_client_secret: str = ""
         self.google_client_id: str = ""
+
+        # MSOFT AUTH
+        self.msal_login_authority: str = ""
+        self.msal_client_id: str = ""
+        self.msal_issuer: str = ""
+
         # News
         self.news_api_key: str = ""
         # admin
@@ -103,7 +109,7 @@ class Settings:
 
         self.pwd_len = cf.hash.password.length
         self.rounds = cf.hash.password.rounds
-        self.coding = cf.hash.password.coding
+        self.encoding = cf.hash.password.encoding
 
         self.name = cf.elyte.api.app["name"]
         self.version = cf.tool.poetry.version
@@ -152,6 +158,14 @@ class Settings:
             + self.rabbit_host_port
             + "/"
         )
+
+        self.google_client_id = str(getenv("GOOGLE_CLIENT_ID"))
+        self.google_client_secret = str(getenv("GOOGLE_CLIENT_SECRET"))
+
+        self.msal_login_authority = str(getenv("MSAL_LOGIN_AUTHORITY"))
+        self.msal_client_id = str(getenv("MSAL_CLIENT_ID"))
+        self.msal_issuer = str(getenv("MSAL_ISSUER"))
+
         self.client_url = str(getenv("CLIENT_URL"))
         self.token_expire_min = int(getenv("TOKEN_EXPIRE_MINUTES"))
         self.algorithm = str(getenv("ALGORITHM"))

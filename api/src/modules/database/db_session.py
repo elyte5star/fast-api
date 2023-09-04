@@ -32,7 +32,6 @@ class AsyncDatabaseSession:
         self.delete = delete
         self.log = logger
         self.cf = cf
-        
 
     def async_session_generator(self) -> AsyncSession:
         try:
@@ -90,7 +89,9 @@ class AsyncDatabaseSession:
     async def useremail_exist(self, email: str) -> Optional[_User]:
         async with self.get_session() as session:
             result = await session.execute(
-                self.select(_User.email).where(_User.email == email)
+                self.select(_User.email, _User.username, _User.userid).where(
+                    _User.email == email
+                )
             )
             return result.first()
 

@@ -35,7 +35,10 @@ async def token(
 )
 async def get_token(data: CloudLoginData):
     return await handler._get_token(
-        CloudLoginData(username=data.username, email=data.email, userid=data.userid)
+        CloudLoginData(
+            token=data.token,
+            type=data.type,
+        )
     )
 
 

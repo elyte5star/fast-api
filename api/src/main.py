@@ -30,7 +30,7 @@ import time
 cfg = Settings().from_toml_file().from_env_file()
 
 
-logging.basicConfig(encoding=cfg.coding, level=cfg.log_type)
+logging.basicConfig(encoding=cfg.encoding, level=cfg.log_type)
 
 db = Utilities(cfg)
 db.async_session_generator()

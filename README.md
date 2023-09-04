@@ -13,7 +13,7 @@ Starting the project
   ```
   DEBUG=1
   ALGORITHM=HS256
-  SECRET_KEY=***********************************************************
+  SECRET_KEY=***************************************************
   TOKEN_EXPIRE_MINUTES=50
   REFRESH_TOKEN_EXPIRE_MINUTES=43200
   HOST_URL=http://localhost:8000/
@@ -44,6 +44,12 @@ Starting the project
   USE_CREDENTIALS=true
   VALIDATE_CERTS=true
   SECURITY_PASSWORD_SALT=***********
+  GOOGLE_CLIENT_ID=***********.apps.googleusercontent.com
+  GOOGLE_CLIENT_SECRET=***********
+  MSAL_CLIENT_ID=*************
+  MSAL_ISSUER=https://login.microsoftonline.com/*******/v2.0
+  MSAL_LOGIN_AUTHORITY=https://login.microsoftonline.com/*****
+
   ```
 
 - Docker setup run:

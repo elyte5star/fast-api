@@ -5,7 +5,7 @@ from modules.schemas.misc.enums import WorkerType
 
 
 def run():
-    config = Settings().from_toml_file()
+    config = Settings().from_toml_file().from_env_file()
     worker = WorkerBase(config, WorkerType.Booking, config.queue_name[1])
     worker.booking_handler = BookingHandler(config)
     worker.run_forever()

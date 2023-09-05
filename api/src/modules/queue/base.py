@@ -5,7 +5,6 @@ from modules.schemas.queue.job_task import (
     Job,
     JobState,
     JobStatus,
-    JobType,
     Task,
 )
 from modules.database.models.job_task import _Job, _Task
@@ -18,7 +17,7 @@ class RQHandler(Utilities):
     def create_job(self, job_type):
         job = Job()
         job.job_type = job_type
-        job.job_id = self.get_indent()
+        job.job_id = self._get_indent()
         job.job_status.state = JobState.Pending
         job.created_at = self.time_now()
         return job
@@ -63,7 +62,7 @@ class RQHandler(Utilities):
     async def add_job_with_one_task(self, job, queue_name: str):
         job.number_of_tasks = 1
         tasks = list()
-        task = Task(job_id=job.job_id, task_id=self.get_indent())
+        task = Task(job_id=job.job_id, task_id=self._get_indent())
         task.status = JobStatus(state=JobState.Received)
         task.created_at = self.time_now()
         task.finished = self.time_then()

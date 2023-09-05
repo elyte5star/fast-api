@@ -1,15 +1,14 @@
-from .base import RQHandler
+from modules.queue.base import RQHandler
+from modules.schemas.misc.enums import JobType
 from modules.schemas.requests.booking import BookingRequest
 from modules.schemas.responses.job import (
     GetJobRequestResponse,
     create_jobresponse,
 )
 from modules.schemas.responses.booking import GetQBookingRequestResult
-from .base import JobType
-from fastapi.encoders import jsonable_encoder
 from modules.schemas.requests.job import GetJobRequest
 from modules.database.models.job_task import _Job
-from ..schemas.queue.job_task import result_available
+from modules.schemas.queue.job_task import result_available
 
 
 class QBookingHandler(RQHandler):
@@ -17,8 +16,9 @@ class QBookingHandler(RQHandler):
         self, booking_data: BookingRequest
     ) -> GetJobRequestResponse:
         job = self.create_job(JobType.CreateBooking)
-        json_obj = jsonable_encoder(booking_data)
+        json_obj = booking_data
         job.booking_request = json_obj
+        job.userid = booking_data.cred.userid
         return await self.add_job_with_one_task(job, self.cf.queue_name[1])
 
     async def get_booking_result(self, data: GetJobRequest) -> GetQBookingRequestResult:

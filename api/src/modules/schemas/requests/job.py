@@ -1,6 +1,6 @@
 from .base_request import RequestBase
 
-from ..queue.job_task import Job
+from modules.schemas.queue.job_task import Job
 
 
 class CreateJob(RequestBase):

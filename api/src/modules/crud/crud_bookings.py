@@ -56,12 +56,11 @@ class Bookings(Discount):
                 oid=self._get_indent(),
                 total_price=total_price,
                 cart=data.cart,
-                shipping_details=shipping_details,
+                shipping_details=self.obj_as_json(shipping_details),
                 owner_id=data.cred.userid,
             )
             session.add(booking)
             await session.commit()
-
         return CreateBookingResponse(
             oid=booking.oid,
             message=f"Booking with id : {booking.oid} created!",

@@ -18,6 +18,11 @@ from google.auth.transport import requests
 
 
 class Utilities(AsyncDatabaseSession):
+    def serialize_datetime(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        raise TypeError("Type not serializable")
+
     def return_config_object(self):
         return self.cf
 

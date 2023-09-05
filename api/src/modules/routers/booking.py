@@ -21,16 +21,7 @@ async def create_booking(
     data: CreateBooking,
     cred: JWTcredentials = Depends(security),
 ):
-    return await handler._create_booking(
-        BookingRequest(
-            cart=data.cart,
-            total_price=data.total_price,
-            cred=cred,
-            billing_address=data.billing_address,
-            shipping_details=data.shipping_details,
-            payment_details=data.payment_details,
-        )
-    )
+    return await handler._create_booking(BookingRequest(cred=cred, **data.dict()))
 
 
 # Get Bookings

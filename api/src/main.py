@@ -15,15 +15,10 @@ from modules.crud.crud_users import Users
 from modules.auth.crud_auth import Auth
 from modules.crud.crud_products import Products
 from modules.crud.crud_bookings import Bookings
+from modules.crud.jobs import DbJobs
 
 from modules.queue.booking_queue import QBookingHandler
-from modules.routers import (
-    auth,
-    users,
-    products,
-    booking,
-    q_booking,
-)
+from modules.routers import auth, users, products, booking, q_booking, job
 import time
 
 
@@ -35,13 +30,14 @@ logging.basicConfig(encoding=cfg.encoding, level=cfg.log_type)
 db = Utilities(cfg)
 db.async_session_generator()
 
-routes = (users, auth, products, booking, q_booking)
+routes = (users, auth, products, booking, q_booking, job)
 crud_operations = (
     Users(cfg),
     Auth(cfg),
     Products(cfg),
     Bookings(cfg),
     QBookingHandler(cfg),
+    DbJobs(cfg),
 )
 
 

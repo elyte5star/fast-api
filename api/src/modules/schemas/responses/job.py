@@ -14,9 +14,7 @@ class JobResponse(BaseModel):
     job_status: JobStatus = JobStatus()
 
 
-def create_jobresponse(
-    job: Job, end: Optional[datetime] = None
-) -> JobResponse:
+def create_jobresponse(job: Job, end: Optional[datetime] = None) -> JobResponse:
     return JobResponse(
         username=job.booking_request["cred"]["username"],
         start_time=job.created_at,
@@ -33,7 +31,7 @@ class GetJobsResponse(BaseResponse):
 
 
 class GetJobResponse(BaseResponse):
-    job: JobResponse = None
+    job: Optional[JobResponse] = None
 
 
 class GetJobRequestResponse(BaseResponse):

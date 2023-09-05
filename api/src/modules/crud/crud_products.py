@@ -133,15 +133,11 @@ class Products(Discount):
                 .options(selectinload(Product.reviews))
             )
             products = result.scalars().all()
-            if len(products) > 0:
-                return GetProductsResponse(
-                    products=self.obj_as_json(products),
-                    message=f"Total number of products: {len(products)}",
-                )
-            return GetProductsResponse(
-                success=False,
-                message="Products not found!!",
-            )
+
+        return GetProductsResponse(
+            products=self.obj_as_json(products),
+            message=f"Total number of products: {len(products)}",
+        )
 
     async def _delete_product(self, data: DeleteProductRequest) -> BaseResponse:
         if data.token_load.username == self.cf.username:

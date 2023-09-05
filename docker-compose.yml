@@ -7,7 +7,7 @@ services:
   db:
     image: mariadb
     container_name: maria-db
-    restart: always
+    restart: on-failure
     env_file:
       - api.env
     ports:

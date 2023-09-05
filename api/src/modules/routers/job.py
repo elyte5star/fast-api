@@ -22,6 +22,6 @@ async def get_jobs(
 async def get_job(
     job_id: str, cred: JWTcredentials = Depends(security)
 ) -> BaseResponse:
-    return await handler.get_job_status(
+    return await handler.get_job(
         GetJobRequest(cred=cred, job_id=job_id)
     )

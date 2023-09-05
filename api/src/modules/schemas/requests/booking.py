@@ -1,4 +1,5 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, EmailStr
+
 from .base_request import RequestBase
 from modules.schemas.requests.product import ProductItem
 from modules.schemas.requests.review import Review
@@ -12,16 +13,33 @@ class CartItem(ProductItem):
     calculated_price: float
 
 
+class PaymentDetails(BaseModel):
+    cardType: str
+    cardNumber: str
+    expiryDate: str
+    cardCvv: str
+    nameOnCard: str
+
+
+class BillingAddress(BaseModel):
+    bfname: str
+    bemail: EmailStr
+    baddress: str
+    bcountry: str
+    bzip: str
+    bcity: str
+
+
 class CreateBooking(BaseModel):
     cart: list[CartItem]
     total_price: float
-    payment_details: dict
-    billing_address: dict
-    shipping_details: Optional[dict] = None
+    payment_details: PaymentDetails
+    billing_address: BillingAddress
+    shipping_details: Optional[BillingAddress] = None
 
     @field_validator("shipping_details")
     @classmethod
-    def prevent_none(cls, v: dict):
+    def prevent_none(cls, v: BillingAddress):
         assert v is not None, "shipping_details may not be None"
         return v
 

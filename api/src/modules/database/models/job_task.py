@@ -1,5 +1,5 @@
 from modules.database.base import Base
-from ...schemas.misc.enums import JobType
+from modules.schemas.misc.enums import JobType
 from sqlalchemy import (
     Column,
     String,
@@ -12,6 +12,7 @@ from sqlalchemy import (
 
 
 class _Job(Base):
+    userid = Column(String(60), ForeignKey("_user.userid"))
     job_id = Column(String(60), primary_key=True, index=True)
     task_id = Column(String(60), index=True)
     created_at = Column(DateTime(timezone=True), nullable=True)

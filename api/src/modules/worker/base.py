@@ -56,9 +56,9 @@ class WorkerBase:
             print("[+] Worker connected to MYSQL/MARIADB successfully.")
             with session_local() as session:
                 yield session
-        except:
+        except Exception as e:
             session.rollback()
-            raise
+            print(e)
         finally:
             print("[+] Worker connection to MYSQL/MARIA database closed!")
             session.close()

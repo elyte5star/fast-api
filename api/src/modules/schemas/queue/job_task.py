@@ -1,9 +1,8 @@
-from pydantic import BaseModel, Json,field_validator
+from pydantic import BaseModel, Json, field_validator
 from datetime import datetime
 from modules.schemas.misc.enums import JobState, JobStatus, JobType
-from modules.schemas.requests.booking import BookingRequest
+from modules.schemas.requests.booking import BookingRequest, BookingModel
 from typing import Optional
-
 
 
 class Job(BaseModel):
@@ -14,11 +13,11 @@ class Job(BaseModel):
     task_id: str = ""
     job_status: JobStatus = JobStatus()
     number_of_tasks: int = 0
-    booking_request: Optional[BookingRequest] = None
+    booking_request: Optional[BookingModel] = None
 
     @field_validator("booking_request")
     @classmethod
-    def prevent_none(cls, v: BookingRequest):
+    def prevent_none(cls, v: BookingModel):
         assert v is not None, "booking_request may not be None"
         return v
 

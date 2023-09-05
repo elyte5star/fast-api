@@ -48,7 +48,7 @@ class AsyncDatabaseSession:
             return self._session
         except Exception as ex:
             self.log.warning(
-                "Connection could not be made due to the following error: \n",
+                "Cannot connect to DB due to the following error: \n",
                 ex,
             )
 
@@ -60,6 +60,7 @@ class AsyncDatabaseSession:
         except Exception as e:
             await session.rollback()
             self.log.warning(e)
+            raise
         finally:
             await session.close()
             # await self._engine.dispose()

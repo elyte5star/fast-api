@@ -44,6 +44,12 @@ class CreateBooking(BaseModel):
         return v
 
 
+class BookingModel(BaseModel):
+    cart: list[CartItem]
+    total_price: float
+    shipping_details: BillingAddress
+
+
 class BookingRequest(RequestBase):
     pass
 

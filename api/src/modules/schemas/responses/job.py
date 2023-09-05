@@ -5,7 +5,7 @@ from typing import Optional
 
 
 class JobResponse(BaseModel):
-    username: str = ""
+    userid: str = ""
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
     total_time: float = 0.0
@@ -16,7 +16,7 @@ class JobResponse(BaseModel):
 
 def create_jobresponse(job: Job, end: Optional[datetime] = None) -> JobResponse:
     return JobResponse(
-        username=job.booking_request["cred"]["username"],
+        userid=job.userid,
         start_time=job.created_at,
         job_type=job.job_type,
         job_id=job.job_id,

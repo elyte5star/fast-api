@@ -1,6 +1,6 @@
 from modules.queue.base import RQHandler
 from modules.schemas.misc.enums import JobType
-from modules.schemas.requests.booking import BookingRequest
+from modules.schemas.requests.booking import BookingRequest, BookingModel
 from modules.schemas.responses.job import (
     GetJobRequestResponse,
     create_jobresponse,
@@ -13,12 +13,18 @@ from modules.schemas.queue.job_task import result_available
 
 class QBookingHandler(RQHandler):
     async def add_create_booking_job(
-        self, booking_data: BookingRequest
+        self, data: BookingRequest
     ) -> GetJobRequestResponse:
         job = self.create_job(JobType.CreateBooking)
-        json_obj = booking_data
-        job.booking_request = json_obj
-        job.userid = booking_data.cred.userid
+        booking_model = BookingModel(
+            cart=data.cart,
+            total_price=data.total_price,
+            shipping_details=data.billing_address
+            if data.shipping_details is None
+            else data.shipping_details,
+        )
+        job.booking_request = booking_model
+        job.userid = data.cred.userid
         return await self.add_job_with_one_task(job, self.cf.queue_name[1])
 
     async def get_booking_result(self, data: GetJobRequest) -> GetQBookingRequestResult:

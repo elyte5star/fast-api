@@ -1,6 +1,6 @@
 from modules.utils.base_functions import Utilities
 from aio_pika import Message, connect
-from modules.schemas.queue.item import ItemInQueue
+from modules.schemas.queue.item import QueueItem
 from modules.schemas.queue.job_task import (
     Job,
     JobState,
@@ -9,7 +9,6 @@ from modules.schemas.queue.job_task import (
 )
 from modules.database.models.job_task import _Job, _Task
 from modules.schemas.responses.job import GetJobRequestResponse
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import selectinload
 
 
@@ -27,7 +26,7 @@ class RQHandler(Utilities):
         job: Job,
         tasks_list: list[Task],
         queue_name: str,
-        queue_items_list: list[ItemInQueue],
+        queue_items_list: list[QueueItem],
     ) -> tuple[bool, str]:
         try:
             _job = _Job(**job.dict())
@@ -68,7 +67,7 @@ class RQHandler(Utilities):
         task.finished = self.time_then()
         tasks.append(task)
         queue_items_list = list()
-        queue_items_list.append(ItemInQueue(job=job, task=task))
+        queue_items_list.append(QueueItem(job=job, task=task))
         success, message = await self.add_job_tasks_to_db(
             job,
             tasks,

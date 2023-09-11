@@ -4,6 +4,7 @@ from .base_request import RequestBase
 from modules.schemas.requests.product import ProductItem
 from modules.schemas.requests.review import Review
 from typing import Optional
+from modules.schemas.requests.auth import JWTcredentials
 
 
 class CartItem(ProductItem):
@@ -48,10 +49,12 @@ class BookingModel(BaseModel):
     cart: list[CartItem]
     total_price: float
     shipping_details: BillingAddress
+    userid: str
 
 
 class BookingRequest(RequestBase):
-    pass
+    cred: JWTcredentials
+    booking: Optional[CreateBooking] = None
 
 
 class BookingsRequest(RequestBase):

@@ -138,7 +138,7 @@ class Settings:
         return self
 
     def from_env_file(self):
-        print("Overriding toml variables with env vairiables")
+        print("Overriding toml variables")
 
         self.sql_host = str(getenv("MYSQL_HOST"))
         self.sql_db = str(getenv("MYSQL_DATABASE"))

@@ -13,14 +13,21 @@ router = APIRouter(prefix="/qbooking", tags=["QBookings"])
 
 
 # Create booking
-@router.post("/create", status_code=202, response_model=GetJobRequestResponse)
+@router.post(
+    "/create",
+    status_code=202,
+    response_model=GetJobRequestResponse,
+    summary="Create a booking job",
+)
 async def create_booking(
     res: CreateBooking, cred: JWTcredentials = Depends(security)
 ) -> GetJobRequestResponse:
-    return await handler.add_create_booking_job(BookingRequest(cred=cred, **res.dict()))
+    return await handler.add_create_booking_job(BookingRequest(cred=cred, booking=res))
 
 
-@router.get("/{job_id}", response_model=GetQBookingRequestResult)
+@router.get(
+    "/{job_id}", response_model=GetQBookingRequestResult, summary=" Get booking result"
+)
 async def get_booking_result(
     job_id: str, cred: JWTcredentials = Depends(security)
 ) -> GetQBookingRequestResult:

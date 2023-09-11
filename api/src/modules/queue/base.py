@@ -119,5 +119,6 @@ class RQHandler(Utilities):
         job.job_status["state"] = state
         job.job_status["success"] = success
         job.job_status["is_finished"] = is_finished
+        print(self.obj_as_json(job))
 
         return (job, tasks, ends[-1])

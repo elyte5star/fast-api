@@ -20,6 +20,7 @@ from modules.crud.jobs import DbJobs
 from modules.queue.booking_queue import QBookingHandler
 from modules.routers import auth, users, products, booking, q_booking, job
 import time
+from multiprocessing import cpu_count
 
 
 cfg = Settings().from_toml_file().from_env_file()
@@ -112,6 +113,7 @@ async def validation_exception_handler(request, exc):
 async def startup_event() -> None:
     await db.create_all()
     logger.info(f"{cfg.name} v{cfg.version} is starting.")
+    logger.info(f"Number of CPU's {cpu_count()}")
 
 
 @app.on_event("shutdown")

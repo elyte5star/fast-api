@@ -5,7 +5,6 @@ from modules.schemas.requests.users import (
     GetUserRequest,
     DeleteUserRequest,
     UpdateUserRequest,
-   
 )
 from modules.schemas.responses.equiry import ClientEnquiryResponse
 from modules.schemas.responses.users import (
@@ -19,7 +18,6 @@ from modules.database.models.user import _User
 from modules.database.models.enquiry import _Enquiry
 from sqlalchemy.orm import selectinload, defer
 from modules.schemas.requests.auth import JWTcredentials
-
 
 
 class Users(Utilities):
@@ -36,6 +34,7 @@ class Users(Utilities):
             user_data_dict["userid"] = self._get_indent()
             user_data_dict["discount"] = None
             user_data_dict["password"] = hashed_password
+            user_data_dict["created_at"] = self.time_now()
             db_user = _User(**user_data_dict)
             async with self.get_session() as session:
                 session.add(db_user)
@@ -111,7 +110,9 @@ class Users(Utilities):
         )
 
     async def _create_enquiry(self, data: Enquiry) -> ClientEnquiryResponse:
-        client_equiry = _Enquiry(**data.dict(), eid=self._get_indent())
+        client_equiry = _Enquiry(
+            **data.dict(), created_at=self.time_now(), eid=self._get_indent()
+        )
         async with self.get_session() as session:
             session.add(client_equiry)
             await session.commit()

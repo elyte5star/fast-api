@@ -29,7 +29,7 @@ class Products(Discount):
     async def _create_product(self, data: ProductItem) -> CreateProductResponse:
         if await self.product_name_exist(data.name) is None:
             data.pid = self._get_indent()
-            product = Product(**data.dict())
+            product = Product(created_at=self.time_now(), **data.dict())
             async with self.get_session() as session:
                 session.add(product)
                 await session.commit()
@@ -46,7 +46,7 @@ class Products(Discount):
     async def _create_review(self, data: ReviewRequest) -> CreateReviewResponse:
         if await self.pid_exist(data.review.product_id) is not None:
             data.review.rid = self._get_indent()
-            review = Review(**data.review.dict())
+            review = Review(created_at=self.time_now(),**data.review.dict())
             async with self.get_session() as session:
                 session.add(review)
                 await session.commit()

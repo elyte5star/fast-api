@@ -1,7 +1,12 @@
 from modules.utils.base_functions import Utilities
 from modules.database.models.booking import _Booking
 from sqlalchemy.orm import selectinload
-from modules.schemas.requests.booking import BookingsRequest, BookingRequest
+from modules.schemas.requests.booking import (
+    BookingsRequest,
+    BookingRequest,
+    BookingModel,
+   
+)
 from modules.schemas.responses.booking import (
     GetBookingResponse,
     CreateBookingResponse,
@@ -42,29 +47,47 @@ class Discount(Utilities):
 
 
 class Bookings(Discount):
-    async def _create_booking(self, data: BookingRequest) -> CreateBookingResponse:
-        total_price = data.total_price
-        shipping_details = (
-            data.billing_address
-            if data.shipping_details is None
-            else data.shipping_details
-        )
+    async def _create_booking_request(
+        self, data: BookingRequest
+    ) -> CreateBookingResponse:
+        total_price = data.booking.total_price
         if data.cred.discount is not None:
             total_price = self.calculate_discount(total_price, data.cred.discount)
-        async with self.get_session() as session:
-            booking = _Booking(
-                oid=self._get_indent(),
-                total_price=total_price,
-                cart=data.cart,
-                shipping_details=self.obj_as_json(shipping_details),
-                owner_id=data.cred.userid,
+        if await self.make_payment(data.booking.payment_details, total_price):
+            booking_model = BookingModel(
+                shipping_details=data.booking.billing_address
+                if data.booking.shipping_details is None
+                else data.booking.shipping_details,
+                cart=data.booking.cart,
+                userid=data.cred.userid,
+                total_price=data.booking.total_price,
             )
-            session.add(booking)
-            await session.commit()
-        return CreateBookingResponse(
-            oid=booking.oid,
-            message=f"Booking with id : {booking.oid} created!",
-        )
+            (response, oid) = await self._create_booking(booking_model)
+            if response:
+                return CreateBookingResponse(
+                    oid=oid,
+                    message=f"Booking with id : {oid} created!",
+                )
+        return CreateBookingResponse(success=False, message="Operation failed")
+
+    
+    async def _create_booking(self, data: BookingModel) -> tuple[bool, str]:
+        try:
+            async with self.get_session() as session:
+                booking = _Booking(
+                    oid=self._get_indent(),
+                    total_price=data.total_price,
+                    cart=data.cart,
+                    created_at=self.time_now(),
+                    shipping_details=self.obj_as_json(data.shipping_details),
+                    owner_id=data.userid,
+                )
+                session.add(booking)
+                await session.commit()
+            return (True, booking.oid)
+        except Exception as e:
+            self.log.warning(e)
+            return (False, "")
 
     async def _get_bookings(self, data: BookingsRequest) -> GetBookingsResponse:
         if data.token_load.username == self.cf.username:

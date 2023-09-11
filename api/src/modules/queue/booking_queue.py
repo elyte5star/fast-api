@@ -16,16 +16,22 @@ class QBookingHandler(RQHandler):
         self, data: BookingRequest
     ) -> GetJobRequestResponse:
         job = self.create_job(JobType.CreateBooking)
-        booking_model = BookingModel(
-            cart=data.cart,
-            total_price=data.total_price,
-            shipping_details=data.billing_address
-            if data.shipping_details is None
-            else data.shipping_details,
-        )
-        job.booking_request = booking_model
-        job.userid = data.cred.userid
-        return await self.add_job_with_one_task(job, self.cf.queue_name[1])
+        total_price = data.booking.total_price
+        if data.cred.discount is not None:
+            total_price = self.calculate_discount(total_price, data.cred.discount)
+        if await self.make_payment(data.booking.payment_details, total_price):
+            booking_model = BookingModel(
+                shipping_details=data.booking.billing_address
+                if data.booking.shipping_details is None
+                else data.booking.shipping_details,
+                cart=data.booking.cart,
+                userid=data.cred.userid,
+                total_price=data.booking.total_price,
+            )
+            job.booking_request = booking_model
+            job.userid = data.cred.userid
+            return await self.add_job_with_one_task(job, self.cf.queue_name[1])
+        return GetJobRequestResponse(success=False, message="Couldnt create job")
 
     async def get_booking_result(self, data: GetJobRequest) -> GetQBookingRequestResult:
         if await self.job_exist(data.job_id) is not None:

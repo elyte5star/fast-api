@@ -63,7 +63,7 @@ class DbJobs(Utilities):
             for job in result.scalars():
                 jobs.append(await self.get_job_response(job))
 
-        # TODO filter jobs with username?
+        # TODO filter jobs with userid?
         return GetJobsResponse(
             jobs=jobs,
             message=f"Total number of jobs : {len(jobs)}",

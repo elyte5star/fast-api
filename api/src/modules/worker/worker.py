@@ -107,7 +107,7 @@ class BWorker(Process):
             queue_job = queue_item["job"]
             job_type = queue_job["job_type"]
 
-            result = {}
+            result = None
 
             # Find task in db, update started, status before doing any work.
             with self.get_session() as session:

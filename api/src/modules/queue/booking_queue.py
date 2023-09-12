@@ -9,6 +9,7 @@ from modules.schemas.responses.booking import GetQBookingRequestResult
 from modules.schemas.requests.job import GetJobRequest
 from modules.database.models.job_task import _Job
 from modules.schemas.queue.job_task import result_available
+from sqlalchemy.orm import selectinload
 
 
 class QBookingHandler(RQHandler):
@@ -36,7 +37,10 @@ class QBookingHandler(RQHandler):
     async def get_booking_result(self, data: GetJobRequest) -> GetQBookingRequestResult:
         if await self.job_exist(data.job_id) is not None:
             async with self.get_session() as session:
-                query = self.select(_Job).where(_Job.job_id == data.job_id)
+                query = (
+                    self.select(_Job)
+                    .where(_Job.job_id == data.job_id)
+                )
                 jobs = await session.execute(query)
                 (job,) = jobs.first()
                 if job.job_type != JobType.CreateBooking:
@@ -45,6 +49,7 @@ class QBookingHandler(RQHandler):
                     )
                 (job, tasks, end) = await self._check_job_and_tasks(job)
 
+                # update job status in db?
                 if not result_available(job):
                     return GetQBookingRequestResult(
                         success=False, message="Result from job is not available."

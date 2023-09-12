@@ -20,7 +20,6 @@ from modules.database.models.product import Product, SpecialDeals
 from modules.database.models.review import Review
 from modules.database.models.enquiry import _Enquiry
 from sqlalchemy import or_, inspect
-from sqlalchemy.orm import selectinload, defer
 
 
 class AsyncDatabaseSession:
@@ -59,8 +58,7 @@ class AsyncDatabaseSession:
     async def async_inspect_schema(self):
         async with self._engine.connect() as conn:
             tables = await conn.run_sync(self.use_inspector)
-        self.log.info(tables)
-            
+        return tables
 
     @asynccontextmanager
     async def get_session(self) -> AsyncGenerator:
@@ -73,14 +71,12 @@ class AsyncDatabaseSession:
             raise
         finally:
             await session.close()
-          
 
     async def create_all(self):
         async with self._engine.begin() as conn:
             # await conn.run_sync(Base.metadata.drop_all)
             await conn.run_sync(Base.metadata.create_all)
             await self.create_admin_account()
-            await self.async_inspect_schema()
 
     async def username_email_exists(self, email: str, username: str) -> Optional[_User]:
         async with self.get_session() as session:

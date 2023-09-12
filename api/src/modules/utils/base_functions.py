@@ -32,7 +32,7 @@ class Utilities(AsyncDatabaseSession):
     async def make_payment(self, data: PaymentDetails, amount_to_pay: float) -> bool:
         # TODO implement card payment
         return True
-
+    
     def obj_as_json(self, obj):
         return jsonable_encoder(obj)
 

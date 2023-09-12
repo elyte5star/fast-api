@@ -1,11 +1,9 @@
 from modules.utils.base_functions import Utilities
 from modules.database.models.booking import _Booking
-from sqlalchemy.orm import selectinload
 from modules.schemas.requests.booking import (
     BookingsRequest,
     BookingRequest,
     BookingModel,
-   
 )
 from modules.schemas.responses.booking import (
     GetBookingResponse,
@@ -70,7 +68,6 @@ class Bookings(Discount):
                 )
         return CreateBookingResponse(success=False, message="Operation failed")
 
-    
     async def _create_booking(self, data: BookingModel) -> tuple[bool, str]:
         try:
             async with self.get_session() as session:
@@ -92,9 +89,7 @@ class Bookings(Discount):
     async def _get_bookings(self, data: BookingsRequest) -> GetBookingsResponse:
         if data.token_load.username == self.cf.username:
             async with self.get_session() as session:
-                result = await session.execute(
-                    self.select(_Booking).options(selectinload(_Booking.owner))
-                )
+                result = await session.execute(self.select(_Booking))
                 bookings = result.scalars().all()
                 if bookings:
                     return GetBookingsResponse(
@@ -114,9 +109,7 @@ class Bookings(Discount):
         if await self.oid_exist(data.oid) is not None:
             async with self.get_session() as session:
                 result = await session.execute(
-                    self.select(_Booking)
-                    .where(_Booking.oid == data.oid)
-                    .options(selectinload(_Booking.owner))
+                    self.select(_Booking).where(_Booking.oid == data.oid)
                 )
 
                 (booking,) = result.first()

@@ -1,6 +1,6 @@
 from modules.database.base import Base
 from modules.schemas.misc.enums import JobType
-from modules.schemas.requests.booking import BookingRequest
+from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy import (
     Column,
     String,
@@ -8,20 +8,19 @@ from sqlalchemy import (
     Integer,
     ForeignKey,
     Enum,
-    JSON,
-    
+    JSON,PickleType
 )
 
 
 class _Job(Base):
     job_id = Column(String(60), primary_key=True, index=True)
     userid = Column(String(60), ForeignKey("_user.userid"))
-    task_id = Column(String(60))
     created_at = Column(DateTime(timezone=True), nullable=True)
     job_type = Column(Enum(JobType))
     job_status = Column(JSON)
     number_of_tasks = Column(Integer)
     booking_request = Column(JSON(none_as_null=True))
+    task_ids = Column(MutableList.as_mutable(PickleType), default=[])
 
 
 class _Task(Base):
@@ -32,3 +31,4 @@ class _Task(Base):
     created_at = Column(DateTime(timezone=True), nullable=True)
     started = Column(DateTime(timezone=True), nullable=True)
     finished = Column(DateTime(timezone=True), nullable=True)
+

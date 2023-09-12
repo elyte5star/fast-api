@@ -10,7 +10,7 @@ class Job(BaseModel):
     created_at: datetime = datetime.utcnow()
     job_type: JobType = JobType.Noop
     job_id: str = ""
-    task_id: str = ""
+    task_ids: list = []
     job_status: JobStatus = JobStatus()
     number_of_tasks: int = 0
     booking_request: Optional[BookingModel] = None

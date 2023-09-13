@@ -66,7 +66,7 @@ Starting the project
   docker-compose build worker
   ```
 
-  - start server with
+  - start server with and worker
 
   ```
   docker-compose up api

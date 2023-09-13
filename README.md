@@ -13,7 +13,7 @@ Starting the project
   ```
   DEBUG=1
   ALGORITHM=HS256
-  SECRET_KEY=***************************************************
+  SECRET_KEY=***********************************************************
   TOKEN_EXPIRE_MINUTES=50
   REFRESH_TOKEN_EXPIRE_MINUTES=43200
   HOST_URL=http://localhost:8000/

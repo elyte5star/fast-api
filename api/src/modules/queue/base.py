@@ -1,5 +1,5 @@
 from modules.utils.base_functions import Utilities
-from aio_pika import Message, connect
+from aio_pika import Message, connect, DeliveryMode
 from modules.schemas.queue.item import QueueItem
 from modules.schemas.queue.job_task import (
     Job,
@@ -49,7 +49,10 @@ class RQHandler(Utilities):
                 for queue_item in queue_items_list:
                     # Sending the message
                     await channel.default_exchange.publish(
-                        Message(queue_item.json().encode()),
+                        Message(
+                            queue_item.json().encode(),
+                            delivery_mode=DeliveryMode.PERSISTENT,
+                        ),
                         routing_key=queue_name,
                     )
 
@@ -119,5 +122,5 @@ class RQHandler(Utilities):
         job.job_status["state"] = state
         job.job_status["success"] = success
         job.job_status["is_finished"] = is_finished
-        
+
         return (job, tasks, ends[-1])

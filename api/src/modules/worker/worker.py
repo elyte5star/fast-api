@@ -51,7 +51,7 @@ class BWorker(Process):
             echo=False,
         )
         _, kwargs = engine.dialect.create_connect_args(engine.url)
-        # print(f"[+] Connection information : {kwargs}")
+        print(f"[+] Connection information : {kwargs}")
         return sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
     @contextmanager
@@ -171,7 +171,7 @@ class BWorker(Process):
             ConnectionParameters(host=self.cf.rabbit_host_name)
         )
         channel = connection.channel()
-        channel.queue_declare(queue=self.queue_name, durable=False)
+        channel.queue_declare(queue=self.queue_name, durable=True)
         channel.basic_qos(prefetch_count=1)
         channel.basic_consume(queue=self.queue_name, on_message_callback=self.callback)
         self.insert_worker_to_db(self.create_worker())

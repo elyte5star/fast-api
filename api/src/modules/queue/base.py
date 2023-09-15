@@ -9,7 +9,7 @@ from modules.schemas.queue.job_task import (
 )
 from modules.database.models.job_task import _Job, _Task
 from modules.schemas.responses.job import GetJobRequestResponse
-from sqlalchemy.orm import selectinload
+
 
 
 class RQHandler(Utilities):

@@ -256,6 +256,9 @@ $RECYCLE.BIN/
 # Changes made manually by Anzyz development team
 
 
+#Deployment
+deployment/regcred.yml
+
 #fORNTEND
 
 e-commerce/*

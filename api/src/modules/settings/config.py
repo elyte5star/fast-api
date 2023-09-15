@@ -35,6 +35,8 @@ class Settings:
         self.rabbit_host_port: str = ""
         self.rabbit_connect_string: str = ""
         self.queue_name: list = []
+        self.rabbit_user: str = ""
+        self.rabbit_pass: str = ""
         self.rabbit_connect_string: str = ""
 
         # Project details
@@ -92,6 +94,8 @@ class Settings:
 
         self.rabbit_host_name = cf.queue.params.host_name
         self.rabbit_host_port = cf.queue.params.port
+        self.rabbit_user = cf.queue.params.user
+        self.rabbit_pass = cf.queue.params.pwd
         self.queue_name = cf.queue.params.my_queue
         self.rabbit_connect_string = (
             "amqp://guest:guest@"
@@ -151,6 +155,8 @@ class Settings:
         self.rabbit_host_name = str(getenv("RABBIT_HOST"))
         self.rabbit_host_port = str(getenv("RABBIT_PORT_NUMBER"))
         self.queue_name = json.loads(getenv("RABBIT_QNAME"))
+        self.rabbit_user = str(getenv("RABBITMQ_DEFAULT_USER"))
+        self.rabbit_pass = str(getenv("RABBITMQ_DEFAULT_PASS"))
         self.rabbit_connect_string = (
             "amqp://guest:guest@"
             + self.rabbit_host_name

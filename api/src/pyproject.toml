@@ -115,6 +115,7 @@ host_name = "rabbitQ"
 my_queue = ["SEARCH", "BOOKING", "LOST_ITEM"]
 port = "5672"
 pwd = "elyteRQ"
+user="rabbitUser"
 
 [api]
 auth_type = ["SELF", "GOOGLE"]
@@ -128,7 +129,7 @@ news_api_key = "8820ff85814d4e2ab94b0585d76eb209"
 email = "elyte5star@gmail.com"
 is_admin = true
 password = "$2b$10$rQcvrrW2JcvjV2XM5TG3zeJd6oHPthld3VfRLsvyV2UJFO0.BxACO"
-telephone = "40978057"
+telephone = "889851919"
 username = "elyte"
 
 [hash.password]

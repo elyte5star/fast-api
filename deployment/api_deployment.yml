@@ -1,1 +1,77 @@
-  
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ingress
+  namespace: demo
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+
+spec:
+  tls:
+    - hosts:
+        - elyte.info
+      secretName: tls-secret
+   
+  rules:
+  - host: elyte.info
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api
+            port:
+              number: 8000
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: api
+  template:
+    metadata:
+      labels:
+        name: api
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: api
+          imagePullPolicy: Always
+          image: elyte5star/api:v1 
+          ports:
+            - containerPort: 8000
+          env:
+            - name: TOKEN_EXPIRE_MINUTES
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: TOKEN_EXPIRE_MINUTES
+
+            
+           
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: api
+  namespace: demo
+spec:
+  selector:
+    name: api
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 31317
+            

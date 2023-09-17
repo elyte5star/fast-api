@@ -10,11 +10,11 @@ metadata:
 spec:
   tls:
     - hosts:
-        - elyte.info
+        - elyte.api.info
       secretName: tls-secret
    
   rules:
-  - host: elyte.info
+  - host: elyte.api.info
     http:
       paths:
       - path: /
@@ -46,7 +46,7 @@ spec:
         - name: regcred
       containers:
         - name: api
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           image: elyte5star/api:v1 
           ports:
             - containerPort: 8000

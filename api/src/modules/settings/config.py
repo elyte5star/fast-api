@@ -173,7 +173,9 @@ class Settings:
         self.msal_issuer = str(getenv("MSAL_ISSUER"))
 
         self.client_url = str(getenv("CLIENT_URL"))
+        self.refresh_token_expire_minutes = int(getenv("REFRESH_TOKEN_EXPIRE_MINUTES"))
         self.token_expire_min = int(getenv("TOKEN_EXPIRE_MINUTES"))
+        self.secret_key = str(getenv("SECRET_KEY"))
         self.algorithm = str(getenv("ALGORITHM"))
         self.security_salt = str(getenv("SECURITY_PASSWORD_SALT"))
         self.email = str(getenv("MAIL_FROM"))

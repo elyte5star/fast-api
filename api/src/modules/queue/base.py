@@ -44,7 +44,7 @@ class RQHandler(Utilities):
                 # Creating a channel
                 channel = await connection.channel()
                 # Declaring queue
-                _ = await channel.declare_queue(queue_name)
+                _ = await channel.declare_queue(queue_name,durable=True)
 
                 for queue_item in queue_items_list:
                     # Sending the message

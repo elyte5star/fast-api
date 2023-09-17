@@ -13,7 +13,9 @@ def run():
     worker.booking_handler = BookingHandler(config)
     worker.start()
     end = time.time()
-    print(f"Started process: {worker.id} in {end - start} seconds. {worker.time_now()}")
+    print(
+        f"Started process with process id: {worker.pid} for worker with id: {worker.id} in {end - start} seconds. {worker.time_now()}"
+    )
     worker.join()
     # worker.run_forever()
 

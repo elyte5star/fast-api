@@ -60,7 +60,7 @@ services:
 
   rabbitQ:
     hostname: rabbitQ
-    image: rabbitmq:3-management
+    image: rabbitmq:3.11.23-management-alpine
     container_name: rabbit
     ports:
       - 5672:5672

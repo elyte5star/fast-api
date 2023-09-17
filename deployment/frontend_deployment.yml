@@ -46,7 +46,7 @@ spec:
       containers:
         - name: vuejs
           imagePullPolicy: IfNotPresent
-          image: elyte5star/vuejs3:v1 
+          image: elyte5star/vuej3:v1 
           ports:
             - containerPort: 8000
           env:
@@ -67,6 +67,13 @@ spec:
                 secretKeyRef:
                   name: dashboard-secrets
                   key: VITE_APP_WAIT_TIME
+
+            - name: VUE_MAINTENANCE_MODE
+              valueFrom:
+                secretKeyRef:
+                  name: dashboard-secrets
+                  key: VUE_MAINTENANCE_MODE
+
 
             - name: VITE_APP_MSAL_CLIENT_ID
               valueFrom:

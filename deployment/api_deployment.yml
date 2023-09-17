@@ -57,6 +57,145 @@ spec:
                   name: api-secrets
                   key: TOKEN_EXPIRE_MINUTES
 
+            - name: REFRESH_TOKEN_EXPIRE_MINUTES
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: REFRESH_TOKEN_EXPIRE_MINUTES
+
+            - name: HOST_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: HOST_URL
+
+            - name: CLIENT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: CLIENT_URL
+
+            - name: ALGORITHM
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: ALGORITHM
+
+            - name: MYSQL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_HOST
+            
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_USER
+            
+            - name: MYSQL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_PORT
+
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_DATABASE
+
+            - name: RABBIT_QNAME
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: RABBIT_QNAME
+
+            - name: MAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MAIL_USERNAME
+
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MAIL_PASSWORD
+
+            - name: MAIL_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MAIL_FROM
+
+            - name: MAIL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MAIL_PORT
+            
+            - name: MAIL_SERVER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MAIL_SERVER
+
+            - name: MAIL_FROM_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MAIL_FROM_NAME
+
+            - name: MAIL_STARTTLS
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MAIL_STARTTLS
+            
+            - name: MAIL_SSL_TLS
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MAIL_SSL_TLS
+            
+            - name: USE_CREDENTIALS
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: USE_CREDENTIALS
+
+            - name: VALIDATE_CERTS
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: VALIDATE_CERTS
+
+            - name: SECURITY_PASSWORD_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: SECURITY_PASSWORD_SALT
+
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: GOOGLE_CLIENT_ID
+            
+            - name: MSAL_LOGIN_AUTHORITY
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MSAL_LOGIN_AUTHORITY
+            
+            - name: MSAL_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MSAL_CLIENT_ID
+            
+
             
            
 ---

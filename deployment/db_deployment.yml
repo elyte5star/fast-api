@@ -16,6 +16,7 @@ spec:
       containers:
         - name: db
           image: mariadb
+          imagePullPolicy: Never
           ports:
             - containerPort: 3306 
           env:
@@ -26,17 +27,43 @@ spec:
                 secretKeyRef:
                   name: api-secrets
                   key: MYSQL_ROOT_PASSWORD
+
+            - name: MARIADB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_USER
+
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            
+            - name: MARIADB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_DATABASE
+            
+            - name: MYSQL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_HOST
 ---
 
+  
 apiVersion: v1
 kind: Service
 metadata:
   name: db
   namespace: demo
 spec:
-  ports:
-  - port: 3306
-    targetPort: 3306
+  type: NodePort
   selector:
     name: db
-  
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306

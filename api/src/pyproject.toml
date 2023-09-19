@@ -120,7 +120,6 @@ user="rabbitUser"
 [api]
 auth_type = ["SELF", "GOOGLE"]
 debug = true
-google_client_id = "864725361364-enrs63jgolid0jpmiffcsnj1rtadtss1.apps.googleusercontent.com"
 host_url = "http://localhost:8000/"
 log_type = "INFO"
 news_api_key = "8820ff85814d4e2ab94b0585d76eb209"
@@ -131,6 +130,15 @@ is_admin = true
 password = "$2b$10$rQcvrrW2JcvjV2XM5TG3zeJd6oHPthld3VfRLsvyV2UJFO0.BxACO"
 telephone = "889851919"
 username = "elyte"
+mail_username='elyte5star'
+mail_port=587
+mail_server='smtp.gmail.com'
+mail_from_name='E-COMMERCE APPLICATION'
+mail_starttls=true
+mail_ssl_tls=false
+use_credentials=true
+validate_certs=true
+
 
 [hash.password]
 encoding = "utf-8"

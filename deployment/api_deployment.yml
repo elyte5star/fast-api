@@ -75,12 +75,6 @@ spec:
                   name: api-secrets
                   key: CLIENT_URL
 
-            - name: ALGORITHM
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: ALGORITHM
-
             - name: MYSQL_HOST
               valueFrom:
                 secretKeyRef:
@@ -105,72 +99,42 @@ spec:
                   name: api-secrets
                   key: MYSQL_DATABASE
 
-            - name: RABBIT_QNAME
+            - name: RABBIT_HOST
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
-                  key: RABBIT_QNAME
+                  key: RABBIT_HOST
 
-            - name: MAIL_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: MAIL_USERNAME
-
-            - name: MAIL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: MAIL_PASSWORD
-
-            - name: MAIL_FROM
+            - name: RABBIT_PORT_NUMBER
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
                   key: MAIL_FROM
 
-            - name: MAIL_PORT
+            - name: RABBITMQ_DEFAULT_USER
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
-                  key: MAIL_PORT
+                  key: RABBITMQ_DEFAULT_USER
             
-            - name: MAIL_SERVER
+            - name: RABBITMQ_DEFAULT_PASS
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
-                  key: MAIL_SERVER
+                  key: RABBITMQ_DEFAULT_PASS
 
-            - name: MAIL_FROM_NAME
+            - name: MSAL_ISSUER
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
-                  key: MAIL_FROM_NAME
-
-            - name: MAIL_STARTTLS
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: MAIL_STARTTLS
+                  key: MSAL_ISSUER
             
-            - name: MAIL_SSL_TLS
+            - name: MAIL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
-                  key: MAIL_SSL_TLS
+                  key: MAIL_PASSWORD
             
-            - name: USE_CREDENTIALS
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: USE_CREDENTIALS
-
-            - name: VALIDATE_CERTS
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: VALIDATE_CERTS
-
             - name: SECURITY_PASSWORD_SALT
               valueFrom:
                 secretKeyRef:

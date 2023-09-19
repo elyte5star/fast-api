@@ -68,14 +68,14 @@ services:
     restart: on-failure
     networks:
       - elyte_net
-
+    
   worker:
     image: worker
     container_name: main-worker
     build:
       context: ./api/src
       dockerfile: ./worker.dockerfile
-    restart: always
+    restart: on-failure
     env_file:
       - api.env
     networks:

@@ -55,7 +55,7 @@ class RQHandler(Utilities):
                         ),
                         routing_key=queue_name,
                     )
-
+                
             return (True, f"Job with id '{job.job_id}' created.")
 
         except Exception as ex:

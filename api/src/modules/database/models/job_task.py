@@ -14,7 +14,7 @@ from sqlalchemy import (
 
 class _Job(Base):
     job_id = Column(String(60), primary_key=True, index=True)
-    userid = Column(String(60), ForeignKey("_user.userid"))
+    userid = Column(String(60), ForeignKey("_user.userid",onupdate="CASCADE", ondelete="CASCADE"),nullable=False)
     created_at = Column(DateTime(timezone=True), nullable=True)
     job_type = Column(Enum(JobType))
     job_status = Column(JSON)
@@ -25,7 +25,7 @@ class _Job(Base):
 
 class _Task(Base):
     task_id = Column(String(60), primary_key=True, index=True)
-    job_id = Column(String(60), ForeignKey("_job.job_id"))
+    job_id = Column(String(60), ForeignKey("_job.job_id",onupdate="CASCADE", ondelete="CASCADE"),nullable=False)
     status = Column(JSON(none_as_null=True))
     result = Column(JSON(none_as_null=True))
     created_at = Column(DateTime(timezone=True), nullable=True)

@@ -50,8 +50,6 @@ class BWorker(Process):
             self.url_object,
             echo=False,
         )
-        _, kwargs = engine.dialect.create_connect_args(engine.url)
-        print(f"[+] Connection information : {kwargs}")
         return sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
     @contextmanager
@@ -100,12 +98,12 @@ class BWorker(Process):
     def callback(self, ch, method, properties, body):
         try:
             # Get job and task from queue item.
-            # print(" [x] Received job and task %r" % json.loads(body.decode()))
             received = body.decode()
             queue_item = json.loads(received)
             queue_task = queue_item["task"]
             queue_job = queue_item["job"]
             job_type = queue_job["job_type"]
+            print(" [x] Received job with id : %r" % queue_item["job"]['job_id'])
 
             result = None
 

@@ -1,0 +1,180 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ingress
+  namespace: demo
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+
+spec:
+  tls:
+    - hosts:
+        - elyte.api.info
+      secretName: tls-secret
+   
+  rules:
+  - host: elyte.api.info
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api
+            port:
+              number: 8000
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: api
+  template:
+    metadata:
+      labels:
+        name: api
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: api
+          imagePullPolicy: IfNotPresent
+          image: elyte5star/api:v1 
+          ports:
+            - containerPort: 8000
+          env:
+            - name: TOKEN_EXPIRE_MINUTES
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: TOKEN_EXPIRE_MINUTES
+
+            - name: REFRESH_TOKEN_EXPIRE_MINUTES
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: REFRESH_TOKEN_EXPIRE_MINUTES
+
+            - name: HOST_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: HOST_URL
+
+            - name: CLIENT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: CLIENT_URL
+
+            - name: MYSQL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_HOST
+            
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_USER
+            
+            - name: MYSQL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_PORT
+
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_DATABASE
+
+            - name: RABBIT_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: RABBIT_HOST
+
+            - name: RABBIT_PORT_NUMBER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MAIL_FROM
+
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: RABBITMQ_DEFAULT_USER
+            
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: RABBITMQ_DEFAULT_PASS
+
+            - name: MSAL_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MSAL_ISSUER
+            
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MAIL_PASSWORD
+            
+            - name: SECURITY_PASSWORD_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: SECURITY_PASSWORD_SALT
+
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: GOOGLE_CLIENT_ID
+            
+            - name: MSAL_LOGIN_AUTHORITY
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MSAL_LOGIN_AUTHORITY
+            
+            - name: MSAL_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MSAL_CLIENT_ID
+            
+
+            
+           
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: api
+  namespace: demo
+spec:
+  selector:
+    name: api
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 31317
+            

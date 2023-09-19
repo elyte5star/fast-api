@@ -1,5 +1,5 @@
 from modules.utils.base_functions import Utilities
-from aio_pika import Message, connect
+from aio_pika import Message, connect, DeliveryMode
 from modules.schemas.queue.item import QueueItem
 from modules.schemas.queue.job_task import (
     Job,
@@ -9,7 +9,7 @@ from modules.schemas.queue.job_task import (
 )
 from modules.database.models.job_task import _Job, _Task
 from modules.schemas.responses.job import GetJobRequestResponse
-from sqlalchemy.orm import selectinload
+
 
 
 class RQHandler(Utilities):
@@ -44,15 +44,18 @@ class RQHandler(Utilities):
                 # Creating a channel
                 channel = await connection.channel()
                 # Declaring queue
-                _ = await channel.declare_queue(queue_name)
+                _ = await channel.declare_queue(queue_name,durable=True)
 
                 for queue_item in queue_items_list:
                     # Sending the message
                     await channel.default_exchange.publish(
-                        Message(queue_item.json().encode()),
+                        Message(
+                            queue_item.json().encode(),
+                            delivery_mode=DeliveryMode.PERSISTENT,
+                        ),
                         routing_key=queue_name,
                     )
-
+                
             return (True, f"Job with id '{job.job_id}' created.")
 
         except Exception as ex:
@@ -119,5 +122,5 @@ class RQHandler(Utilities):
         job.job_status["state"] = state
         job.job_status["success"] = success
         job.job_status["is_finished"] = is_finished
-        
+
         return (job, tasks, ends[-1])

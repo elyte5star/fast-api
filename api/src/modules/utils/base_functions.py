@@ -32,7 +32,7 @@ class Utilities(AsyncDatabaseSession):
     async def make_payment(self, data: PaymentDetails, amount_to_pay: float) -> bool:
         # TODO implement card payment
         return True
-    
+
     def obj_as_json(self, obj):
         return jsonable_encoder(obj)
 
@@ -197,6 +197,9 @@ class Utilities(AsyncDatabaseSession):
         now_utc = datetime.now()
         now_norway = now_utc.astimezone(timezone("Europe/Stockholm"))
         return now_norway
+
+    def time_now_utc(self) -> datetime:
+        return datetime.now()
 
     def time_then(self) -> datetime:
         return datetime(1980, 1, 1)

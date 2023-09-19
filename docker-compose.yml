@@ -60,7 +60,7 @@ services:
 
   rabbitQ:
     hostname: rabbitQ
-    image: rabbitmq:3-management
+    image: rabbitmq:3.11.23-management-alpine
     container_name: rabbit
     ports:
       - 5672:5672
@@ -68,14 +68,14 @@ services:
     restart: on-failure
     networks:
       - elyte_net
-
+    
   worker:
     image: worker
     container_name: main-worker
     build:
       context: ./api/src
-      dockerfile: ./rabbitworker.dockerfile
-    restart: always
+      dockerfile: ./worker.dockerfile
+    restart: on-failure
     env_file:
       - api.env
     networks:

@@ -161,6 +161,7 @@ class Users(Utilities):
             info["database_parameters"] = kwargs
             info["tables_in_database"] = await self.async_inspect_schema()
             info["cpu_count"] = cpu_count()
+            info["queue_parameters"] = self.cf.rabbit_connect_string
             return GetInfoResponse(info=info, message="System information")
         return GetInfoResponse(success=False, message="Admin rights needed!")
 

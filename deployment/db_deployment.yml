@@ -8,17 +8,25 @@ spec:
   selector:
     matchLabels:
       name: db
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         name: db
-    spec:   
+    spec:
+      volumes:
+        - name: pvc
+          persistentVolumeClaim:
+            claimName: maria-pvc   
       containers:
         - name: db
           image: mariadb
-          imagePullPolicy: Never
           ports:
-            - containerPort: 3306 
+            - containerPort: 3306
+          volumeMounts:
+            - name: pvc
+              mountPath: /var/lib/mysql
           env:
             - name: MARIADB_ALLOW_EMPTY_ROOT_PASSWORD
               value: "1" # if it is 1 and root_password is set, root_password takes precedance
@@ -38,32 +46,26 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
-                  key: MYSQL_ROOT_PASSWORD
+                  key: MYSQL_PASSWORD
             
             - name: MARIADB_DATABASE
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
                   key: MYSQL_DATABASE
-            
-            - name: MYSQL_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: api-secrets
-                  key: MYSQL_HOST
----
-
-  
+                  
+                            
+                  
+---           
+        
 apiVersion: v1
 kind: Service
 metadata:
   name: db
   namespace: demo
 spec:
-  type: NodePort
-  selector:
-    name: db
   ports:
   - port: 3306
-    protocol: TCP
-    targetPort: 3306
+  selector:
+    name: db
+  clusterIP: None

@@ -30,8 +30,7 @@ spec:
             port:
               number: 8000
 
----
-
+---           
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -163,11 +162,9 @@ spec:
                 secretKeyRef:
                   name: api-secrets
                   key: MSAL_CLIENT_ID
-            
 
-            
-           
 ---
+
 kind: Service
 apiVersion: v1
 metadata:
@@ -176,10 +173,10 @@ metadata:
 spec:
   selector:
     name: api
-  type: NodePort
   ports:
     - protocol: TCP
       port: 8000
       targetPort: 8000
-      nodePort: 31317
-            
+
+    
+        

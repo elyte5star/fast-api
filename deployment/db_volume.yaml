@@ -1,0 +1,21 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: db-hostpath
+  namespace: demo
+provisioner: microk8s.io/hostpath
+reclaimPolicy: Delete
+parameters:
+  pvDir: /maria/mariadb-data
+volumeBindingMode: WaitForFirstConsumer
+
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: maria-pvc
+  namespace: demo
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 1Gi } }

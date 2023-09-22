@@ -80,20 +80,20 @@ spec:
             - name: VITE_APP_MSAL_CLIENT_ID
               valueFrom:
                 secretKeyRef:
-                  name: dashboard-secrets
-                  key: VITE_APP_MSAL_CLIENT_ID
+                  name: api-secrets
+                  key: MSAL_CLIENT_ID
 
             - name: VUE_APP_MSAL_LOGIN_AUTHORITY
               valueFrom:
                 secretKeyRef:
-                  name: dashboard-secrets
-                  key: VUE_APP_MSAL_LOGIN_AUTHORITY
+                  name: api-secrets
+                  key: MSAL_LOGIN_AUTHORITY
             
             - name: VUE_GOOGLE_CLIENT_ID
               valueFrom:
                 secretKeyRef:
-                  name: dashboard-secrets
-                  key: VUE_GOOGLE_CLIENT_ID
+                  name: api-secrets
+                  key: GOOGLE_CLIENT_ID
             
             - name: NGINX_PROXY_PASS
               valueFrom:
@@ -108,7 +108,7 @@ spec:
                   key: NGINX_PORT
     
   
-  ---
+---
 kind: Service
 apiVersion: v1
 metadata:
@@ -117,10 +117,9 @@ metadata:
 spec:
   selector:
     name: vuejs
-  type: NodePort
   ports:
     - protocol: TCP
       port: 8000
       targetPort: 8000
-      nodePort: 31319
+      
             

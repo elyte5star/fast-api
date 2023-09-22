@@ -25,6 +25,7 @@ class Settings:
         self.host_url: str = ""
         self.debug: bool = False
         self.auth_type: str = ""
+        self.origins: list = []
 
         self.pwd_len: int = 0
         self.round: int = 0
@@ -181,6 +182,7 @@ class Settings:
         self.security_salt = str(getenv("SECURITY_PASSWORD_SALT"))
         self.mail_password = str(getenv("MAIL_PASSWORD"))
         # TODO
+        # self.origins = json.loads(getenv("BACKEND_CORS_ORIGINS"))
         # self.queue_name = json.loads(getenv("RABBIT_QNAME"))
         # self.email = str(getenv("MAIL_FROM"))
         # self.mail_username = str(getenv("MAIL_USERNAME"))

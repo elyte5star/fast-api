@@ -1,12 +1,12 @@
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: db-hostpath
+  name: ssd-hostpath
   namespace: demo
 provisioner: microk8s.io/hostpath
 reclaimPolicy: Delete
 parameters:
-  pvDir: /maria/mariadb-data
+  pvDir: /mnt/ssd-disk
 volumeBindingMode: WaitForFirstConsumer
 
 
@@ -17,5 +17,5 @@ metadata:
   name: maria-pvc
   namespace: demo
 spec:
-  accessModes: [ReadWriteOnce]
-  resources: { requests: { storage: 1Gi } }
+  accessModes: [ReadWriteMany]
+  resources: { requests: { storage: 5Gi } }

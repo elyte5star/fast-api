@@ -6,8 +6,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://elyte.info"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS,DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://frontend.elyte.com"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "Request-URI: $request_uri";
@@ -16,7 +16,8 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - elyte.api.info
+        - '*.elyte.com'
+        - backend.elyte.com
       secretName: tls-secret
   rules:
   - host: elyte.api.info
@@ -28,7 +29,7 @@ spec:
           service:
             name: api
             port:
-              number: 8000
+              number: 8080
 
 ---           
 apiVersion: apps/v1
@@ -37,14 +38,17 @@ metadata:
   name: api
   namespace: demo
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       name: api
+  strategy:
+    type: Recreate # All existing Pods are killed before new ones are created
   template:
     metadata:
       labels:
         name: api
+        role: backend
     spec:
       imagePullSecrets:
         - name: regcred
@@ -53,7 +57,7 @@ spec:
           imagePullPolicy: Always
           image: elyte5star/api:v1 
           ports:
-            - containerPort: 8000
+            - containerPort: 8080
           env:
             - name: TOKEN_EXPIRE_MINUTES
               valueFrom:
@@ -171,12 +175,16 @@ metadata:
   name: api
   namespace: demo
 spec:
+  type: LoadBalancer
   selector:
     name: api
   ports:
-    - protocol: TCP
-      port: 8000
-      targetPort: 8000
-
+    - name: http
+      port: 8080
+      targetPort: 8080
+    - port: 4000
+      name: https
+      targetPort: 443
+    
     
         

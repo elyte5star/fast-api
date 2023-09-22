@@ -14,6 +14,7 @@ spec:
     metadata:
       labels:
         name: db
+        role: db
     spec:
       volumes:
         - name: pvc
@@ -22,6 +23,7 @@ spec:
       containers:
         - name: db
           image: mariadb
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3306
           volumeMounts:
@@ -64,8 +66,11 @@ metadata:
   name: db
   namespace: demo
 spec:
+  type: NodePort
   ports:
   - port: 3306
+    protocol: TCP
+    nodePort: 30010
   selector:
     name: db
-  clusterIP: None
+  

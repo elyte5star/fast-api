@@ -17,5 +17,8 @@ metadata:
   name: maria-pvc
   namespace: demo
 spec:
-  accessModes: [ReadWriteMany]
+  accessModes: [ReadWriteOnce]
   resources: { requests: { storage: 5Gi } }
+  hostPath:
+    path: /data/maria-pvc/
+    type: DirectoryOrCreate

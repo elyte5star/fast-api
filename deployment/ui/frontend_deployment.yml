@@ -25,7 +25,7 @@ spec:
           service:
             name: vuejs
             port:
-              number: 8080
+              number: 3001
 
 ---
 apiVersion: apps/v1
@@ -53,7 +53,7 @@ spec:
           imagePullPolicy: Always
           image: elyte5star/vuej3:v1 
           ports:
-            - containerPort: 8080
+            - containerPort: 80
           resources:
             limits:
               cpu: 0.5
@@ -128,7 +128,7 @@ spec:
   ports:
   - port: 3001
     name: http    
-    targetPort: 8080
+    targetPort: 80
   - port: 4001
     name: https
     targetPort: 443

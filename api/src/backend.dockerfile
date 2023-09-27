@@ -16,6 +16,6 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi --no-root --only main
 
 
-CMD ["uvicorn", "main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
 
-EXPOSE 8080
+EXPOSE 80

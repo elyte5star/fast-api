@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS,DELETE"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://frontend.elyte.com, https://elyte.com, http://elyte.com, http://*.elyte.com, http://localhost, http://elyte.com:8080, http://elyte.com:3001, https://localhost, https://elyte.com:443, https://elyte.com:4001"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://frontend.elyte.com, https://elyte.com, http://elyte.com, http://*.elyte.com, http://localhost, http://elyte.com:80, http://elyte.com:3001, https://localhost, https://elyte.com:443, https://elyte.com:4001"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "Request-URI: $request_uri";
@@ -21,7 +21,7 @@ spec:
         - backend.elyte.com
       secretName: tls-secret
   rules:
-  - host: backend.elyte.com
+  - host: elyte.com
     http:
       paths:
       - path: /
@@ -30,7 +30,7 @@ spec:
           service:
             name: api
             port:
-              number: 8080
+              number: 3000
 
 ---           
 apiVersion: apps/v1
@@ -58,7 +58,7 @@ spec:
           imagePullPolicy: Always
           image: elyte5star/api:v1 
           ports:
-            - containerPort: 8080
+            - containerPort: 80
           resources:
             limits:
               cpu: 0.5
@@ -200,7 +200,7 @@ spec:
   ports:
     - name: http
       port: 3000
-      targetPort: 8080
+      targetPort: 80
     - port: 4000
       name: https
       targetPort: 443

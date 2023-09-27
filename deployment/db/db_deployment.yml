@@ -30,8 +30,6 @@ spec:
             - name: pvc
               mountPath: /var/lib/mysql
           env:
-            - name: MARIADB_ALLOW_EMPTY_ROOT_PASSWORD
-              value: "1" # if it is 1 and root_password is set, root_password takes precedance
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:

@@ -163,7 +163,6 @@ class Settings:
         self.rabbit_host_port = str(getenv("RABBITMQ_NODE_PORT"))
         self.rabbit_user = str(getenv("RABBITMQ_DEFAULT_USER"))
         self.rabbit_pass = str(getenv("RABBITMQ_DEFAULT_PASS"))
-        self.queue_name = json.loads(getenv("RABBIT_QNAME"))
         self.rabbit_connect_string = (
             f"amqp://{self.rabbit_user}:{self.rabbit_pass}@"
             + self.rabbit_host_name

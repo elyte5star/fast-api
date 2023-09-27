@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 
 
-def run():
+def main():
     config = Settings().from_toml_file().from_env_file()
     start = time.time()
     worker = BWorker(config, WorkerType.Booking, config.queue_name[1])
@@ -21,4 +21,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    main()

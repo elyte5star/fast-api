@@ -25,7 +25,7 @@ class Settings:
         self.host_url: str = ""
         self.debug: bool = False
         self.auth_type: str = ""
-        self.origins: list = []
+        self.origins: list[str] = ['*']
 
         self.pwd_len: int = 0
         self.round: int = 0
@@ -90,7 +90,7 @@ class Settings:
         self.sql_host = cf.database.host
         self.sql_port = cf.database.port
         self.sql_db = cf.database.db
-        self.db_url = f"mariadb+aiomysql://{self.sql_username}:{self.sql_password}@{self.sql_host}/{self.sql_db}?charset=utf8mb4"
+        self.db_url = f"mariadb+aiomysql://{self.sql_username}:{self.sql_password}@{self.sql_host}:{self.sql_port}/{self.sql_db}?charset=utf8mb4"
 
         self.rabbit_host_name = cf.queue.params.host_name
         self.rabbit_host_port = cf.queue.params.port
@@ -149,26 +149,27 @@ class Settings:
         return self
 
     def from_env_file(self):
-        print("Overriding toml variables with enviroment var")
+        print("Enviromental variables injected!")
 
         self.sql_host = str(getenv("MYSQL_HOST"))
         self.sql_db = str(getenv("MYSQL_DATABASE"))
         self.sql_username = str(getenv("MYSQL_USER"))
-        self.sql_password = str(getenv("MYSQL_ROOT_PASSWORD"))
+        self.sql_password = str(getenv("MYSQL_PASSWORD"))
         self.sql_port = int(getenv("MYSQL_PORT"))
         self.host_url = str(getenv("HOST_URL"))
-        self.db_url = f"mariadb+aiomysql://{self.sql_username}:{self.sql_password}@{self.sql_host}/{self.sql_db}?charset=utf8mb4"
+        self.db_url = f"mariadb+aiomysql://{self.sql_username}:{self.sql_password}@{self.sql_host}:{self.sql_port}/{self.sql_db}?charset=utf8mb4"
 
         self.rabbit_host_name = str(getenv("RABBIT_HOST"))
-        self.rabbit_host_port = str(getenv("RABBIT_PORT_NUMBER"))
+        self.rabbit_host_port = str(getenv("RABBITMQ_NODE_PORT"))
         self.rabbit_user = str(getenv("RABBITMQ_DEFAULT_USER"))
         self.rabbit_pass = str(getenv("RABBITMQ_DEFAULT_PASS"))
+        self.queue_name = json.loads(getenv("RABBIT_QNAME"))
         self.rabbit_connect_string = (
             f"amqp://{self.rabbit_user}:{self.rabbit_pass}@"
             + self.rabbit_host_name
             + ":"
             + self.rabbit_host_port
-            + "/"
+            + "/%2F"
         )
         self.google_client_id = str(getenv("GOOGLE_CLIENT_ID"))
         self.msal_login_authority = str(getenv("MSAL_LOGIN_AUTHORITY"))
@@ -181,8 +182,8 @@ class Settings:
 
         self.security_salt = str(getenv("SECURITY_PASSWORD_SALT"))
         self.mail_password = str(getenv("MAIL_PASSWORD"))
+        self.origins = json.loads(getenv("BACKEND_CORS_ORIGINS"))
         # TODO
-        # self.origins = json.loads(getenv("BACKEND_CORS_ORIGINS"))
         # self.queue_name = json.loads(getenv("RABBIT_QNAME"))
         # self.email = str(getenv("MAIL_FROM"))
         # self.mail_username = str(getenv("MAIL_USERNAME"))

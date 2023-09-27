@@ -19,6 +19,5 @@ class BookingHandler:
             result["oid"] = oid
             return (response, result)
         except Exception as e:
-            print("Process failed.....")
-            print(e)
+            print("Process failed.....", e)
             return (False, {})

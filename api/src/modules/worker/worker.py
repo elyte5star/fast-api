@@ -5,7 +5,7 @@ from modules.settings.config import Settings
 from modules.database.db_session import _Worker, _Task, _Job
 from modules.schemas.misc.enums import JobType, JobStatus, JobState
 import json
-from pika import ConnectionParameters, BlockingConnection
+from pika import URLParameters, BlockingConnection
 from modules.schemas.misc.enums import WorkerType
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
@@ -33,8 +33,8 @@ class BWorker(Process):
 
     def time_now(self) -> datetime:
         now_utc = datetime.now()
-        now_norway = now_utc.astimezone(timezone("Europe/Stockholm"))
-        return now_norway
+        now_est = now_utc.astimezone(timezone("Europe/Stockholm"))
+        return now_est
 
     def create_worker(self):
         worker = Worker()
@@ -43,6 +43,7 @@ class BWorker(Process):
         worker.worker_id = self.id
         worker.queue_name = self.queue_name
         worker.queue_host = self.cf.rabbit_host_name
+        worker.process_id = str(self.pid)
         return worker
 
     def session_generator(self):
@@ -103,7 +104,7 @@ class BWorker(Process):
             queue_task = queue_item["task"]
             queue_job = queue_item["job"]
             job_type = queue_job["job_type"]
-            print(" [x] Received job with id : %r" % queue_item["job"]['job_id'])
+            print(" [x] Received job with id : %r" % queue_item["job"]["job_id"])
 
             result = None
 
@@ -135,7 +136,7 @@ class BWorker(Process):
         except Exception as e:
             # On exception, put queue_item on lost_item queue.
             connection = BlockingConnection(
-                ConnectionParameters(host=self.cf.rabbit_host_name)
+                URLParameters(self.cf.rabbit_connect_string)
             )
             channel = connection.channel()
             channel.queue_declare(queue=self.cf.queue_name[2], durable=True)
@@ -159,15 +160,12 @@ class BWorker(Process):
             self._update_finished_task_status_in_db(
                 task_status, db_task.task_id, result
             )
-            print(" [*] Result for Task. :", result)
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
     # rename run_forever()
     # override the run function
     def run(self) -> None:
-        connection = BlockingConnection(
-            ConnectionParameters(host=self.cf.rabbit_host_name)
-        )
+        connection = BlockingConnection(URLParameters(self.cf.rabbit_connect_string))
         channel = connection.channel()
         channel.queue_declare(queue=self.queue_name, durable=True)
         channel.basic_qos(prefetch_count=1)

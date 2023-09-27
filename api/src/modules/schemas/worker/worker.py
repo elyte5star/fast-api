@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Json
+from pydantic import BaseModel
 from ..misc.enums import WorkerType
 from datetime import datetime
+from typing import Optional
 
 
 class Worker(BaseModel):
@@ -9,3 +10,4 @@ class Worker(BaseModel):
     worker_id: str = ""
     queue_name: str = ""
     queue_host: str = ""
+    process_id: Optional[str] = ""

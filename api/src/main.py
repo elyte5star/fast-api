@@ -22,7 +22,6 @@ from modules.routers import auth, users, products, booking, q_booking, job
 import time
 
 
-
 cfg = Settings().from_toml_file().from_env_file()
 
 
@@ -57,6 +56,8 @@ app = FastAPI(
 
 ALLOWED_HOSTS = ["*"]
 
+if cfg.origins:
+    ALLOWED_HOSTS = [str(origin) for origin in cfg.origins]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_HOSTS,
@@ -113,7 +114,6 @@ async def validation_exception_handler(request, exc):
 async def startup_event() -> None:
     await db.create_all()
     logger.info(f"{cfg.name} v{cfg.version} is starting.")
-    
 
 
 @app.on_event("shutdown")

@@ -7,13 +7,13 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      name: db
+      name: db 
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        name: db
+        name: db # service will look for this label
         role: db
     spec:
       volumes:
@@ -21,9 +21,9 @@ spec:
           persistentVolumeClaim:
             claimName: maria-pvc   
       containers:
-        - name: db
+        - name: maria-db
           image: mariadb
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 3306
           volumeMounts:
@@ -70,7 +70,7 @@ spec:
   ports:
   - port: 3306
     protocol: TCP
-    nodePort: 30010
+    targetPort: 3306
   selector:
     name: db
   

@@ -1,69 +1,25 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: api-ingress
-  namespace: demo
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS,DELETE"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://frontend.elyte.com, https://elyte.com, http://elyte.com, http://*.elyte.com, http://localhost, http://elyte.com:8080, http://elyte.com:3001, https://localhost, https://elyte.com:443, https://elyte.com:4001"
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "Request-URI: $request_uri";
-    
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - '*.elyte.com'
-        - elyte.com
-        - backend.elyte.com
-      secretName: tls-secret
-  rules:
-  - host: backend.elyte.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: api
-            port:
-              number: 8080
-
----           
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: api
+  name: worker
   namespace: demo
 spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      name: api
-  strategy:
-    type: Recreate # All existing Pods are killed before new ones are created
+  ttlSecondsAfterFinished: 100
+  backoffLimit: 2
+  parallelism: 2
   template:
     metadata:
       labels:
-        name: api
-        role: backend
+        name: worker
+        role: worker
     spec:
       imagePullSecrets:
         - name: regcred
+      restartPolicy: Never
       containers:
-        - name: api
-          imagePullPolicy: Always
-          image: elyte5star/api:v1 
-          ports:
-            - containerPort: 8080
-          resources:
-            limits:
-              cpu: 0.5
-            requests:
-              cpu: 0.25 # gives 1/2 of the limit
+        - name: worker
+          imagePullPolicy: IfNotPresent
+          image: elyte5star/worker:v1 
           env:
             - name: TOKEN_EXPIRE_MINUTES
               valueFrom:
@@ -118,13 +74,12 @@ spec:
                 secretKeyRef:
                   name: api-secrets
                   key: MYSQL_DATABASE
-
+                  
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
                   key: MYSQL_PASSWORD
-
 
             - name: RABBIT_HOST
               valueFrom:
@@ -186,24 +141,4 @@ spec:
                   name: api-secrets
                   key: MSAL_CLIENT_ID
 
----
-
-kind: Service
-apiVersion: v1
-metadata:
-  name: api
-  namespace: demo
-spec:
-  type: LoadBalancer
-  selector:
-    name: api
-  ports:
-    - name: http
-      port: 3000
-      targetPort: 8080
-    - port: 4000
-      name: https
-      targetPort: 443
-    
-    
-        
+            

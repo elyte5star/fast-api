@@ -9,10 +9,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - elyte.com
+        - elyte.info
       secretName: tls-secret 
   rules:
-  - host: elyte.com
+  - host: elyte.info
     http:
       paths:
       - path: /

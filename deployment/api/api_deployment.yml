@@ -7,19 +7,19 @@ metadata:
     nginx.org/ssl-services: "api"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS,DELETE"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://elyte.com, http://elyte.com, http://*.elyte.com, http://localhost:8080, http://elyte.com:8080, http://elyte.com:3001, https://localhost:8080, https://elyte.com:443, https://elyte.com:4001"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://elyte.info, http://elyte.info, http://*.elyte.info, http://localhost:8080, http://elyte.info:8080, http://elyte.info:3001, https://localhost:8080, https://elyte.info:443, https://elyte.info:4001"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    
+  
 spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - '*.elyte.com'
-        - elyte.com
-        - backend.elyte.com
+        - '*.elyte.info'
+        - elyte.info
+        - backend.elyte.info
       secretName: tls-secret
   rules:
-  - host: backend.elyte.com
+  - host: backend.elyte.info
     http:
       paths:
       - path: /

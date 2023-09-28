@@ -9,7 +9,6 @@ parameters:
   pvDir: /mnt/ssd-disk
 volumeBindingMode: WaitForFirstConsumer
 
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

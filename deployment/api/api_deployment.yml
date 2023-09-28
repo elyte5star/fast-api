@@ -4,13 +4,11 @@ metadata:
   name: api-ingress
   namespace: demo
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.org/ssl-services: "api"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS,DELETE"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://frontend.elyte.com, https://elyte.com, http://elyte.com, http://*.elyte.com, http://localhost, http://elyte.com:80, http://elyte.com:3001, https://localhost, https://elyte.com:443, https://elyte.com:4001"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://elyte.com, http://elyte.com, http://*.elyte.com, http://localhost:8080, http://elyte.com:8080, http://elyte.com:3001, https://localhost:8080, https://elyte.com:443, https://elyte.com:4001"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "Request-URI: $request_uri";
     
 spec:
   ingressClassName: nginx
@@ -21,7 +19,7 @@ spec:
         - backend.elyte.com
       secretName: tls-secret
   rules:
-  - host: elyte.com
+  - host: backend.elyte.com
     http:
       paths:
       - path: /
@@ -31,7 +29,25 @@ spec:
             name: api
             port:
               number: 3000
+---
 
+kind: Service
+apiVersion: v1
+metadata:
+  name: api
+  namespace: demo
+spec:
+  type: LoadBalancer
+  selector:
+    name: api
+  ports:
+    - name: http
+      port: 3000 #expose at this port
+      targetPort: 8080
+    - port: 4000 #expose at this port
+      name: https
+      targetPort: 443
+    
 ---           
 apiVersion: apps/v1
 kind: Deployment
@@ -39,7 +55,7 @@ metadata:
   name: api
   namespace: demo
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       name: api
@@ -58,7 +74,7 @@ spec:
           imagePullPolicy: Always
           image: elyte5star/api:v1 
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           resources:
             limits:
               cpu: 0.5
@@ -186,24 +202,5 @@ spec:
                   name: api-secrets
                   key: MSAL_CLIENT_ID
 
----
-
-kind: Service
-apiVersion: v1
-metadata:
-  name: api
-  namespace: demo
-spec:
-  type: LoadBalancer
-  selector:
-    name: api
-  ports:
-    - name: http
-      port: 3000
-      targetPort: 80
-    - port: 4000
-      name: https
-      targetPort: 443
-    
     
         

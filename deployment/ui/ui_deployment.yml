@@ -4,19 +4,15 @@ metadata:
   name: vue-ingress
   namespace: demo
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "Request-URI: $request_uri";
-
+    nginx.org/ssl-services: "vuejs"
 spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - frontend.elyte.com
-      secretName: tls-secret
-   
+        - elyte.com
+      secretName: tls-secret 
   rules:
-  - host: frontend.elyte.com
+  - host: elyte.com
     http:
       paths:
       - path: /
@@ -28,6 +24,26 @@ spec:
               number: 3001
 
 ---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: vuejs
+  namespace: demo
+spec:
+  type: LoadBalancer
+  selector:
+    name: vuejs
+  ports:
+  - port: 3001 #expose at this port
+    name: http    
+    targetPort: 8080
+  - port: 4001 #expose at this port
+    name: https
+    targetPort: 443
+            
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -53,7 +69,7 @@ spec:
           imagePullPolicy: Always
           image: elyte5star/vuej3:v1 
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           resources:
             limits:
               cpu: 0.5
@@ -116,20 +132,3 @@ spec:
                   key: NGINX_PORT
     
   
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: vuejs
-  namespace: demo
-spec:
-  selector:
-    name: vuejs
-  ports:
-  - port: 3001
-    name: http    
-    targetPort: 80
-  - port: 4001
-    name: https
-    targetPort: 443
-            

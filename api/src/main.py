@@ -46,6 +46,9 @@ app = FastAPI(
     title=cfg.name,
     description=cfg.description,
     version=cfg.version,
+    terms_of_service=cfg.terms,
+    contact=cfg.contacts,
+    license_info=cfg.license,
     swagger_ui_parameters={
         "syntaxHighlight.theme": "tomorrow-night",
         "tryItOutEnabled": True,
@@ -101,6 +104,7 @@ async def add_process_time_header(request: Request, call_next):
     response = await call_next(request)
     process_time = time.time() - start_time
     response.headers["X-Process-Time"] = str(process_time)
+    response.headers["root_path"] = request.scope.get('root_path')
     return response
 
 

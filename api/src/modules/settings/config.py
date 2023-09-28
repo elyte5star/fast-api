@@ -6,7 +6,6 @@ from typing import Any
 import secrets
 
 
-
 project_root = Path(__file__).parent.parent.parent
 toml_path = path.join(project_root, "pyproject.toml")
 cf = Configuration.from_file(toml_path)
@@ -127,7 +126,8 @@ class Settings:
         self.license = cf.elyte.contact.license.as_dict()
 
         self.algorithm = cf.token.params.algorithm
-        self.secret_key = secrets.token_urlsafe(32)
+        # self.secret_key = secrets.token_urlsafe(32)
+        self.secret_key = cf.token.params.secret_key
         self.token_expire_min = cf.token.params.token_expire_min
         self.refresh_token_expire_minutes = cf.token.params.refresh_token_expire_minutes
         self.grant_type = cf.token.params.grant_type
@@ -158,7 +158,6 @@ class Settings:
         return self
 
     def from_env_file(self):
-        
         print("Enviromental variables injected!")
 
         self.sql_host = str(getenv("MYSQL_HOST"))

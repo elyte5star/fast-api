@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: db 
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: db # service will look for this label
+        role: db
+    spec:
+      volumes:
+        - name: pvc
+          persistentVolumeClaim:
+            claimName: maria-pvc   
+      containers:
+        - name: maria-db
+          image: mariadb
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: pvc
+              mountPath: /var/lib/mysql
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_ROOT_PASSWORD
+
+            - name: MARIADB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_USER
+
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_PASSWORD
+            
+            - name: MARIADB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_DATABASE
+                  
+                                           
+---           
+        
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  namespace: demo
+spec:
+  type: NodePort
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    name: db
+  

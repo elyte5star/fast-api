@@ -3,6 +3,9 @@ from pathlib import Path
 from os import getenv, path
 from fastapi_mail import ConnectionConfig
 from typing import Any
+import secrets
+
+
 
 project_root = Path(__file__).parent.parent.parent
 toml_path = path.join(project_root, "pyproject.toml")
@@ -25,6 +28,7 @@ class Settings:
         self.host_url: str = ""
         self.debug: bool = False
         self.auth_type: str = ""
+        self.origins: list[str] = ["*"]
 
         self.pwd_len: int = 0
         self.round: int = 0
@@ -43,6 +47,9 @@ class Settings:
         self.name: str = ""
         self.version: str = ""
         self.description: str = ""
+        self.terms: str = ""
+        self.contacts: dict = {}
+        self.license: dict = {}
 
         # JWT params
         self.algorithm: str = ""
@@ -89,7 +96,7 @@ class Settings:
         self.sql_host = cf.database.host
         self.sql_port = cf.database.port
         self.sql_db = cf.database.db
-        self.db_url = f"mariadb+aiomysql://{self.sql_username}:{self.sql_password}@{self.sql_host}/{self.sql_db}?charset=utf8mb4"
+        self.db_url = f"mariadb+aiomysql://{self.sql_username}:{self.sql_password}@{self.sql_host}:{self.sql_port}/{self.sql_db}?charset=utf8mb4"
 
         self.rabbit_host_name = cf.queue.params.host_name
         self.rabbit_host_port = cf.queue.params.port
@@ -113,11 +120,14 @@ class Settings:
         self.encoding = cf.hash.password.encoding
 
         self.name = cf.elyte.api.app["name"]
+        self.terms = cf.elyte.api.app.terms_of_service
         self.version = cf.tool.poetry.version
         self.description = cf.elyte.api.app.description
+        self.contacts = cf.elyte.contact.as_dict()
+        self.license = cf.elyte.contact.license.as_dict()
 
         self.algorithm = cf.token.params.algorithm
-        self.secret_key = cf.token.params.secret_key
+        self.secret_key = secrets.token_urlsafe(32)
         self.token_expire_min = cf.token.params.token_expire_min
         self.refresh_token_expire_minutes = cf.token.params.refresh_token_expire_minutes
         self.grant_type = cf.token.params.grant_type
@@ -148,18 +158,19 @@ class Settings:
         return self
 
     def from_env_file(self):
-        print("Overriding toml variables with enviroment var")
+        
+        print("Enviromental variables injected!")
 
         self.sql_host = str(getenv("MYSQL_HOST"))
         self.sql_db = str(getenv("MYSQL_DATABASE"))
         self.sql_username = str(getenv("MYSQL_USER"))
-        self.sql_password = str(getenv("MYSQL_ROOT_PASSWORD"))
+        self.sql_password = str(getenv("MYSQL_PASSWORD"))
         self.sql_port = int(getenv("MYSQL_PORT"))
         self.host_url = str(getenv("HOST_URL"))
-        self.db_url = f"mariadb+aiomysql://{self.sql_username}:{self.sql_password}@{self.sql_host}/{self.sql_db}?charset=utf8mb4"
+        self.db_url = f"mariadb+aiomysql://{self.sql_username}:{self.sql_password}@{self.sql_host}:{self.sql_port}/{self.sql_db}?charset=utf8mb4"
 
         self.rabbit_host_name = str(getenv("RABBIT_HOST"))
-        self.rabbit_host_port = str(getenv("RABBIT_PORT_NUMBER"))
+        self.rabbit_host_port = str(getenv("RABBITMQ_NODE_PORT"))
         self.rabbit_user = str(getenv("RABBITMQ_DEFAULT_USER"))
         self.rabbit_pass = str(getenv("RABBITMQ_DEFAULT_PASS"))
         self.rabbit_connect_string = (
@@ -167,7 +178,7 @@ class Settings:
             + self.rabbit_host_name
             + ":"
             + self.rabbit_host_port
-            + "/"
+            + "/%2F"
         )
         self.google_client_id = str(getenv("GOOGLE_CLIENT_ID"))
         self.msal_login_authority = str(getenv("MSAL_LOGIN_AUTHORITY"))
@@ -180,6 +191,7 @@ class Settings:
 
         self.security_salt = str(getenv("SECURITY_PASSWORD_SALT"))
         self.mail_password = str(getenv("MAIL_PASSWORD"))
+        self.origins = json.loads(getenv("BACKEND_CORS_ORIGINS"))
         # TODO
         # self.queue_name = json.loads(getenv("RABBIT_QNAME"))
         # self.email = str(getenv("MAIL_FROM"))

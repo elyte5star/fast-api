@@ -1,11 +1,12 @@
 from modules.schemas.worker.worker import Worker
+from modules.schemas.queue.job_task import Task
 import uuid
 from datetime import datetime
 from modules.settings.config import Settings
 from modules.database.db_session import _Worker, _Task, _Job
 from modules.schemas.misc.enums import JobType, JobStatus, JobState
 import json
-from pika import ConnectionParameters, BlockingConnection
+from pika import URLParameters, BlockingConnection
 from modules.schemas.misc.enums import WorkerType
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
@@ -33,8 +34,8 @@ class BWorker(Process):
 
     def time_now(self) -> datetime:
         now_utc = datetime.now()
-        now_norway = now_utc.astimezone(timezone("Europe/Stockholm"))
-        return now_norway
+        now_est = now_utc.astimezone(timezone("Europe/Stockholm"))
+        return now_est
 
     def create_worker(self):
         worker = Worker()
@@ -43,6 +44,7 @@ class BWorker(Process):
         worker.worker_id = self.id
         worker.queue_name = self.queue_name
         worker.queue_host = self.cf.rabbit_host_name
+        worker.process_id = str(self.pid)
         return worker
 
     def session_generator(self):
@@ -96,6 +98,9 @@ class BWorker(Process):
             session.commit()
 
     def callback(self, ch, method, properties, body):
+        success = False
+        result = {}
+        db_task = Task()
         try:
             # Get job and task from queue item.
             received = body.decode()
@@ -103,9 +108,7 @@ class BWorker(Process):
             queue_task = queue_item["task"]
             queue_job = queue_item["job"]
             job_type = queue_job["job_type"]
-            print(" [x] Received job with id : %r" % queue_item["job"]['job_id'])
-
-            result = None
+            print(" [x] Received job with id : %r" % queue_item["job"]["job_id"])
 
             # Find task in db, update started, status before doing any work.
             with self.get_session() as session:
@@ -121,7 +124,7 @@ class BWorker(Process):
             self._update_ongoing_task_status_in_db(task_status, db_task.task_id)
 
             # Switch on job type.
-            success = False
+
             match job_type:
                 case JobType.Noop:
                     raise SystemExit("No job on the queue")
@@ -129,13 +132,12 @@ class BWorker(Process):
                     raise SystemExit("Create Search job in wrong queue.")
                 case JobType.CreateBooking:
                     (success, result) = self.booking_handler.create_booking(queue_job)
-
                 case _:
                     raise SystemExit(f"Unknown job type: {job_type}")
         except Exception as e:
             # On exception, put queue_item on lost_item queue.
             connection = BlockingConnection(
-                ConnectionParameters(host=self.cf.rabbit_host_name)
+                URLParameters(self.cf.rabbit_connect_string)
             )
             channel = connection.channel()
             channel.queue_declare(queue=self.cf.queue_name[2], durable=True)
@@ -159,19 +161,17 @@ class BWorker(Process):
             self._update_finished_task_status_in_db(
                 task_status, db_task.task_id, result
             )
-            print(" [*] Result for Task. :", result)
+            print(" [x] Done")
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
     # rename run_forever()
     # override the run function
     def run(self) -> None:
-        connection = BlockingConnection(
-            ConnectionParameters(host=self.cf.rabbit_host_name)
-        )
+        connection = BlockingConnection(URLParameters(self.cf.rabbit_connect_string))
         channel = connection.channel()
-        channel.queue_declare(queue=self.queue_name, durable=True)
+        channel.queue_declare(queue=self.queue_name, durable=True, passive=True)
         channel.basic_qos(prefetch_count=1)
         channel.basic_consume(queue=self.queue_name, on_message_callback=self.callback)
         self.insert_worker_to_db(self.create_worker())
-        print(" [*] Worker Waiting for Task.")
+        print(" [*] Worker Waiting for JOB.")
         channel.start_consuming()

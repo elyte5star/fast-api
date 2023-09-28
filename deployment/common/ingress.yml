@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ingress
+  namespace: demo
+  annotations:
+    nginx.org/ssl-services: "api,vuejs"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS,DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://elyte.com, http://elyte.com, http://*.elyte.com, http://localhost:8080, http://elyte.com:8080, http://elyte.com:3001, https://localhost:8080, https://elyte.com:443, https://elyte.com:4001"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - '*.elyte.com'
+        - elyte.com
+        - backend.elyte.com
+      secretName: tls-secret
+  rules:
+  - host: backend.elyte.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api
+            port:
+              number: 3000
+  
+  - host: elyte.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: vuejs
+            port:
+              number: 3001

@@ -195,8 +195,8 @@ class Utilities(AsyncDatabaseSession):
 
     def time_now(self) -> datetime:
         now_utc = datetime.now()
-        now_norway = now_utc.astimezone(timezone("Europe/Stockholm"))
-        return now_norway
+        now_est = now_utc.astimezone(timezone("Europe/Stockholm"))
+        return now_est
 
     def time_now_utc(self) -> datetime:
         return datetime.now()

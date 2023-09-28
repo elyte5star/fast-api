@@ -17,8 +17,8 @@ class BookingHandler:
                 booking_handler._create_booking(BookingModel(**booking_request))
             )
             result["oid"] = oid
+            print("Result:..", result)
             return (response, result)
         except Exception as e:
-            print("Process failed.....")
-            print(e)
+            print("Process failed.....", e)
             return (False, {})

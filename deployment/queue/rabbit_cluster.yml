@@ -1,7 +1,7 @@
 apiVersion: rabbitmq.com/v1beta1
 kind: RabbitmqCluster
 metadata:
-  name: rabbitQ
+  name: rabbitmq
   namespace: demo
 spec:
   replicas: 3
@@ -18,10 +18,10 @@ spec:
       - rabbitmq_peer_discovery_k8s
     additionalConfig: |
             log.console.level = info
-            channel_max = 700
-            default_user= guest 
-            default_pass = guest
-            queue_master_locator = min-masters
-            loopback_users.guest = false
+            channel_max = 200
+            disk_free_limit.relative = 1.5
+            management.path_prefix = /rabbitmq
+            vm_memory_high_watermark.relative = 0.7
+            vm_memory_high_watermark_paging_ratio = 0.9
   service:
     type: LoadBalancer

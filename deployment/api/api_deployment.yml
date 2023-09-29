@@ -1,35 +1,3 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: api-ingress
-  namespace: demo
-  annotations:
-    nginx.org/ssl-services: "api"
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS,DELETE"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://elyte.info, http://elyte.info, http://*.elyte.info, http://localhost:8080, http://elyte.info:8080, http://elyte.info:3001, https://localhost:8080, https://elyte.info:443, https://elyte.info:4001"
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-  
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - '*.elyte.info'
-        - elyte.info
-        - backend.elyte.info
-      secretName: tls-secret
-  rules:
-  - host: backend.elyte.info
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: api
-            port:
-              number: 3000
----
 
 kind: Service
 apiVersion: v1
@@ -43,10 +11,11 @@ spec:
   ports:
     - name: http
       port: 3000 #expose at this port
-      targetPort: 8080
-    - port: 4000 #expose at this port
-      name: https
+      targetPort: 80
+    - name: https
+      port: 4000 #expose at this port
       targetPort: 443
+
     
 ---           
 apiVersion: apps/v1
@@ -74,7 +43,7 @@ spec:
           imagePullPolicy: Always
           image: elyte5star/api:v1 
           ports:
-            - containerPort: 8080
+            - containerPort: 80
           resources:
             limits:
               cpu: 0.5

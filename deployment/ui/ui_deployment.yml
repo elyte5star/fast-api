@@ -10,7 +10,7 @@ spec:
   ports:
   - port: 3001 #expose at this port
     name: http    
-    targetPort: 80
+    targetPort: 8081
   - name: https
     port: 4001 #expose at this port
     targetPort: 443
@@ -42,8 +42,7 @@ spec:
           imagePullPolicy: Always
           image: elyte5star/vuej3:v1 
           ports:
-            - containerPort: 80
-          resources:
+            - containerPort: 8081
             limits:
               cpu: 0.5
             requests:

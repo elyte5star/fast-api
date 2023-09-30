@@ -11,7 +11,7 @@ spec:
   ports:
     - name: http
       port: 3000 #expose at this port
-      targetPort: 80
+      targetPort: 8081
     - name: https
       port: 4000 #expose at this port
       targetPort: 443
@@ -43,7 +43,7 @@ spec:
           imagePullPolicy: Always
           image: elyte5star/api:v1 
           ports:
-            - containerPort: 80
+            - containerPort: 8081
           resources:
             limits:
               cpu: 0.5

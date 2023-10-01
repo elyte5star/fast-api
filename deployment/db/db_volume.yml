@@ -3,7 +3,7 @@ kind: StorageClass
 metadata:
   name: maria-hostpath
   namespace: demo
-provisioner: microk8s.io/hostpath
+provisioner: kubernetes.io/no-provisioner
 allowVolumeExpansion: true
 reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
@@ -17,7 +17,7 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: base
+  storageClassName: csi-hostpath-sc
   capacity:
     storage: 10Gi
   accessModes:
@@ -32,7 +32,7 @@ metadata:
   name: maria-pvc
   namespace: demo
 spec:
-  storageClassName: base
+  storageClassName: csi-hostpath-sc
   accessModes: [ReadWriteOnce]
   resources: { requests: { storage: 3Gi } }
 

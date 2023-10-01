@@ -41,7 +41,7 @@ spec:
       containers:
         - name: api
           imagePullPolicy: Always
-          image: elyte5star/api:v1 
+          image: elyte5star/api:v2 
           ports:
             - containerPort: 8081
           resources:

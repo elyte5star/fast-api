@@ -40,7 +40,7 @@ spec:
       containers:
         - name: vuejs
           imagePullPolicy: Always
-          image: elyte5star/vuej3:v1 
+          image: elyte5star/vuej3:v2 
           ports:
             - containerPort: 8081
             limits:

@@ -1,3 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ingress
+  namespace: demo
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: api.demo-elyte.test
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8081
+
+---
 
 kind: Service
 apiVersion: v1
@@ -6,16 +26,16 @@ metadata:
   namespace: demo
 spec:
   type: LoadBalancer
+  loadBalancerIP: 10.64.140.43
   selector:
     name: api
   ports:
     - name: http
-      port: 3000 #expose at this port
+      protocol: TCP
+      port: 8081 #incoming port
       targetPort: 8081
-    - name: https
-      port: 4000 #expose at this port
-      targetPort: 443
-
+      
+    
     
 ---           
 apiVersion: apps/v1
@@ -41,9 +61,10 @@ spec:
       containers:
         - name: api
           imagePullPolicy: Always
-          image: elyte5star/api:v2 
+          image: elyte5star/api:v1 
           ports:
             - containerPort: 8081
+              name: http-web-svc
           resources:
             limits:
               cpu: 0.5

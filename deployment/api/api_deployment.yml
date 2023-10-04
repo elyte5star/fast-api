@@ -3,8 +3,18 @@ kind: Ingress
 metadata:
   name: api-ingress
   namespace: demo
+  annotations:
+    nginx.org/ssl-services: "api"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS,DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://api.demo-elyte.test, https://demo-elyte.test, http://*.demo-elyte.test"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - api.demo-elyte.test
+      secretName: tls-secret
   rules:
     - host: api.demo-elyte.test
       http:
@@ -31,10 +41,9 @@ spec:
     name: api
   ports:
     - name: http
-      protocol: TCP
       port: 8081 #incoming port
       targetPort: 8081
-      
+   
     
     
 ---           

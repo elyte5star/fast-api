@@ -15,7 +15,7 @@ openssl req -x509 \
             -sha256 -days 356 \
             -nodes \
             -newkey rsa:2048 \
-            -subj "/CN=${DOMAIN}/C=US/L=San Fransisco" \
+            -subj "/CN=${DOMAIN}/C=NO/L=Stavanger" \
             -keyout rootCA.key -out rootCA.crt 
 
 # Generate Private key 
@@ -33,11 +33,11 @@ req_extensions = req_ext
 distinguished_name = dn
 
 [ dn ]
-C = US
-ST = California
-L = San Fransisco
-O = MLopsHub
-OU = MlopsHub Dev
+C = NO
+ST = Rogaland
+L = Stavanger
+O = ElyteHub
+OU = Utimore services
 CN = ${DOMAIN}
 
 [ req_ext ]
@@ -46,6 +46,7 @@ subjectAltName = @alt_names
 [ alt_names ]
 DNS.1 = ${DOMAIN}
 DNS.2 = www.${DOMAIN}
+DNS.3 = demo-elyte.test
 IP.1 = 192.168.1.5 
 IP.2 = 192.168.1.6
 

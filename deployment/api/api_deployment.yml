@@ -7,28 +7,26 @@ metadata:
     nginx.org/ssl-services: "api"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS,DELETE"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://elyte.com, http://elyte.com, http://*.elyte.com, http://localhost:8080, http://elyte.com:8080, http://elyte.com:3001, https://localhost:8080, https://elyte.com:443, https://elyte.com:4001"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://api.demo-elyte.test, https://demo-elyte.test, http://*.demo-elyte.test"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    
 spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - '*.elyte.com'
-        - elyte.com
-        - backend.elyte.com
+        - api.demo-elyte.test
       secretName: tls-secret
   rules:
-  - host: backend.elyte.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: api
-            port:
-              number: 3000
+    - host: api.demo-elyte.test
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8081
+
 ---
 
 kind: Service
@@ -38,15 +36,15 @@ metadata:
   namespace: demo
 spec:
   type: LoadBalancer
+  loadBalancerIP: 10.64.140.43
   selector:
     name: api
   ports:
     - name: http
-      port: 3000 #expose at this port
-      targetPort: 8080
-    - port: 4000 #expose at this port
-      name: https
-      targetPort: 443
+      port: 8081 #incoming port
+      targetPort: 8081
+   
+    
     
 ---           
 apiVersion: apps/v1
@@ -74,7 +72,8 @@ spec:
           imagePullPolicy: Always
           image: elyte5star/api:v1 
           ports:
-            - containerPort: 8080
+            - containerPort: 8081
+              name: http-web-svc
           resources:
             limits:
               cpu: 0.5

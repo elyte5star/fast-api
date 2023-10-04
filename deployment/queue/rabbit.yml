@@ -1,0 +1,79 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmq
+  namespace: demo
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 50
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: rabbitmq
+            topologyKey: topology.kubernetes.io/zone
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: rabbitmq
+          topologyKey: kubernetes.io/hostname
+  override:
+    service:
+      spec:
+        ports:
+          - name: management-http
+            protocol: TCP
+            port: 15672
+            targetPort: 15672
+          - name: amqp-tcp
+            protocol: TCP
+            port: 5672
+            targetPort: 5672
+    statefulSet:
+      spec:
+        template:
+          spec:
+            containers: []
+            topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: "topology.kubernetes.io/zone"
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: rabbitmq
+  persistence:
+    storage: 10Gi
+    storageClassName: base
+  service:
+    type: LoadBalancer
+  rabbitmq:
+    additionalConfig: |
+      log.console.level = info
+      channel_max = 200
+      disk_free_limit.relative = 1.5
+      management.path_prefix = /rabbitmq
+      vm_memory_high_watermark.relative = 0.7
+      vm_memory_high_watermark_paging_ratio = 0.9
+    additionalPlugins:
+      - rabbitmq_top
+      - rabbitmq_management
+      - rabbitmq_peer_discovery_k8s
+    advancedConfig: |
+      [
+        {ra, [
+              {wal_data_dir, '/var/lib/rabbitmq/quorum-wal'}
+          ]},
+        {rabbit, [
+          {quorum_cluster_size, 5},
+          {quorum_commands_soft_limit, 1024} # maximum number of unconfirmed messages a channel accepts before entering flow
+        ]}
+      ].
+  replicas: 1
+  resources:
+    requests:
+      cpu: "1"
+      memory: 2Gi
+    limits:
+      cpu: "1"
+      memory: 2Gi

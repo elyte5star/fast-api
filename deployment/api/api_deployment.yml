@@ -7,7 +7,7 @@ metadata:
     nginx.org/ssl-services: "api"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS,DELETE"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://api.demo-elyte.test, https://demo-elyte.test, http://*.demo-elyte.test"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://demo-elyte.test, http://*.demo-elyte.test"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
 spec:
   ingressClassName: nginx

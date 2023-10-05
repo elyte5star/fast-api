@@ -44,7 +44,7 @@ spec:
                   app.kubernetes.io/name: rabbitmq
   persistence:
     storage: 10Gi
-    storageClassName: base
+    storageClassName: hostpath
   service:
     type: LoadBalancer
   rabbitmq:
@@ -56,7 +56,6 @@ spec:
       vm_memory_high_watermark.relative = 0.7
       vm_memory_high_watermark_paging_ratio = 0.9
     additionalPlugins:
-      - rabbitmq_top
       - rabbitmq_management
       - rabbitmq_peer_discovery_k8s
     advancedConfig: |

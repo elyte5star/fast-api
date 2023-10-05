@@ -258,8 +258,8 @@ $RECYCLE.BIN/
 
 #Deployment
 deployment/common/regcred.yml
-deployment/api/api_secrets.env
-deployment/ui/dashboard_secrets.env
+deployment/common/api_secrets.env
+deployment/common/dashboard_secrets.env
 
 #fORNTEND
 

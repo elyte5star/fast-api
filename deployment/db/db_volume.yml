@@ -3,12 +3,18 @@ kind: StorageClass
 metadata:
   name: maria-hostpath
   namespace: demo
-provisioner: k8s.io/minikube-hostpath
+provisioner: microk8s.io/hostpath
 allowVolumeExpansion: true
 reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 
 ---
+
+#a PVC (Persistent Volume Claim) to PV (Persistent Volume) 
+#binding is a one-to-one mapping, 
+#using a ClaimRef which is a bi-directional binding between
+#the PersistentVolume and the PersistentVolumeClaim.
+
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -17,13 +23,14 @@ metadata:
   labels:
     type: local
 spec:
-  #storageClassName: csi-hostpath-sc
+  storageClassName: maria-hostpath
   capacity:
-    storage: 10Gi
+    storage: 3Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
     path: "/mnt/maria/data"
+    
 
 ---
 apiVersion: v1
@@ -32,7 +39,7 @@ metadata:
   name: maria-pvc
   namespace: demo
 spec:
-  #storageClassName: csi-hostpath-sc
+  storageClassName: maria-hostpath
   accessModes: [ReadWriteOnce]
   resources: { requests: { storage: 3Gi } }
 

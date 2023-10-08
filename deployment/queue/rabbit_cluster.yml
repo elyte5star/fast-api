@@ -1,27 +1,153 @@
 apiVersion: rabbitmq.com/v1beta1
 kind: RabbitmqCluster
 metadata:
-  name: rabbitmq
+  name: rabbitmq-cluster
   namespace: demo
 spec:
-  replicas: 3
-  resources:
-    requests:
-      cpu: 500m
-      memory: 1Gi
-    limits:
-      cpu: 1
-      memory: 2Gi
+  terminationGracePeriodSeconds: 20
+  persistence:
+    storageClassName: rabbit-hostpath
+    storage: 5Gi
+  service:
+    type: LoadBalancer
   rabbitmq:
+    additionalConfig: |
+      log.console.level = info
+      channel_max = 700
+      collect_statistics_interval = 10000
     additionalPlugins:
       - rabbitmq_management
       - rabbitmq_peer_discovery_k8s
-    additionalConfig: |
-            log.console.level = info
-            channel_max = 200
-            disk_free_limit.relative = 1.5
-            management.path_prefix = /rabbitmq
-            vm_memory_high_watermark.relative = 0.7
-            vm_memory_high_watermark_paging_ratio = 0.9
-  service:
-    type: LoadBalancer
+      - rabbitmq_mqtt
+      - rabbitmq_stomp
+      - rabbitmq_stream
+      - rabbitmq_web_mqtt
+      - rabbitmq_web_stomp
+  replicas: 1
+  resources:
+    requests:
+      cpu: "4"
+      memory: 10Gi
+    limits:
+      cpu: "4"
+      memory: 10Gi
+
+
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbit-user-secret
+  namespace: demo
+type: Opaque
+stringData:
+  username: rabbitUser # Note that Messaging Topology Operator does not watch this secret. Updating this secret object won't update actual user credentials.
+  password: elyteRQ # As a workaround, you can add a label or annotation to the User object to trigger a Reconile loop and credentials will be updated.
+
+---
+
+apiVersion: rabbitmq.com/v1beta1
+kind: User
+metadata:
+  name: rabbit-user
+  namespace: demo
+spec:
+  tags:
+  - management 
+  - policymaker
+  - monitoring
+  - administrator
+  rabbitmqClusterReference:
+    name: rabbitmq-cluster # rabbitmqCluster must exist in the same namespace as this resource
+  importCredentialsSecret:
+    name: rabbit-user-secret
+
+
+---
+
+apiVersion: rabbitmq.com/v1beta1
+kind: Permission
+metadata:
+  name: rabbit-user-permission
+  namespace: demo
+spec:
+  vhost: "/"
+  user: "rabbitUser" # name of the RabbitMQ user
+  permissions:
+    write: ".*"
+    configure: ".*"
+    read: ".*"
+  rabbitmqClusterReference:
+    name: rabbitmq-cluster
+
+---
+#High Availability (HA)
+
+apiVersion: rabbitmq.com/v1beta1
+kind: Policy
+metadata:
+  name: ha-policy
+  namespace: demo
+spec:
+  name: transient # name of the policy
+  vhost: "/" # default to '/' if not provided
+  pattern: "" # regex used to match queues and exchanges
+  applyTo: "all" # set to 'queues', 'exchanges', or 'all'
+  definition:
+    ha-mode:
+     all
+    ha-sync-mode:
+     automatic
+  rabbitmqClusterReference:
+    name: rabbitmq-cluster #name of the rabbitmqcluster
+
+
+
+
+
+
+
+
+
+
+
+
+
+# apiVersion: rabbitmq.com/v1beta1
+# kind: RabbitmqCluster
+# metadata:
+#   name: rabbitmq-cluster
+#   namespace: demo
+#   annotations:
+#     rabbitmq.com/topology-allowed-namespaces: "demo"
+# spec:
+#   persistence:
+#     storage: 50Gi
+#     storageClassName: rabbit-hostpath
+#   service:
+#     type: LoadBalancer
+#   rabbitmq:
+#     additionalConfig: |
+#       log.console.level = info
+#       channel_max = 700
+#       collect_statistics_interval = 10000
+#     additionalPlugins:
+#       - rabbitmq_management
+#       - rabbitmq_peer_discovery_k8s
+#       - rabbitmq_mqtt
+#       - rabbitmq_stomp
+#       - rabbitmq_stream
+#       - rabbitmq_web_mqtt
+#       - rabbitmq_web_stomp
+#   replicas: 1
+#   resources:
+#     requests:
+#       cpu: "4"
+#       memory: 10Gi
+#     limits:
+#       cpu: "4"
+#       memory: 10Gi
+
+

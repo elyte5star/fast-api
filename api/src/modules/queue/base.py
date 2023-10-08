@@ -37,8 +37,10 @@ class RQHandler(Utilities):
                 session.add(_job)
                 await session.commit()
 
+            
             # Perform connection
             connection = await connect(self.cf.rabbit_connect_string)
+            
 
             async with connection:
                 # Creating a channel

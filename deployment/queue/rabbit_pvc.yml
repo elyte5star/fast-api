@@ -4,7 +4,6 @@ metadata:
   name: rabbit-hostpath
   namespace: demo
 provisioner: microk8s.io/hostpath
-allowVolumeExpansion: true
 reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 parameters:

@@ -29,8 +29,6 @@ sleep 40
 
 echo "Oops! I fell asleep for a 40 seconds! Now Deploying Frontend!..."
 
-
-
 kubectl apply -f ../ui/ui_network.yml
 kubectl apply -f ../ui/ui_deployment.yml
 
@@ -39,11 +37,11 @@ sleep 40
 echo "Oops! I fell asleep for a 40 seconds! Installing rabbitmq cluster operator using helm"
 
 helm install --namespace demo rabbitmq bitnami/rabbitmq-cluster-operator --set clustering.forceBoot=true
-sleep 30
-echo "Slept for 30 seconds ..Now Deploying RabbitMQ cluster 1 replica set!...."
-kubectl apply -f ../queue/rabbit_network.yml
+sleep 50
+echo "Slept for 50 seconds ..Now Deploying RabbitMQ cluster 1 replica set!...."
 kubectl apply -f ../queue/rabbit_pvc.yml
 kubectl apply -f ../queue/rabbit_cluster.yml
+kubectl apply -f ../queue/rabbit_network.yml
 
 sleep 60
 

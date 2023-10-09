@@ -49,7 +49,7 @@ Starting the Deployment
     
       - ui_secrets.env file
 
-      ```
+     
       VUE_API_URL=/api/v1/
       VUE_BASE_URL=https://demo-elyte.test/
       VITE_APP_WAIT_TIME=3000

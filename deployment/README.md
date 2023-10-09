@@ -13,7 +13,7 @@ Starting the Deployment
     sudo snap install microk8s --classic
     microk8s kubectl config view --raw > ~/.kube/config
     microk8s enable metallb:10.64.140.43-10.64.140.59 #These are fake IP addresses for the LoadBalancer
-    microk8s enable hostpath-storage
+    microk8s enable hostpath-storage #not suitable for production
     microk8s enable dns
     microk8s enable ingress
     sudo snap alias microk8s.kubectl kubectl
@@ -29,7 +29,7 @@ Starting the Deployment
       REFRESH_TOKEN_EXPIRE_MINUTES=43200
       HOST_URL=https://api.demo-elyte.test/
       CLIENT_URL=https://demo-elyte.test/
-      MYSQL_HOST=db
+      MYSQL_HOST=db #replace with db IP address for remote connection
       MYSQL_USER=userExample
       MYSQL_PORT=3306
       MYSQL_DATABASE=elyte
@@ -96,7 +96,7 @@ Starting the Deployment
 
 - Self signed certificate setup:
 
-  - enter the common/openssl and enter the folowing command to create certificates
+  - enter the common/openssl folder and enter the folowing command to create certificates
 
   ```
   chmod +x ssl.sh #make script executable
@@ -105,7 +105,7 @@ Starting the Deployment
   cat demo-elyte.test.crt | base64
   cat demo-elyte.test.key | base64
 
-  Use the values to create a TLS secret YML file.
+  Use the values to create a TLS secret YML file tls.yml and place it on the common/openssl folder.
   
   ```
 - Deployment

@@ -37,7 +37,7 @@ Starting the Deployment
       MYSQL_PASSWORD=54321
       RABBIT_HOST=rabbitmq-cluster
       RABBITMQ_NODE_PORT=5672
-      BACKEND_CORS_ORIGINS=["http://api.demo-elyte.test","https://api.demo-elyte.test", "https://demo-elyte.test", "http://*.demo-elyte.test", "http://localhost:8081", "http://demo-elyte.test", "http://demo-elyte.test:3001", "https://localhost:8081", "https://demo-elyte.test:443", "https://demo-elyte.test:4001"]
+      BACKEND_CORS_ORIGINS=["https://demo-elyte.test", "http://*.demo-elyte.test"]
       RABBITMQ_DEFAULT_USER=rabbitUser
       RABBITMQ_DEFAULT_PASS=elyteRQ
       MSAL_ISSUER=https://login.microsoftonline.com/***************/v2.0
@@ -47,6 +47,7 @@ Starting the Deployment
       MSAL_LOGIN_AUTHORITY=https://login.microsoftonline.com/********** */
       MSAL_CLIENT_ID=******
     
+      - ui_secrets.env file
 
       ```
       VUE_API_URL=/api/v1/

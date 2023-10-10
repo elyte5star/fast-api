@@ -169,7 +169,7 @@ class BWorker(Process):
     def run(self) -> None:
         connection = BlockingConnection(URLParameters(self.cf.rabbit_connect_string))
         channel = connection.channel()
-        channel.queue_declare(queue=self.queue_name, durable=True, passive=True)
+        channel.queue_declare(queue=self.queue_name, durable=True)
         channel.basic_qos(prefetch_count=1)
         channel.basic_consume(queue=self.queue_name, on_message_callback=self.callback)
         self.insert_worker_to_db(self.create_worker())

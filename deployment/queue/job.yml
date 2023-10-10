@@ -4,21 +4,20 @@ metadata:
   name: worker
   namespace: demo
 spec:
-  ttlSecondsAfterFinished: 100
+  ttlSecondsAfterFinished: 50
   backoffLimit: 2
-  parallelism: 2
   template:
     metadata:
       labels:
         name: worker
-        role: worker
+        app: worker
     spec:
+      restartPolicy: Never
       imagePullSecrets:
         - name: regcred
-      restartPolicy: Never
       containers:
         - name: worker
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           image: elyte5star/worker:v1 
           env:
             - name: TOKEN_EXPIRE_MINUTES
@@ -74,12 +73,13 @@ spec:
                 secretKeyRef:
                   name: api-secrets
                   key: MYSQL_DATABASE
-                  
+
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: api-secrets
                   key: MYSQL_PASSWORD
+
 
             - name: RABBIT_HOST
               valueFrom:
@@ -140,5 +140,3 @@ spec:
                 secretKeyRef:
                   name: api-secrets
                   key: MSAL_CLIENT_ID
-
-            

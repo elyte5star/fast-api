@@ -7,6 +7,7 @@ spec:
   podSelector:
     matchLabels:
       role: db
+      app: worker
   policyTypes:
     - Ingress
     - Egress
@@ -15,6 +16,7 @@ spec:
       - podSelector:
           matchLabels:
             role: backend
+            app: worker
       ports:
         - protocol: TCP
           port: 3306
@@ -23,6 +25,7 @@ spec:
       - podSelector:
           matchLabels:
             role: backend
+            app: worker
       ports:
         - protocol: TCP
           port: 3306

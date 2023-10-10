@@ -191,17 +191,6 @@ class Settings:
         self.security_salt = str(getenv("SECURITY_PASSWORD_SALT"))
         self.mail_password = str(getenv("MAIL_PASSWORD"))
         self.origins = json.loads(getenv("BACKEND_CORS_ORIGINS"))
-        # TODO
-        # self.queue_name = json.loads(getenv("RABBIT_QNAME"))
-        # self.email = str(getenv("MAIL_FROM"))
-        # self.mail_username = str(getenv("MAIL_USERNAME"))
-        # self.mail_port = int(getenv("MAIL_PORT"))
-        # self.mail_server = str(getenv("MAIL_SERVER"))
-        # self.mail_from_name = str(getenv("MAIL_FROM_NAME"))
-        # self.mail_starttls = getenv("MAIL_STARTTLS", "False").lower() == "true"
-        # self.mail_ssl_tls = getenv("MAIL_SSL_TLS", "False").lower() == "true"
-        # self.use_credentials = getenv("USE_CREDENTIALS", "False").lower() == "true"
-        # self.validate_certs = getenv("VALIDATE_CERTS", "False").lower() == "true"
         self.email_config = ConnectionConfig(
             MAIL_USERNAME=self.mail_username,
             MAIL_PASSWORD=self.mail_password,
@@ -212,4 +201,15 @@ class Settings:
             MAIL_SSL_TLS=self.mail_ssl_tls,
             TEMPLATE_FOLDER=Path(__file__).parent.parent / "templates",
         )
+        # TODO
+        #self.queue_name = json.loads(getenv("RABBIT_QNAME"))
+        # self.email = str(getenv("MAIL_FROM"))
+        # self.mail_username = str(getenv("MAIL_USERNAME"))
+        # self.mail_port = int(getenv("MAIL_PORT"))
+        # self.mail_server = str(getenv("MAIL_SERVER"))
+        # self.mail_from_name = str(getenv("MAIL_FROM_NAME"))
+        # self.mail_starttls = getenv("MAIL_STARTTLS", "False").lower() == "true"
+        # self.mail_ssl_tls = getenv("MAIL_SSL_TLS", "False").lower() == "true"
+        # self.use_credentials = getenv("USE_CREDENTIALS", "False").lower() == "true"
+        # self.validate_certs = getenv("VALIDATE_CERTS", "False").lower() == "true"
         return self

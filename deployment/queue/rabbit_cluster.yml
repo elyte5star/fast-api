@@ -3,8 +3,10 @@ kind: RabbitmqCluster
 metadata:
   name: rabbitmq-cluster
   namespace: demo
+  labels:
+    app: rabbitmq-cluster
 spec:
-  terminationGracePeriodSeconds: 20
+  terminationGracePeriodSeconds: 60
   persistence:
     storageClassName: rabbit-hostpath
     storage: 10Gi
@@ -15,6 +17,7 @@ spec:
       log.console.level = info
       channel_max = 700
       collect_statistics_interval = 10000
+      disk_free_limit.relative = 2.0
     additionalPlugins:
       - rabbitmq_management
       - rabbitmq_peer_discovery_k8s

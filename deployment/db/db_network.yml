@@ -6,26 +6,31 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      role: db
-      app: worker
+      role: db  #isolates role=db pods in the demo namespace for both ingress and egress traffic
   policyTypes:
     - Ingress
     - Egress
   ingress:
     - from:
-      - podSelector:
-          matchLabels:
-            role: backend
-            app: worker
-      ports:
+        #allows connections to all pods in the demo namespace with the label role=db on TCP port 3306 from:
+        - podSelector:
+            matchLabels:
+              role: backend #any pod in the demo namespace with the label role=backend
+        - podSelector:
+            matchLabels:
+              tier: worker #any pod in the demo namespace with the label tier=worker
+      ports:              
         - protocol: TCP
           port: 3306
   egress:
+    #allows connections from any pod in the demo namespace with the label role=db to:
     - to:
       - podSelector:
           matchLabels:
             role: backend
-            app: worker
+      - podSelector:
+            matchLabels:
+              tier: worker #any pod in the demo namespace with the label tier=worker
       ports:
         - protocol: TCP
           port: 3306

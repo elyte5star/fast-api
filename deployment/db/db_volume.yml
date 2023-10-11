@@ -18,7 +18,7 @@ volumeBindingMode: WaitForFirstConsumer
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: maria-pv
+  name: mariadb-volume
   namespace: demo
   labels:
     type: local
@@ -29,7 +29,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/maria/data"
+    path: "/mnt/mariadb/data"
     
 
 ---

@@ -6,28 +6,10 @@ metadata:
 provisioner: microk8s.io/hostpath
 reclaimPolicy: Delete
 parameters:
-  pvDir: /mnt/rabbit-disk
-volumeBindingMode: Immediate
+  pvDir: /mnt/rabbitmq-data
+volumeBindingMode: WaitForFirstConsumer
 
 
 
 
 
----
-
-# apiVersion: v1
-# kind: PersistentVolume
-# metadata:
-#   name: rabbit-pv
-#   namespace: demo
-#   labels:
-#     type: local
-# spec:
-#   storageClassName: rabbit-hostpath
-#   capacity:
-#     storage: 5Gi
-#   accessModes:
-#     - ReadWriteOnce
-#   hostPath:
-#     path: "/mnt/rabbit/data"
-   

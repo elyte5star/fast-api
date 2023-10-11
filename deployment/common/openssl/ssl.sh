@@ -46,9 +46,9 @@ subjectAltName = @alt_names
 [ alt_names ]
 DNS.1 = ${DOMAIN}
 DNS.2 = www.${DOMAIN}
-DNS.3 = api.demo-elyte.test
-IP.1 = 192.168.1.5 
-IP.2 = 192.168.1.6
+DNS.3 = *.demo-elyte.test
+DNS.4 = www.*.demo-elyte.test
+
 
 EOF
 

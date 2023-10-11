@@ -1,10 +1,11 @@
 #! /bin/bash
 
 
-echo "Creating namespace and secrets!"
+echo "Creating namespace,ingress and secrets!"
 
 kubectl apply -f ns.yml
 kubectl apply -f ./openssl/tls.yml
+kubectl apply -f ingress.yml
 kubectl apply -f regcred.yml
 kubectl create secret generic api-secrets --namespace demo --from-env-file=api_secrets.env
 kubectl create secret generic dashboard-secrets --namespace demo --from-env-file=ui_secrets.env
@@ -17,9 +18,8 @@ kubectl apply -f ../db/db_deployment.yml
 
 sleep 50
 
-echo "Oops! I fell asleep for a 40 seconds!"
+echo "Oops! I fell asleep for a 50 seconds! Deploying API now!...."
 
-echo "Deploying API!...."
 
 kubectl apply -f ../api/api_network.yml
 kubectl apply -f ../api/api_deployment.yml
@@ -27,10 +27,11 @@ kubectl apply -f ../api/api_deployment.yml
 
 sleep 60
 
-echo "Oops! I fell asleep for a 50 seconds! Now Deploying Frontend!..."
+echo "Oops! I fell asleep for a 60 seconds! Now Deploying Frontend!..."
 
-kubectl apply -f ../ui/ui_network.yml
+
 kubectl apply -f ../ui/ui_deployment.yml
+kubectl apply -f ../ui/ui_network.yml
 
 sleep 40
 
@@ -42,7 +43,7 @@ sleep 60
 
 echo "helm chart installed"
 
-echo "Slept for 50 seconds ..Now Deploying RabbitMQ cluster 1 replica set!...."
+echo "Slept for 60 seconds ..Now Deploying RabbitMQ cluster 1 replica set!...."
 
 
 
@@ -52,8 +53,19 @@ kubectl apply -f ../queue/rabbit_cluster.yml
 
 sleep 60
 
-echo "slept for 60secs Created a worker to handle jobs"
 
-kubectl apply -f job.yml 
+echo "slept for 60secs! Creating rabbit user access and a worker to handle jobs"
 
-echo "Check deployments"
+kubectl apply -f ../queue/rabbit_user.yml
+
+kubectl apply -f ../queue/rabbit_network.yml
+
+
+kubectl apply -f ../worker/worker.yml
+
+
+sleep 60
+
+
+
+echo "slept for 60 seconds! Pls Check deployments..."

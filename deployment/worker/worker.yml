@@ -1,47 +1,43 @@
+
+
 kind: Service
 apiVersion: v1
 metadata:
-  name: api
+  name: worker
   namespace: demo
 spec:
-  type: LoadBalancer
-  loadBalancerIP: 10.64.140.43
   selector:
-    name: api
+    name: worker
   ports:
-    - name: http
-      port: 8081 #incoming port
-      targetPort: 8081
-     
----   
+    - protocol: TCP
+      port: 8999
+  
+---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api
+  name: worker
   namespace: demo
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: api
+      name: worker
   strategy:
     type: Recreate # All existing Pods are killed before new ones are created
   template:
     metadata:
       labels:
-        name: api
-        role: backend
+        name: worker
+        tier: worker
     spec:
       imagePullSecrets:
         - name: regcred
       containers:
-        - name: api
+        - name: worker
           imagePullPolicy: Always
-          image: elyte5star/api:v1 
-          ports:
-            - containerPort: 8081
-              name: http-web-svc
+          image: elyte5star/worker:v1 
           resources:
             limits:
               cpu: 0.5
@@ -169,5 +165,4 @@ spec:
                   name: api-secrets
                   key: MSAL_CLIENT_ID
 
-    
-        
+

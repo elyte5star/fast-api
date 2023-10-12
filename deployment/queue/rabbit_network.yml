@@ -66,7 +66,37 @@ spec:
       - port: 15691 # Prometheus endpoint + TLS
 
 
+
 ---
+
+
+#High Availability (HA)
+
+apiVersion: rabbitmq.com/v1beta1
+kind: Policy
+metadata:
+  name: ha-policy
+  namespace: demo
+spec:
+  name: transient # name of the policy
+  vhost: "/" # default to '/' if not provided
+  pattern: "" # regex used to match queues and exchanges
+  applyTo: "all" # set to 'queues', 'exchanges', or 'all'
+  definition:
+    ha-mode:
+     all
+    ha-sync-mode:
+     automatic
+  rabbitmqClusterReference:
+    name: rabbitmq-cluster #name of the rabbitmqcluster
+
+
+---
+
+
+#### Only apply this when the cluster is up and running..####
+
+
 # #Ensures that only the Pods in the RabbitmqCluster can send or receive traffic with each other on the ports used for inter-node communication.
 # apiVersion: networking.k8s.io/v1
 # kind: NetworkPolicy

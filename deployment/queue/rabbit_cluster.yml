@@ -6,7 +6,7 @@ metadata:
   labels:
     app: rabbitmq-cluster
 spec:
-  terminationGracePeriodSeconds: 60
+  terminationGracePeriodSeconds: 70
   persistence:
     storageClassName: rabbit-hostpath
     storage: 10Gi
@@ -35,27 +35,6 @@ spec:
       cpu: "4"
       memory: 10Gi
 
-
----
-#High Availability (HA)
-
-apiVersion: rabbitmq.com/v1beta1
-kind: Policy
-metadata:
-  name: ha-policy
-  namespace: demo
-spec:
-  name: transient # name of the policy
-  vhost: "/" # default to '/' if not provided
-  pattern: "" # regex used to match queues and exchanges
-  applyTo: "all" # set to 'queues', 'exchanges', or 'all'
-  definition:
-    ha-mode:
-     all
-    ha-sync-mode:
-     automatic
-  rabbitmqClusterReference:
-    name: rabbitmq-cluster #name of the rabbitmqcluster
 
 
 

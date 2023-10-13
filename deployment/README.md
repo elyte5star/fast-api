@@ -1,3 +1,7 @@
+
+
+- [Deployment Architecture on microk8s.](./doc/architecture.png)
+
 Starting the Deployment
 
 - Project Setup:

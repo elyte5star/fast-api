@@ -1,6 +1,6 @@
 
 
-- [Deployment Architecture on microk8s.](./doc/architecture.png)
+- ![Deployment Architecture on microk8s.](./doc/architecture.png)
 
 Starting the Deployment
 

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import time
-import numpy as np
+#import numpy as np
 import string, random, json, base64
 import bcrypt
 from jose import jwt
@@ -239,10 +239,10 @@ class Utilities(AsyncDatabaseSession):
             return True
         return False
 
-    def random_date(self, start_date, range_in_days):
-        days_to_add = np.arange(0, range_in_days)
-        rd = np.datetime64(start_date) + np.random.choice(days_to_add)
-        return str(rd)
+    # def random_date(self, start_date, range_in_days):
+    #     days_to_add = np.arange(0, range_in_days)
+    #     rd = np.datetime64(start_date) + np.random.choice(days_to_add)
+    #     return str(rd)
 
     def create_token(self, data: dict, expires_delta: Optional[timedelta] = None):
         _encode = data.copy()

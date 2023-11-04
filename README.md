@@ -5,7 +5,7 @@ Starting the project
   - Clone project with
 
   ```
-  git clone git@github.com:elyte5star/fast-api-queue.git
+  git clone git@github.com:elyte5star/fast-api.git
   ```
 
   - Create file api.env and set values for the environment variables below:

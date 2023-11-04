@@ -24,7 +24,7 @@ router = APIRouter(prefix="/products", tags=["Products"])
 
 
 @router.post(
-    "/create",
+    "/create/many",
     response_model=CreateProductsResponse,
     summary="Create Products",
 )

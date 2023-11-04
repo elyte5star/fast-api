@@ -5,9 +5,8 @@ from modules.schemas.requests.users import (
     GetUserRequest,
     DeleteUserRequest,
     UpdateUserRequest,
-    EmailSchema,
 )
-from modules.schemas.responses.equiry import ClientEnquiryResponse
+from modules.schemas.responses.enquiry import ClientEnquiryResponse
 from modules.schemas.responses.users import (
     CreateUserResponse,
     GetUsersResponse,
@@ -19,8 +18,7 @@ from modules.database.models.user import _User
 from modules.database.models.enquiry import _Enquiry
 from sqlalchemy.orm import selectinload, defer
 from modules.schemas.requests.auth import JWTcredentials
-from fastapi_mail import FastMail, MessageSchema, MessageType
-from fastapi_mail.errors import ConnectionErrors
+from multiprocessing import cpu_count
 
 
 class Users(Utilities):
@@ -30,37 +28,22 @@ class Users(Utilities):
             is None
         ):
             hashed_password = self.hash_password(
-                data.user.password, self.cf.rounds, self.cf.coding
+                data.user.password.get_secret_value(), self.cf.rounds, self.cf.encoding
             )
 
             user_data_dict = data.user.dict()
             user_data_dict["userid"] = self._get_indent()
             user_data_dict["discount"] = None
             user_data_dict["password"] = hashed_password
+            user_data_dict["created_at"] = self.time_now()
             db_user = _User(**user_data_dict)
             async with self.get_session() as session:
                 session.add(db_user)
                 await session.commit()
-            token = self.generate_confirmation_token(data.user.email)
-            email_verification_endpoint = (
-                f"{self.cf.host_url}auth/confirm_email/{token}"
+            return CreateUserResponse(
+                userid=db_user.userid,
+                message=f"User with username {db_user.username} created!Login to activate your account!",
             )
-            mail_body = {
-                "email": data.user.email,
-                "userid": db_user.userid,
-                "username": db_user.username,
-                "url": email_verification_endpoint,
-                "home": self.cf.client_url,
-            }
-            data_model = EmailSchema(email=[data.user.email], body=mail_body)
-            mail_status = await self.send_with_template(
-                data_model, "Confirm Your Email", "verify_email.html"
-            )
-            if mail_status:
-                return CreateUserResponse(
-                    userid=db_user.userid,
-                    message=f"User with username {db_user.username} created! Email confirmation sent!",
-                )
 
         return CreateUserResponse(
             success=False,
@@ -98,14 +81,22 @@ class Users(Utilities):
             edit_user_dict = data.user.dict()
 
             # only update password if entered or changed
-            if edit_user_dict["password"] == "default" or self.verify_password(
-                edit_user_dict["password"], stored_user.password, self.cf.coding
+
+            if (
+                data.user.password.get_secret_value() == "default"
+                or self.verify_password(
+                    data.user.password.get_secret_value(),
+                    stored_user.password,
+                    self.cf.encoding,
+                )
             ):
                 del edit_user_dict["password"]
                 self.log.info("Password not supplied or didnt change")
             else:
                 edit_user_dict["password"] = self.hash_password(
-                    data.user.password, self.cf.rounds, self.cf.coding
+                    data.user.password.get_secret_value(),
+                    self.cf.rounds,
+                    self.cf.encoding,
                 )
                 self.log.warning("A password was supplied and will be modified")
 
@@ -128,7 +119,9 @@ class Users(Utilities):
         )
 
     async def _create_enquiry(self, data: Enquiry) -> ClientEnquiryResponse:
-        client_equiry = _Enquiry(**data.dict(), eid=self._get_indent())
+        client_equiry = _Enquiry(
+            **data.dict(), created_at=self.time_now(), eid=self._get_indent()
+        )
         async with self.get_session() as session:
             session.add(client_equiry)
             await session.commit()
@@ -162,9 +155,14 @@ class Users(Utilities):
 
     async def get_info(self, credentials: JWTcredentials) -> GetInfoResponse:
         if credentials.username == self.cf.username:
+            info = {}
             async with self.get_session() as _:
                 _, kwargs = self._engine.dialect.create_connect_args(self._engine.url)
-            return GetInfoResponse(info=kwargs, message="Database Url")
+            info["database_parameters"] = kwargs
+            info["tables_in_database"] = await self.async_inspect_schema()
+            info["cpu_count"] = cpu_count()
+            info["queue_parameters"] = self.cf.rabbit_connect_string
+            return GetInfoResponse(info=info, message="System information")
         return GetInfoResponse(success=False, message="Admin rights needed!")
 
     async def _get_user(self, data: GetUserRequest) -> GetUserResponse:

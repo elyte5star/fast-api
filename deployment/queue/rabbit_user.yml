@@ -1,0 +1,59 @@
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbitmq-cluster-default-user
+  namespace: demo
+stringData:
+  default_user.conf: |
+    default_user = rabbitUser
+    default_pass = elyteRQ
+---
+
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbit-admin-user-secret
+  namespace: demo
+type: Opaque
+stringData:
+  username: AdminUser # Note that Messaging Topology Operator does not watch this secret. Updating this secret object won't update actual user credentials.
+  password: elyteAdmin # As a workaround, you can add a label or annotation to the User object to trigger a Reconile loop and credentials will be updated.
+
+---
+
+
+apiVersion: rabbitmq.com/v1beta1
+kind: User
+metadata:
+  name: rabbit-admin
+  namespace: demo
+spec:
+  tags:
+    - management 
+    - policymaker
+    - monitoring
+    - administrator
+  rabbitmqClusterReference:
+    name: rabbitmq-cluster # rabbitmqCluster must exist in the same namespace as this resource
+  importCredentialsSecret:
+    name: rabbit-admin-user-secret
+
+
+---
+
+apiVersion: rabbitmq.com/v1beta1
+kind: Permission
+metadata:
+  name: rabbit-admin-permission
+  namespace: demo
+spec:
+  vhost: "/"
+  user: "AdminUser" # name of the RabbitMQ user
+  permissions:
+    write: ".*"
+    configure: ".*"
+    read: ".*"
+  rabbitmqClusterReference:
+    name: rabbitmq-cluster

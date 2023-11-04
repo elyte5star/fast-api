@@ -19,8 +19,7 @@ from modules.database.models.worker import _Worker
 from modules.database.models.product import Product, SpecialDeals
 from modules.database.models.review import Review
 from modules.database.models.enquiry import _Enquiry
-from sqlalchemy import or_
-from sqlalchemy.orm import selectinload, defer
+from sqlalchemy import or_, inspect
 
 
 class AsyncDatabaseSession:
@@ -32,7 +31,6 @@ class AsyncDatabaseSession:
         self.delete = delete
         self.log = logger
         self.cf = cf
-        
 
     def async_session_generator(self) -> AsyncSession:
         try:
@@ -49,9 +47,18 @@ class AsyncDatabaseSession:
             return self._session
         except Exception as ex:
             self.log.warning(
-                "Connection could not be made due to the following error: \n",
+                "Cannot connect to DB due to the following error: \n",
                 ex,
             )
+
+    def use_inspector(self, conn):
+        inspector = inspect(conn)
+        return inspector.get_table_names()
+
+    async def async_inspect_schema(self):
+        async with self._engine.connect() as conn:
+            tables = await conn.run_sync(self.use_inspector)
+        return tables
 
     @asynccontextmanager
     async def get_session(self) -> AsyncGenerator:
@@ -61,9 +68,9 @@ class AsyncDatabaseSession:
         except Exception as e:
             await session.rollback()
             self.log.warning(e)
+            raise
         finally:
             await session.close()
-            # await self._engine.dispose()
 
     async def create_all(self):
         async with self._engine.begin() as conn:
@@ -90,7 +97,9 @@ class AsyncDatabaseSession:
     async def useremail_exist(self, email: str) -> Optional[_User]:
         async with self.get_session() as session:
             result = await session.execute(
-                self.select(_User.email).where(_User.email == email)
+                self.select(_User.email, _User.username, _User.userid).where(
+                    _User.email == email
+                )
             )
             return result.first()
 

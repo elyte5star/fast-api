@@ -16,7 +16,7 @@ from modules.schemas.responses.users import (
     GetUserResponse,
     GetInfoResponse,
 )
-from modules.schemas.responses.equiry import ClientEnquiryResponse
+from modules.schemas.responses.enquiry import ClientEnquiryResponse
 from modules.schemas.requests.auth import JWTcredentials
 from modules.auth.dependency import security
 

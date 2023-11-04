@@ -1,0 +1,163 @@
+
+# Allows the cluster-operator and the messaging-topology-operator to communicate with the cluster Pods over HTTP,
+# which is necessary for some reconciliation operations.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-operator-traffic
+  namespace: demo
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: rabbitmq
+      app.kubernetes.io/name: rabbitmq-cluster
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app.kubernetes.io/component: rabbitmq-operator
+      ports:
+        - port: 15672 # HTTP API
+        - port: 15671 # HTTP API + TLS
+ 
+
+
+
+---
+#allows all ingress traffic to external-facing ports on the cluster, such as for AMQP messaging, Prometheus scraping,
+# known client application Pods 
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-rabbitmq-traffic
+  namespace: demo
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: rabbitmq
+      app.kubernetes.io/name: rabbitmq-cluster
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              tier: worker
+
+        - podSelector:
+            matchLabels:
+              role: backend
+      ports:
+      - port: 5672  # AMQP
+      - port: 5671  # AMQP + TLS
+      - port: 5552  # Streams
+      - port: 5551  # Streams + TLS
+      - port: 15672 # HTTP API
+      - port: 15671 # HTTP API + TLS
+      - port: 61613 # STOMP
+      - port: 61614 # STOMP + TLS
+      - port: 1883  # MQTT
+      - port: 8883  # MQTT + TLS
+      - port: 15674 # STOMP-over-WebSockets
+      - port: 15675 # MQTT-over-WebSockets
+      - port: 15692 # Prometheus endpoint
+      - port: 15691 # Prometheus endpoint + TLS
+
+
+
+---
+
+
+#High Availability (HA)
+
+apiVersion: rabbitmq.com/v1beta1
+kind: Policy
+metadata:
+  name: ha-policy
+  namespace: demo
+spec:
+  name: transient # name of the policy
+  vhost: "/" # default to '/' if not provided
+  pattern: "" # regex used to match queues and exchanges
+  applyTo: "all" # set to 'queues', 'exchanges', or 'all'
+  definition:
+    ha-mode:
+     all
+    ha-sync-mode:
+     automatic
+  rabbitmqClusterReference:
+    name: rabbitmq-cluster #name of the rabbitmqcluster
+
+
+---
+
+
+#### Only apply this when the cluster is up and running..####
+
+
+# #Ensures that only the Pods in the RabbitmqCluster can send or receive traffic with each other on the ports used for inter-node communication.
+# apiVersion: networking.k8s.io/v1
+# kind: NetworkPolicy
+# metadata:
+#   name: allow-inter-node-traffic
+#   namespace: demo
+# spec:
+#   podSelector:
+#     matchLabels:
+#       app.kubernetes.io/component: rabbitmq
+#       app.kubernetes.io/name: rabbitmq-cluster
+#   policyTypes:
+#     - Ingress
+#     - Egress
+#   egress:
+#     - to:
+#       - podSelector:
+#           matchLabels:
+#             app.kubernetes.io/component: rabbitmq
+#             app.kubernetes.io/name: rabbitmq-cluster
+#       ports:
+#         - port: 4369  # epmd
+#         - port: 6000  # stream replication, if streams are being used
+#           endPort: 6500 # if your cluster version is below 1.22 (see below) you should use a helm loop or something similar
+#         - port: 25672 # clustering
+#         - port: 35672 # CLI tooling
+#         - port: 35673 # CLI tooling
+#         - port: 35674 # CLI tooling
+#         - port: 35675 # CLI tooling
+#         - port: 35676 # CLI tooling
+#         - port: 35677 # CLI tooling
+#         - port: 35678 # CLI tooling
+#         - port: 35679 # CLI tooling
+#         - port: 35680 # CLI tooling
+#         - port: 35681 # CLI tooling
+#         - port: 35682 # CLI tooling
+#       # If using the k8s feature gate NetworkPolicyEndPort (enabled by default 1.22+), the last 11 entries can be simplified to:
+#       # - port: 35672 # CLI tooling
+#       #   endPort: 35682
+#   ingress:
+#     - from:
+#       - podSelector:
+#           matchLabels:
+#             app.kubernetes.io/component: rabbitmq
+#             app.kubernetes.io/name: rabbitmq-cluster
+#       ports:
+#         - port: 4369  # epmd
+#         - port: 6000  # stream replication, if streams are being used
+#           endPort: 6500 # if your cluster version is below 1.22 (see below) you should use a helm loop or something similar
+#         - port: 25672 # clustering
+#         - port: 35672 # CLI tooling
+#         - port: 35673 # CLI tooling
+#         - port: 35674 # CLI tooling
+#         - port: 35675 # CLI tooling
+#         - port: 35676 # CLI tooling
+#         - port: 35677 # CLI tooling
+#         - port: 35678 # CLI tooling
+#         - port: 35679 # CLI tooling
+#         - port: 35680 # CLI tooling
+#         - port: 35681 # CLI tooling
+#         - port: 35682 # CLI tooling
+#       # If using the k8s feature gate NetworkPolicyEndPort (enabled by default 1.22+), the last 11 entries can be simplified to:
+#       # - port: 35672 # CLI tooling
+#       #   endPort: 35682

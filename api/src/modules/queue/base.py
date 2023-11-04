@@ -1,24 +1,22 @@
 from modules.utils.base_functions import Utilities
-from aio_pika import Message, connect
-from modules.schemas.queue.item import ItemInQueue
+from aio_pika import Message, connect, DeliveryMode
+from modules.schemas.queue.item import QueueItem
 from modules.schemas.queue.job_task import (
     Job,
     JobState,
     JobStatus,
-    JobType,
     Task,
 )
 from modules.database.models.job_task import _Job, _Task
 from modules.schemas.responses.job import GetJobRequestResponse
-from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import selectinload
+
 
 
 class RQHandler(Utilities):
     def create_job(self, job_type):
         job = Job()
         job.job_type = job_type
-        job.job_id = self.get_indent()
+        job.job_id = self._get_indent()
         job.job_status.state = JobState.Pending
         job.created_at = self.time_now()
         return job
@@ -28,7 +26,7 @@ class RQHandler(Utilities):
         job: Job,
         tasks_list: list[Task],
         queue_name: str,
-        queue_items_list: list[ItemInQueue],
+        queue_items_list: list[QueueItem],
     ) -> tuple[bool, str]:
         try:
             _job = _Job(**job.dict())
@@ -39,22 +37,27 @@ class RQHandler(Utilities):
                 session.add(_job)
                 await session.commit()
 
+            
             # Perform connection
             connection = await connect(self.cf.rabbit_connect_string)
+            
 
             async with connection:
                 # Creating a channel
                 channel = await connection.channel()
                 # Declaring queue
-                _ = await channel.declare_queue(queue_name)
+                _ = await channel.declare_queue(queue_name,durable=True)
 
                 for queue_item in queue_items_list:
                     # Sending the message
                     await channel.default_exchange.publish(
-                        Message(queue_item.json().encode()),
+                        Message(
+                            queue_item.json().encode(),
+                            delivery_mode=DeliveryMode.PERSISTENT,
+                        ),
                         routing_key=queue_name,
                     )
-
+                
             return (True, f"Job with id '{job.job_id}' created.")
 
         except Exception as ex:
@@ -63,13 +66,13 @@ class RQHandler(Utilities):
     async def add_job_with_one_task(self, job, queue_name: str):
         job.number_of_tasks = 1
         tasks = list()
-        task = Task(job_id=job.job_id, task_id=self.get_indent())
+        task = Task(job_id=job.job_id, task_id=self._get_indent())
         task.status = JobStatus(state=JobState.Received)
         task.created_at = self.time_now()
         task.finished = self.time_then()
         tasks.append(task)
         queue_items_list = list()
-        queue_items_list.append(ItemInQueue(job=job, task=task))
+        queue_items_list.append(QueueItem(job=job, task=task))
         success, message = await self.add_job_tasks_to_db(
             job,
             tasks,

@@ -1,18 +1,25 @@
-from pydantic import BaseModel, Json
+from pydantic import BaseModel, Json, field_validator
 from datetime import datetime
-from ..misc.enums import JobState, JobStatus, JobType
-from ..requests.booking import CreateBooking, BookingRequest
+from modules.schemas.misc.enums import JobState, JobStatus, JobType
+from modules.schemas.requests.booking import BookingRequest, BookingModel
 from typing import Optional
 
 
 class Job(BaseModel):
-    created_at: Optional[datetime] = None
+    userid: str = ""
+    created_at: datetime = datetime.utcnow()
     job_type: JobType = JobType.Noop
     job_id: str = ""
-    task_id: str = ""
+    task_ids: list = []
     job_status: JobStatus = JobStatus()
     number_of_tasks: int = 0
-    booking_request: Optional[BookingRequest] = None
+    booking_request: Optional[BookingModel] = None
+
+    @field_validator("booking_request")
+    @classmethod
+    def prevent_none(cls, v: BookingModel):
+        assert v is not None, "booking_request may not be None"
+        return v
 
 
 class Task(BaseModel):
@@ -33,14 +40,14 @@ class Result(BaseModel):
     )
     task_id: str = ""
     data: dict = {}  # Instead of result in Task
-    data_checksum: str = None
+    data_checksum: Optional[str] = None
 
 
 class ResultLog(BaseModel):
     result_id: str = ""
     created_at: datetime = datetime.utcnow
     handled: bool = False
-    handled_dt: datetime = None
+    handled_dt: Optional[datetime] = None
 
 
 def result_available(job: Job) -> bool:

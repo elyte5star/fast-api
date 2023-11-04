@@ -15,9 +15,8 @@ class LoginData(BaseModel):
 
 
 class CloudLoginData(BaseModel):
-    username: str
-    email: str
-    userid: str
+    token: str
+    type: str
 
 
 class JWTcredentials(BaseModel):

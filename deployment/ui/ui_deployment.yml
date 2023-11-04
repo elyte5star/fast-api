@@ -1,0 +1,106 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: vuejs
+  namespace: demo
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 10.64.140.44
+  selector:
+    name: vuejs
+  ports:
+  - name: http
+    port: 8081 #expose at this port    
+    targetPort: 8081
+             
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vuejs
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: vuejs
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: vuejs
+        role: frontend
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: vuejs
+          imagePullPolicy: Always
+          image: elyte5star/vuej3:v1 
+          ports:
+            - containerPort: 8081
+              name: http-web-ui
+          resources:
+            limits:
+              cpu: 0.5
+            requests:
+              cpu: 0.25 
+          env:
+            - name: VUE_API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dashboard-secrets
+                  key: VUE_API_URL
+
+            - name: VUE_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dashboard-secrets
+                  key: VUE_BASE_URL
+
+            - name: VITE_APP_WAIT_TIME
+              valueFrom:
+                secretKeyRef:
+                  name: dashboard-secrets
+                  key: VITE_APP_WAIT_TIME
+
+            - name: VUE_MAINTENANCE_MODE
+              valueFrom:
+                secretKeyRef:
+                  name: dashboard-secrets
+                  key: VUE_MAINTENANCE_MODE
+
+
+            - name: VITE_APP_MSAL_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MSAL_CLIENT_ID
+
+            - name: VUE_APP_MSAL_LOGIN_AUTHORITY
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MSAL_LOGIN_AUTHORITY
+            
+            - name: VUE_GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: GOOGLE_CLIENT_ID
+            
+            - name: NGINX_PROXY_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dashboard-secrets
+                  key: NGINX_PROXY_PASS
+
+            - name: NGINX_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: dashboard-secrets
+                  key: NGINX_PORT
+    
+  

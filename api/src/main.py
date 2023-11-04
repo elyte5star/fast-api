@@ -15,33 +15,29 @@ from modules.crud.crud_users import Users
 from modules.auth.crud_auth import Auth
 from modules.crud.crud_products import Products
 from modules.crud.crud_bookings import Bookings
+from modules.crud.jobs import DbJobs
 
 from modules.queue.booking_queue import QBookingHandler
-from modules.routers import (
-    auth,
-    users,
-    products,
-    booking,
-    q_booking,
-)
+from modules.routers import auth, users, products, booking, q_booking, job
 import time
 
 
 cfg = Settings().from_toml_file().from_env_file()
 
 
-logging.basicConfig(encoding=cfg.coding, level=cfg.log_type)
+logging.basicConfig(encoding=cfg.encoding, level=cfg.log_type)
 
 db = Utilities(cfg)
 db.async_session_generator()
 
-routes = (users, auth, products, booking, q_booking)
+routes = (users, auth, products, booking, q_booking, job)
 crud_operations = (
     Users(cfg),
     Auth(cfg),
     Products(cfg),
     Bookings(cfg),
     QBookingHandler(cfg),
+    DbJobs(cfg),
 )
 
 
@@ -50,6 +46,9 @@ app = FastAPI(
     title=cfg.name,
     description=cfg.description,
     version=cfg.version,
+    terms_of_service=cfg.terms,
+    contact=cfg.contacts,
+    license_info=cfg.license,
     swagger_ui_parameters={
         "syntaxHighlight.theme": "tomorrow-night",
         "tryItOutEnabled": True,
@@ -60,6 +59,8 @@ app = FastAPI(
 
 ALLOWED_HOSTS = ["*"]
 
+if cfg.origins:
+    ALLOWED_HOSTS = [str(origin) for origin in cfg.origins]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_HOSTS,
@@ -103,6 +104,7 @@ async def add_process_time_header(request: Request, call_next):
     response = await call_next(request)
     process_time = time.time() - start_time
     response.headers["X-Process-Time"] = str(process_time)
+    response.headers["root_path"] = request.scope.get('root_path')
     return response
 
 

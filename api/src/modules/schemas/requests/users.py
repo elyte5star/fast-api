@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, SecretStr
 from modules.schemas.requests.base_request import RequestBase
 from typing import Any
 
@@ -6,7 +6,7 @@ from typing import Any
 class User(BaseModel):
     username: str
     email: EmailStr
-    password: str
+    password: SecretStr
     telephone: str
     active: bool = False
 
@@ -19,7 +19,7 @@ class EmailSchema(BaseModel):
 class EditUser(BaseModel):
     username: str
     email: EmailStr
-    password: str
+    password: SecretStr
     telephone: str
 
 

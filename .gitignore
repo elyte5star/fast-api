@@ -256,6 +256,11 @@ $RECYCLE.BIN/
 # Changes made manually by Anzyz development team
 
 
+#Deployment
+deployment/common/regcred.yml
+deployment/common/api_secrets.env
+deployment/common/dashboard_secrets.env
+
 #fORNTEND
 
 e-commerce/*
@@ -267,6 +272,7 @@ e-commerce/*
 persistence/*
 !persistence/*.file
 
+/api.env
 .env
 *.local
 nodemodules

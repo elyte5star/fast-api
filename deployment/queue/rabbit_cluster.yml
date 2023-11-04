@@ -1,0 +1,52 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmq-cluster
+  namespace: demo
+  labels:
+    app: rabbitmq-cluster
+spec:
+  terminationGracePeriodSeconds: 70
+  persistence:
+    storageClassName: rabbit-hostpath
+    storage: 10Gi
+  service:
+    type: LoadBalancer
+  rabbitmq:
+    additionalConfig: |
+      log.console.level = info
+      channel_max = 700
+      collect_statistics_interval = 10000
+      disk_free_limit.relative = 2.0
+    additionalPlugins:
+      - rabbitmq_management
+      - rabbitmq_peer_discovery_k8s
+      - rabbitmq_mqtt
+      - rabbitmq_stomp
+      - rabbitmq_stream
+      - rabbitmq_web_mqtt
+      - rabbitmq_web_stomp
+  replicas: 1
+  resources:
+    requests:
+      cpu: "4"
+      memory: 10Gi
+    limits:
+      cpu: "4"
+      memory: 10Gi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

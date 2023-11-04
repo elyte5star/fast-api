@@ -21,24 +21,18 @@ async def create_booking(
     data: CreateBooking,
     cred: JWTcredentials = Depends(security),
 ):
-    return await handler._create_booking(
-        BookingRequest(
-            cart=data.cart,
-            total_price=data.total_price,
-            cred=cred,
-        )
-    )
+    return await handler. _create_booking_request(BookingRequest(cred=cred, booking=data))
 
 
 # Get Bookings
-@router.get("", response_model=GetBookingsResponse)
+@router.get("", response_model=GetBookingsResponse,summary="Get all bookings")
 async def get_bookings(
     cred: JWTcredentials = Depends(security),
 ) -> GetBookingsResponse:
     return await handler._get_bookings(BookingsRequest(token_load=cred))
 
 
-@router.get("/{oid}", response_model=GetBookingResponse, summary="Get one user")
+@router.get("/{oid}", response_model=GetBookingResponse, summary="Get one booking")
 async def get_booking(
     oid: str, cred: JWTcredentials = Depends(security)
 ) -> GetBookingResponse:

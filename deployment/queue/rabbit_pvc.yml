@@ -1,0 +1,15 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: rabbit-hostpath
+  namespace: demo
+provisioner: microk8s.io/hostpath
+reclaimPolicy: Delete
+parameters:
+  pvDir: /mnt/rabbitmq-data
+volumeBindingMode: WaitForFirstConsumer
+
+
+
+
+

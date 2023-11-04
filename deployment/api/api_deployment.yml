@@ -1,0 +1,173 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: api
+  namespace: demo
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 10.64.140.43
+  selector:
+    name: api
+  ports:
+    - name: http
+      port: 8081 #incoming port
+      targetPort: 8081
+     
+---   
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: api
+  strategy:
+    type: Recreate # All existing Pods are killed before new ones are created
+  template:
+    metadata:
+      labels:
+        name: api
+        role: backend
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: api
+          imagePullPolicy: Always
+          image: elyte5star/api:v1 
+          ports:
+            - containerPort: 8081
+              name: http-web-svc
+          resources:
+            limits:
+              cpu: 0.5
+            requests:
+              cpu: 0.25 # gives 1/2 of the limit
+          env:
+            - name: TOKEN_EXPIRE_MINUTES
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: TOKEN_EXPIRE_MINUTES
+            
+            - name: BACKEND_CORS_ORIGINS
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: BACKEND_CORS_ORIGINS
+
+            - name: REFRESH_TOKEN_EXPIRE_MINUTES
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: REFRESH_TOKEN_EXPIRE_MINUTES
+
+            - name: HOST_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: HOST_URL
+
+            - name: CLIENT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: CLIENT_URL
+
+            - name: MYSQL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_HOST
+            
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_USER
+            
+            - name: MYSQL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_PORT
+
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_DATABASE
+
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MYSQL_PASSWORD
+
+
+            - name: RABBIT_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: RABBIT_HOST
+
+            - name: RABBITMQ_NODE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: RABBITMQ_NODE_PORT
+
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: RABBITMQ_DEFAULT_USER
+            
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: RABBITMQ_DEFAULT_PASS
+
+            - name: MSAL_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MSAL_ISSUER
+            
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MAIL_PASSWORD
+            
+            - name: SECURITY_PASSWORD_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: SECURITY_PASSWORD_SALT
+
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: GOOGLE_CLIENT_ID
+            
+            - name: MSAL_LOGIN_AUTHORITY
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MSAL_LOGIN_AUTHORITY
+            
+            - name: MSAL_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: api-secrets
+                  key: MSAL_CLIENT_ID
+
+    
+        

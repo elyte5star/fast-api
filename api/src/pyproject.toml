@@ -1,12 +1,12 @@
 [tool.poetry]
 authors = ["elyte5star <checkuti@gmail.com>"]
 description = "e-Market API developed by OGAGA UTI"
-homepage = "https://github.com/elyte5star/fast-api-queue"
+homepage = "https://github.com/elyte5star/fast-api"
 license = "Proprietary"
 name = "Elyte FastAPI Application."
 packages = [{include = "fast-api-queue"}]
 readme = "README.md"
-repository = "https://github.com/elyte5star/fast-api-queue"
+repository = "https://github.com/elyte5star/fast-api"
 version = "1.1.0"
 
 classifiers = [
@@ -22,7 +22,7 @@ description = """
    #   Interactive Documentation for e-Market
    """
 name = "Elyte FastAPI Application."
-terms_of_service = "https://github.com/elyte5star/fast-api-queue"
+terms_of_service = "https://github.com/elyte5star/fast-api"
 version = "1.1.0"
 
 [elyte.contact]
